@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5B800">
+<title>KANSAS CHICKEN - الشيفتات</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--line:#e3e8ee;--brand:#D32F2F}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px}
+h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
+.muted{color:var(--muted);font-size:13px}
+.brand{font-size:30px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px}
+button{width:100%;padding:13px;border:0;border-radius:12px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--main)}
+button.danger{color:#c62828;border-color:#c62828}
+button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
+button:disabled{opacity:.45}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line)}
+.tab.on{background:var(--main);color:var(--onmain);border-color:var(--main)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.btns button{flex:1;margin:0;padding:9px;font-size:13px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
+.bar>div{height:100%;background:var(--main)}
+.task{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;cursor:pointer}
+.task .t{flex:1}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
+.dot.done{background:var(--ok)}.dot.review{background:var(--warn)}
+.tag{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap}
+.tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}
+#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;object-fit:cover;display:none}
+#shot{width:100%;border-radius:12px;display:none}
+.shot{width:100%;border-radius:10px;margin-top:8px}
+.placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
+.meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
+.warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
+  authDomain: "kansas-shift-c9e60.firebaseapp.com",
+  projectId: "kansas-shift-c9e60",
+  storageBucket: "kansas-shift-c9e60.firebasestorage.app",
+  messagingSenderId: "781063241169",
+  appId: "1:781063241169:web:205b4051b262de257e34f0"
+};
+const MANAGER_CODE = '6319';
+const fdb = getFirestore(initializeApp(firebaseConfig));
+
+const DEFAULT_TASKS = [
+ ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
+ ['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],
+ ['صباحي','المطبخ','تشغيل الفرن والمعدات وفحص الحرارة'],['صباحي','المطبخ','نظافة الهوايات'],
+ ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز'],['صباحي','المطبخ','تنظيف الكاونتر وأماكن التحضير'],
+ ['صباحي','المخزن','فحص تواريخ صلاحية الخامات'],['صباحي','المخزن','استلام المنتجات بدرجات حرارة'],
+ ['صباحي','المخزن','قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)'],
+ ['صباحي','الصالة','تنظيف الصالة وترتيب الكراسي والترابيزات'],['صباحي','الصالة','نظافة الأرضية'],
+ ['صباحي','الصالة','نظافة ستارة التهوية'],['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
+ ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
+ ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
+ ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
+ ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
+ ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
+ ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
+];
+
+const SK = {'صباحي':'am','مسائي':'pm'};
+const SHIFTS = ['صباحي','مسائي'];
+const ST = { role:null, user:null, shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
+  revShift:'all', report:[], cur:null, photo:null, taken:false, busy:false };
+let TASKS=[], STAFF=[], DONE=[], LOGINS=[], unsubDone=null, camStream=null;
+
+function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function todayStr(){return ds(new Date());}
+function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
+function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const okS = s => s==='approved';
+const subS = s => s==='pending' || s==='approved';
+function stLabel(s){return ({pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'مرفوضة، أعيد التصوير'})[s]||'لسه';}
+function stCls(s){return s==='approved'?'done':(s==='pending'||s==='rejected'?'review':'');}
+function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
+function findTask(id){return TASKS.find(t=>t.id===id);}
+function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
+function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
+function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e && (e.code||e.message)) || '')+')'); }
+
+onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+onSnapshot(collection(fdb,'staff'), s=>{ STAFF = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+
+function subDone(){
+  if(unsubDone) unsubDone();
+  unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
+    s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+}
+
+function render(){
+  const app = document.getElementById('app');
+  if(ST.role==='mgr') app.innerHTML = mgrView();
+  else if(!ST.user) app.innerHTML = loginView();
+  else if(ST.cur) app.innerHTML = taskView();
+  else app.innerHTML = empView();
+}
+
+function loginView(){
+  const opts = STAFF.filter(x=>x.active!==false).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+  return `
+  <div class="brand">KANSAS CHICKEN</div>
+  <p class="muted" style="text-align:center">تطبيق الشيفتات</p>
+  <div class="card">
+    ${opts ? `<label>الاسم</label><select id="lstaff">${opts}</select>
+    <label>الشيفت</label><select id="lshift"><option>صباحي</option><option>مسائي</option></select>
+    <button onclick="login()">دخول</button>`
+    : '<div class="muted">لسه ما فيش موظفين مضافين. المدير لازم يضيفهم الأول.</div>'}
+    <label style="margin-top:16px">كود المدير</label>
+    <input id="mpin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
+    <button class="sec" onclick="mgrLogin()">دخول كمدير</button>
+  </div>`;
+}
+function login(){
+  const s = STAFF.find(x=>x.id===document.getElementById('lstaff').value);
+  if(!s || s.active===false){ alert('الموظف ده مش متفعل'); return; }
+  ST.user = s.name; ST.shift = document.getElementById('lshift').value; ST.role='emp';
+  ST.date = todayStr(); subDone();
+  addDoc(collection(fdb,'logins'), {staffId:s.id, name:s.name, shift:ST.shift, date:ST.date, at:Date.now()}).catch(()=>{});
+  render();
+}
+function mgrLogin(){
+  const code = document.getElementById('mpin').value.trim();
+  if(code !== MANAGER_CODE){ alert('كود المدير غلط'); return; }
+  ST.role='mgr'; ST.user='المدير'; ST.date=todayStr(); subDone(); loadReport(); render();
+}
+function logout(){ ST.user=null; ST.role=null; ST.cur=null; stopCam(); if(unsubDone) unsubDone(); render(); }
+
+function empView(){
+  const list = taskList(ST.shift);
+  const doneCount = list.filter(t=>subS(recOf(t.id,ST.shift)?.status)).length;
+  const pct = list.length ? Math.round(doneCount/list.length*100) : 0;
+  const rows = list.map(t=>{
+    const r = recOf(t.id, ST.shift);
+    const st = r ? r.status : 'todo';
+    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : '<span class="tag">لسه</span>';
+    return `<div class="task" onclick="openTask('${t.id}')">
+      <span class="dot ${stCls(st)}"></span>
+      <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div></div>${tag}</div>`;
+  }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. كلم المدير.</div>';
+  return `
+  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.user)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
+    <button class="sec small" onclick="logout()">خروج</button></div>
+  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div></div>
+  ${rows}
+  <p class="muted" style="text-align:center">المهمة بتتسجل بعد ما تصوّر بالكاميرا، والمدير بيراجعها.</p>`;
+}
+function openTask(id){
+  const r = recOf(id, ST.shift);
+  if(r && subS(r.status) && r.status!=='rejected') return;
+  ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
+}
+function taskView(){
+  const t = findTask(ST.cur);
+  return `
+  <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
+  <h2>${esc(t.name)}</h2>
+  <div class="card">
+    <video id="cam" autoplay playsinline muted></video>
+    <img id="shot" alt="">
+    <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>المصدر: كاميرا التطبيق فقط</div>
+  </div>
+  <button id="capBtn" onclick="capture()">التقاط صورة</button>
+  <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
+  <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة التصوير</button>
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">إرسال المهمة للمراجعة</button>`;
+}
+async function startCam(){
+  try{
+    camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+    const v = document.getElementById('cam');
+    if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
+  }catch(e){
+    const ph = document.getElementById('ph');
+    if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
+  }
+}
+function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } }
+function capture(){
+  const v = document.getElementById('cam');
+  if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
+  const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  c.getContext('2d').drawImage(v,0,0,w,h);
+  ST.photo = c.toDataURL('image/jpeg',0.6); ST.taken = true;
+  stopCam();
+  v.style.display='none';
+  const img = document.getElementById('shot'); img.src = ST.photo; img.style.display='block';
+  document.getElementById('ph').style.display='none';
+  document.getElementById('capBtn').style.display='none';
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('retakeBtn').style.display='block';
+  document.getElementById('sendBtn').style.display='block';
+}
+function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
+function closeTask(){ stopCam(); ST.cur=null; render(); }
+async function submitPhoto(){
+  if(ST.busy || !ST.taken) return;
+  ST.busy = true;
+  document.getElementById('sendBtn').disabled = true;
+  const t = findTask(ST.cur); const now = new Date();
+  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id;
+  const rec = {
+    date: ST.date, ym: ST.date.slice(0,7),
+    year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
+    shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.user,
+    time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
+    photo: ST.photo, status: 'pending'
+  };
+  try{
+    await setDoc(doc(fdb,'done',id), rec);
+    ST.busy = false; closeTask();
+  }catch(e){
+    ST.busy = false; document.getElementById('sendBtn').disabled = false;
+    fail('إرسال المهمة', e);
+  }
+}
+
+function mgrView(){
+  const tabs = [['rev','المراجعة'],['tasks','المهام'],['staff','الموظفين'],['rep','التقرير']]
+    .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='staff' ? staffView() : repView();
+  return `
+  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">KANSAS CHICKEN</div></div>
+    <button class="sec small" onclick="logout()">خروج</button></div>
+  <div class="tabs">${tabs}</div>${body}`;
+}
+function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='staff') loadLogins(); render(); }
+
+function revView(){
+  const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
+  const shifts = ST.revShift==='all' ? SHIFTS : [ST.revShift];
+  const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
+  const cards = recs.map(r=>`
+    <div class="card">
+      <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>
+      ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
+      <div class="btns">
+        <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
+        <button class="sec" onclick="setStatus('${r.id}','rejected')">رفض</button>
+        <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
+      </div>
+    </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
+  const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+  return `
+  <div class="card">
+    <label>التاريخ</label><input type="date" value="${ST.date}" onchange="setDate(this.value)">
+    <label>الشيفت</label>
+    <select onchange="ST.revShift=this.value;render()">
+      <option value="all" ${ST.revShift==='all'?'selected':''}>الاتنين</option>
+      ${SHIFTS.map(s=>`<option ${ST.revShift===s?'selected':''}>${s}</option>`).join('')}
+    </select>
+    <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
+  </div>
+  <div class="card"><b>لم تُنفّذ</b>${miss}</div>
+  ${cards}`;
+}
+function setDate(v){ ST.date=v; subDone(); render(); }
+function setStatus(id,status){
+  updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
+}
+function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
+
+function tasksView(){
+  if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
+  const lists = SHIFTS.map(sh=>{
+    const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
+      <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
+        <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
+        <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
+      </div>`).join('');
+    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
+  }).join('');
+  return `
+  <div class="card"><h2>إضافة مهمة</h2>
+    <label>اسم المهمة</label><input id="nt_name">
+    <label>المنطقة</label><input id="nt_zone">
+    <label>الشيفت</label><select id="nt_shift"><option>صباحي</option><option>مسائي</option></select>
+    <button onclick="addTask()">إضافة</button></div>
+  ${lists}`;
+}
+function addTask(){
+  const name = document.getElementById('nt_name').value.trim();
+  const zone = document.getElementById('nt_zone').value.trim() || 'عام';
+  const shift = document.getElementById('nt_shift').value;
+  if(!name){ alert('اكتب اسم المهمة'); return; }
+  addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
+}
+function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
+function delTask(id){ if(confirm('تحذف المهمة من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
+function importDefaults(){
+  Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
+    .catch(e=>fail('الاستيراد', e));
+}
+
+function staffView(){
+  const rows = STAFF.map(x=>{
+    const last = LOGINS.filter(l=>l.staffId===x.id).sort((a,b)=>b.at-a.at)[0];
+    const lastTxt = last ? fmtDate(last.date)+' · '+last.shift+' · '+new Date(last.at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) : 'ما دخلش لسه';
+    return `<div class="task" style="cursor:default;${x.active===false?'opacity:.5':''}">
+      <div class="t">${esc(x.name)}<div class="muted">آخر دخول: ${lastTxt}</div></div>
+      <button class="sec small" onclick="toggleStaff('${x.id}',${x.active!==false})">${x.active===false?'تفعيل':'إيقاف'}</button></div>`;
+  }).join('') || '<div class="muted">ما فيش موظفين</div>';
+  return `
+  <div class="card"><h2>إضافة موظف</h2>
+    <label>اسم الموظف</label><input id="ns_name">
+    <button onclick="addStaff()">إضافة موظف</button></div>
+  ${rows}`;
+}
+function addStaff(){
+  const name = document.getElementById('ns_name').value.trim();
+  if(!name){ alert('اكتب اسم الموظف'); return; }
+  addDoc(collection(fdb,'staff'), {name, active:true, created:Date.now()}).catch(e=>fail('إضافة الموظف', e));
+}
+function toggleStaff(id, active){ updateDoc(doc(fdb,'staff',id), {active:!active}).catch(e=>fail('التعديل', e)); }
+function loadLogins(){
+  getDocs(collection(fdb,'logins')).then(s=>{ LOGINS = s.docs.map(d=>d.data()); render(); }).catch(e=>console.warn(e));
+}
+
+function repView(){
+  const [y,m] = ST.month.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  const tot = {'صباحي': taskList('صباحي').length, 'مسائي': taskList('مسائي').length};
+  let rows = '';
+  for(let d=1; d<=days; d++){
+    const date = ST.month+'-'+String(d).padStart(2,'0');
+    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
+    const a = cnt('صباحي'), b = cnt('مسائي');
+    const all = tot['صباحي'] + tot['مسائي'];
+    const pct = all ? Math.round((a+b)/all*100) : 0;
+    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${pct}%</td></tr>`;
+  }
+  return `
+  <div class="card">
+    <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
+    <div class="muted" style="margin-top:6px">عدد المهام المعتمدة كل يوم من أصل المهام المفعّلة.</div>
+  </div>
+  <div class="card" style="overflow-x:auto"><table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th></tr>${rows}</table></div>`;
+}
+function setMonth(v){ ST.month=v; loadReport(); }
+function loadReport(){
+  getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
+    .then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); })
+    .catch(e=>console.warn(e));
+}
+
+Object.assign(window, { ST, render, login, mgrLogin, logout, openTask, closeTask, startCam, capture, retake, submitPhoto,
+  setTab, setDate, setStatus, removeRec, addTask, toggleTask, delTask, importDefaults, addStaff, toggleStaff, setMonth });
+
+render();
+</script>
+</body>
+</html>
