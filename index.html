@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F5B800">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>KANSAS CHICKEN - البوت الذكي لتقييم الهايجين وسلامة الغذاء</title>
+<title>KANSAS CHICKEN - البوت الذكي لنظافة وسلامة الغذاء</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
 *{box-sizing:border-box}
@@ -389,8 +389,8 @@ function calcAIScores(sh) {
     const r = recOf(t.id, sh);
     const isDone = r && okS(r.status);
     
-    const textToCheck = (t.name + ' ' + t.zone).toLowerCase();
-    const isHaccp = textToCheck.includes('حرارة') || textToCheck.includes('ثلاجة') || textToCheck.includes('فريزر') || textToCheck.includes('استلام') || textToCheck.includes('هولدنج') || t.type === 'temp' || textToCheck.includes('سلامة');
+    const text = (t.name + ' ' + t.zone).toLowerCase();
+    const isHaccp = text.includes('حرارة') || text.includes('ثلاجة') || text.includes('فريزر') || text.includes('استلام') || text.includes('هولدنج') || text.includes('صلاحية') || t.type === 'temp';
 
     if (isHaccp) {
       haccpTotal++;
@@ -403,7 +403,9 @@ function calcAIScores(sh) {
       }
     } else {
       cleanTotal++;
-      if (isDone) cleanDone++;
+      if (isDone) {
+        cleanDone++;
+      }
     }
   });
 
@@ -424,19 +426,19 @@ function empView(){
   const ai = calcAIScores(ST.shift);
   
   const performanceEval = ai.totalPct === 100 && ai.violations === 0
-    ? '<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">🏆 أداء نموذجي! أتممت جميع مهام النظافة وسلامة الغذاء بالشكل المظبوط تماماً.</div>'
+    ? '<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">🏆 أداء ممتاز! تم إنجاز كافة مهام النظافة وسلامة الغذاء بامتياز.</div>'
     : ai.violations > 0
-    ? `<div style="background:#ffebee; color:#c62828; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ انتباه! رصد البوت عدد (${ai.violations}) خطأ أو مخالفة في معايير الحرارة.</div>`
-    : ai.totalPct >= 85 
-    ? '<div style="background:#fff4e0; color:#8a5a00; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">👍 أداء جيد جداً، استمر في إنجاز باقي المهام.</div>'
-    : '<div style="background:#ffebee; color:#c62828; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ يرجى استكمال المهام المتبقية للوصول للحد الأدنى المطلوب.</div>';
+    ? `<div style="background:#ffebee; color:#c62828; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ انتباه! رصد البوت عدد (${ai.violations}) مخالفة بسلامة الغذاء.</div>`
+    : ai.cleanScore < 80
+    ? '<div style="background:#fff4e0; color:#8a5a00; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ مؤشر النظافة منخفض! يرجى إتمام مهام النظافة والتعقيم المتبقية.</div>'
+    : '<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">👍 أداء جيد، استمر في الحفاظ على النظافة العامة للفرع.</div>';
 
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
     const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review" style="border:none;">متأخرة</span>' : '<span class="tag" style="background:#f4f6f8; color:#6b7785; border:none;">لسه</span>');
     const valText = (r && r.value !== undefined && r.value !== '') ? ` | القراءة: <b>${esc(r.value)}</b>` : '';
-    const violationText = (r && r.isViolation) ? `<div class="alertbox">⚠️ قراءة غير مطابقة للمواصفات! تم تقييمها كمخالفة.</div>` : '';
+    const violationText = (r && r.isViolation) ? `<div class="alertbox">⚠️ قراءة غير مطابقة للمواصفات!</div>` : '';
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
       <div class="t">
@@ -448,40 +450,39 @@ function empView(){
       </div>
       ${tag}
     </div>`;
-  }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث.</div>';
+  }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي.</div>';
   
   return `
   ${ST.latestAlert ? `<div class="notify-banner"><span>${esc(ST.latestAlert)}</span><button class="small sec" style="color:#fff;border-color:#fff" onclick="ST.latestAlert='';render()">إغلاق</button></div>` : ''}
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
   
-  <!-- كارت تقييم البوت الذكي للوضع -->
   <div class="score-card">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-size:16px; font-weight:bold;">🤖 تقييم البوت الذكي للوضع</span>
+      <span style="font-size:16px; font-weight:bold;">🤖 تقييم البوت الذكي للفرع</span>
       <span style="background:#F5B800; color:#1d2630; padding:3px 8px; border-radius:6px; font-weight:bold;">${grade(ai.totalPct)}</span>
     </div>
     <div class="score-row">
-      <span>مؤشر النظافة والتشغيل (القديم والجديد) 🧹:</span>
-      <b>${ai.cleanScore}%</b>
+      <span>مؤشر النظافة والهايجين (🧹):</span>
+      <b style="${ai.cleanScore < 85 ? 'color:#ffab91' : 'color:#a5d6a7'}">${ai.cleanScore}%</b>
     </div>
     <div class="score-row">
-      <span>مؤشر سلامة الغذاء والحرارة 🌡️:</span>
-      <b style="${ai.haccpScore < 100 ? 'color:#ffab91' : ''}">${ai.haccpScore}%</b>
+      <span>مؤشر سلامة الغذاء والجودة (🌡️):</span>
+      <b style="${ai.haccpScore < 100 ? 'color:#ffab91' : 'color:#a5d6a7'}">${ai.haccpScore}%</b>
     </div>
     <div class="score-row">
-      <span>نسبة إنجاز مهام الشيفت:</span>
+      <span>نسبة الإنجاز الإجمالية:</span>
       <b>${doneCount} / ${list.length} (${ai.totalPct}%)</b>
     </div>
   </div>
 
   <div class="card">
-    <div>الإنجاز الكلي: <b>${doneCount}</b> من ${list.length}</div>
+    <div>إنجاز المهام: <b>${doneCount}</b> من ${list.length}</div>
     <div class="bar"><div style="width:${ai.totalPct}%"></div></div>
     ${performanceEval}
   </div>
   ${rows}
-  <p class="muted" style="text-align:center">التصوير بالكاميرا وإدخال بيانات سلامة الغذاء أساسي للتأكيد.</p>`;
+  <p class="muted" style="text-align:center">التصوير بالكاميرا ودقة البيانات أساسي لاعتماد الشيفت.</p>`;
 }
 
 function openTask(id){
@@ -492,7 +493,8 @@ function openTask(id){
 
 function taskView(){
   const t = findTask(ST.cur);
-  const isTemp = t.type === 'temp' || t.name.toLowerCase().includes('حرارة');
+  const text = (t.name + ' ' + t.zone).toLowerCase();
+  const isTemp = text.includes('حرارة') || text.includes('ثلاجة') || text.includes('فريزر') || text.includes('هولدنج') || t.type === 'temp';
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>هل تم عمل: ${esc(t.name)}؟</h2>
@@ -506,10 +508,10 @@ function taskView(){
     <div class="card">
       <label><b>تسجيل القراءة الرقمية (درجة الحرارة):</b></label>
       <input type="number" id="numericVal" placeholder="أدخل الرقم هنا (مثلاً: 38)" oninput="ST.inputVal=this.value">
-      <div class="muted" style="margin-top:4px">البوت سيتحقق من مطابقة القراءة للمعيار الصحي.</div>
+      <div class="muted" style="margin-top:4px">البوت سيتحقق من مطابقة القراءة للمعايير الصحية.</div>
     </div>
   ` : ''}
-  <button id="capBtn" onclick="capture()">التقاط صورة للتحقق</button>
+  <button id="capBtn" onclick="capture()">التقاط صورة للتحقق من النظافة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة التصوير</button>
   <button id="sendBtn" style="display:none; background:#2e7d32; color:#fff;" onclick="submitPhoto()">Done 👍</button>`;
@@ -549,7 +551,7 @@ function capture(){
   const brightness = colorSum / (w * h);
 
   if (brightness < 25) {
-    alert('🤖 البوت الذكي: الصورة مظلمة تماماً ولا يمكن تقييم الوضع! يرجى إضاءة المكان وتصوير النظافة بوضوح.');
+    alert('🤖 البوت الذكي: الصورة مظلمة تماماً ولا يمكن تقييم النظافة! يرجى إضاءة المكان وتصوير الأسطح بوضوح.');
     return;
   }
 
@@ -580,7 +582,8 @@ function closeTask(){
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
   const t = findTask(ST.cur);
-  const isTemp = t.type === 'temp' || t.name.toLowerCase().includes('حرارة');
+  const text = (t.name + ' ' + t.zone).toLowerCase();
+  const isTemp = text.includes('حرارة') || text.includes('ثلاجة') || text.includes('فريزر') || text.includes('هولدنج') || t.type === 'temp';
 
   if(isTemp && (!ST.inputVal || ST.inputVal.trim() === '')){
     alert('من فضلك أدخل درجة الحرارة بالأرقام ليقوم البوت بتقييم مطابقتها.');
@@ -675,12 +678,12 @@ function revView(){
   </div>
 
   <div class="score-card">
-    <b>🤖 تقييم البوت الذكي الشامل للفرع:</b>
+    <b>🤖 تقييم البوت الذكي للفرع (نظافة + جودة):</b>
     <div class="score-row">
-      <span>شيفت الصباح - نظافة وتشغيل: <b>${amAi.cleanScore}%</b> | سلامة غذاء: <b>${amAi.haccpScore}%</b></span>
+      <span>شيفت الصباح - نظافة: <b>${amAi.cleanScore}%</b> | سلامة غذاء: <b>${amAi.haccpScore}%</b></span>
     </div>
     <div class="score-row">
-      <span>شيفت المساء - نظافة وتشغيل: <b>${pmAi.cleanScore}%</b> | سلامة غذاء: <b>${pmAi.haccpScore}%</b></span>
+      <span>شيفت المساء - نظافة: <b>${pmAi.cleanScore}%</b> | سلامة غذاء: <b>${pmAi.haccpScore}%</b></span>
     </div>
   </div>
 
@@ -723,9 +726,9 @@ function tasksView(){
   }).join('');
   return `
   <div class="card">
-    <h2>تفعيل البوت الذكي ودمج المهام أوتوماتيكياً</h2>
-    <p class="muted">البوت يدمج جميع مهام الهايجين والنظافة (القديمة والجديدة) ويقيمها بذكاء:</p>
-    <button style="background:#2e7d32; color:#fff;" onclick="mergeDefaultTasks()">⚡ مزامنة وتفعيل البوت على كل المهام فوراً</button>
+    <h2>تفعيل ومزامنة البوت على كافة المهام</h2>
+    <p class="muted">البوت يربط ويصنف جميع مهام النظافة وسلامة الغذاء أوتوماتيكياً:</p>
+    <button style="background:#2e7d32; color:#fff;" onclick="mergeDefaultTasks()">⚡ مزامنة وتفعيل البوت الآن</button>
   </div>
   <div class="card"><h2>إضافة مهمة فردية جديدة</h2>
     <label>اسم المهمة</label><input id="nt_name">
