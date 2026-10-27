@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F5B800">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>KANSAS CHICKEN - الشيفتات</title>
+<title>KANSAS CHICKEN - الشيفتات وتقييم الهايجين الذكي</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
 *{box-sizing:border-box}
@@ -35,8 +35,8 @@ button:disabled{opacity:.45}
 .task .t{flex:1}
 .dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
 .dot.done{background:var(--ok)}.dot.review{background:var(--warn)}
-.tag{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap}
-.tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}
+.tag{font-size:12px;padding:4px 10px;border-radius:8px;background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;white-space:nowrap;font-weight:bold;}
+.tag.review{background:#fff4e0;color:var(--warn);border:none;}
 #cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;object-fit:cover;display:none}
 #shot{width:100%;border-radius:12px;display:none}
 .shot{width:100%;border-radius:10px;margin-top:8px}
@@ -44,6 +44,11 @@ button:disabled{opacity:.45}
 .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
 .warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+.alertbox{background:#ffebee;color:#c62828;border-radius:10px;padding:10px;font-size:13px;margin-top:8px;border:1px solid #ef9a9a;font-weight:bold;}
+.notify-banner{background:#d32f2f;color:#fff;padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 12px rgba(211,47,47,0.3);animation:pulse 2s infinite;}
+@keyframes pulse{0%{opacity:1;}50%{opacity:0.85;}100%{opacity:1;}}
+.score-card{background:linear-gradient(135deg, #1d2630 0%, #2c3e50 100%);color:#fff;border-radius:14px;padding:16px;margin-bottom:12px;}
+.score-row{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;}
 .logo{width:76px;height:76px;margin:0 auto;border-radius:22px;background:var(--main);color:var(--brand);font-size:44px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(245,184,0,.35)}
 body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixed}
 .login-wrap{padding-top:36px}
@@ -69,7 +74,7 @@ body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixe
 body{background:var(--bg) !important}
 .brand{color:#ff6b6b}
 .warnbox{background:#3a2e14;color:#ffd58a}
-.tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}
+.tag{background:#1d3a22; color:#a5d6a7; border:1px solid #2e7d32;}
 .placeholder{background:#1f2730}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
@@ -96,65 +101,53 @@ const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
 
+// قائمة مهام الهايجين وسلامة الغذاء الجديدة بالكامل
 const DEFAULT_TASKS = [
-  ['صباحي','الواجهة','عتب الأبواب'],
-  ['صباحي','الواجهة','الزجاج'],
-  ['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
-  ['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],
-  ['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],
-  ['صباحي','المطبخ','تشغيل الفرن والمعدات وفحص الحرارة'],
-  ['صباحي','المطبخ','نظافة الهوايات'],
-  ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز'],
-  ['صباحي','المطبخ','تنظيف الكاونتر وأماكن التحضير'],
-  ['صباحي','المخزن','فحص تواريخ صلاحية الخامات'],
-  ['صباحي','المخزن','استلام المنتجات بدرجات حرارة'],
-  ['صباحي','المخزن','قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)'],
-  ['صباحي','الصالة','تنظيف الصالة وترتيب الكراسي والترابيزات'],
-  ['صباحي','الصالة','نظافة الأرضية'],
-  ['صباحي','الصالة','نظافة ستارة التهوية'],
-  ['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
-  ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
-  ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],
-  ['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
-  ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],
-  ['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
-  ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],
-  ['مسائي','الصالة','تنظيف الصالة والأرضيات'],
-  ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
-  ['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
-  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],
-  ['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
+  ['صباحي','سلامة الغذاء','فحص ثلاجة التبريد وتسجيل الحرارة (أقل من 39°F)','temp',39,'max'],
+  ['صباحي','سلامة الغذاء','فحص الفريزر وتسجيل الحرارة (أقل من 0°F)','temp',0,'max'],
+  ['صباحي','سلامة الغذاء','فحص حرارة الاستلام للمنتجات الباردة (أقل من 39°F)','temp',39,'max'],
+  ['صباحي','الهايجين','فحص الهايجين الشخصي للفريق (الزي، الأظافر، وغطاء الشعر)','bool'],
+  ['صباحي','الهايجين','تعبئة صابون غسيل الأيدي والمعقمات عند كافة الأحواض','bool'],
+  ['صباحي','المطبخ','تشغيل الزيت وتصفية بقاياه وفحص الحرارة التشغيلية','temp',350,'max'],
+  ['صباحي','المطبخ','تشغيل الفرن والمعدات وتسجيل الحرارة','temp',350,'max'],
+  ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز والصلاحية','bool'],
+  ['صباحي','المطبخ','تنظيف وتطهير الكاونتر وأسطح التحضير بمنظف معتمد','bool'],
+  ['صباحي','المطبخ','نظافة الهوايات وفلاتر الشفاطات','bool'],
+  ['صباحي','الواجهة','عتب الأبواب ونظافة الواجهة','bool'],
+  ['صباحي','الواجهة','تلميع الزجاج الداخلي والخارجي','bool'],
+  ['صباحي','الدرايف ثرو','نظافة وترتيب الشباك والكاونتر والتأكد من خلوه من الدهون','bool'],
+  ['صباحي','المخزن','فحص تواريخ صلاحية الخامات ونظام FIFO (القديم أولاً)','bool'],
+  ['صباحي','الصالة','تنظيف الصالة وترتيب الترابيزات والكراسي وتطهيرها','bool'],
+  ['صباحي','الصالة','نظافة الأرضيات وستارة التهوية','bool'],
+  ['صباحي','الحمامات','تنظيف الحمامات وتعقيمها وتعبئة المستلزمات','bool'],
+  ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت','bool'],
+
+  ['مسائي','سلامة الغذاء','قياس حرارة المنتجات الساخنة في الهولدنج (أعلى من 140°F)','temp',140,'min'],
+  ['مسائي','سلامة الغذاء','فحص الثلاجات قبل الإغلاق وتسجيل الحرارة (أقل من 39°F)','temp',39,'max'],
+  ['مسائي','الهايجين','تعقيم وتطهير كافة الأدوات والصواني المستخدمة','bool'],
+  ['مسائي','المطبخ','تصفية ونظافة زيت المقلاة بالكامل وتغطيتها','bool'],
+  ['مسائي','المطبخ','تنظيف المقالي والمعدات وفصل التيار الكهربائي','bool'],
+  ['مسائي','المطبخ','تنظيف وتطهير الفرن والشواية ومحيط الكاونتر','bool'],
+  ['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من إحكام الغلق','bool'],
+  ['مسائي','الخارج','التخلص من المخلفات وتنظيف وتطوير منطقة الحاويات','bool'],
+  ['مسائي','الصالة','تنظيف ومسح الصالة والأرضيات بالكامل','bool'],
+  ['مسائي','الحمامات','تنظيف وغسل الحمامات وتعبئة المعقمات','bool'],
+  ['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي','bool'],
+  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد اليومي','bool'],
+  ['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب والشبابيك','bool']
 ];
 
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
 const TIPS = {
-  'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
-  'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
-  'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
-  'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولو أعلى من الحد المسموح بلّغ المدير فوراً.',
-  'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
-  'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
-  'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
-  'تجهيز التتبيلة وتسجيل وقت التجهيز': 'جهّز التتبيلة بالكميات المحددة، وسجّل وقت التجهيز، ومتستخدمهاش بعد الوقت المحدد.',
-  'تنظيف الكاونتر وأماكن التحضير': 'نظّف الأسطح بمنظف معتمد للأغذية واشطفها وجففها، وخلي أدوات اللحم بعيدة عن الجاهز.',
-  'فحص تواريخ صلاحية الخامات': 'راجع تاريخ الصلاحية على كل صنف، وارمي أي حاجة منتهية، وخلي القديم قدام الجديد.',
-  'استلام المنتجات بدرجات حرارة': 'قيّس حرارة الشحنة عند الاستلام، وارفض أي منتج مش مطابق للحد المسموح.',
-  'قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)': 'قيس حرارة المنتج بترمومتر نظيف، والباردة أقل من 39°F، والساخنة أعلى من 140°F، وسجّل القراءة.',
-  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
-  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
-  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
-  'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
-  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر طباعة فاتورة تجريبية.',
-  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
-  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
-  'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
-  'تنظيف الثلاجات من الداخل والتأكد من قفلها': 'نظّف رفوف الثلاجة من الداخل، واتأكد إن الباب بيقفل كويس.',
-  'التخلص من المخلفات وتنظيف منطقة الزبالة': 'اقفل أكياس الزبالة كويس، وحطها في المكان المخصص، ونظّف المنطقة حواليها.',
-  'تنظيف الصالة والأرضيات': 'امسح الأرضيات وانضف الترابيزات والكراسي، واتأكد إن مفيش أي بقع.',
-  'تأمين المخزن وتسجيل الجرد اليومي': 'اقفل المخزن، وسجّل الجرد اليومي، واتأكد إن الخامات مرتبة ومغطاة.',
-  'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
-  'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
+  'فحص ثلاجة التبريد وتسجيل الحرارة (أقل من 39°F)': 'اقرأ درجة الحرارة من الترمومتر واكتبها. يجب أن تكون أقل من 39°F.',
+  'فحص الفريزر وتسجيل الحرارة (أقل من 0°F)': 'اقرأ درجة الحرارة واكتبها. التجميد الصحيح أقل من 0°F.',
+  'قياس حرارة المنتجات الساخنة في الهولدنج (أعلى من 140°F)': 'قس حرارة الدجاج بالترمومتر النظيف. يجب أن تكون 140°F فأكثر لسلامة الغذاء.',
+  'عتب الأبواب ونظافة الواجهة': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
+  'تلميع الزجاج الداخلي والخارجي': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
+  'نظافة وترتيب الشباك والكاونتر والتأكد من خلوه من الدهون': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
+  'تصفية زيت المقلاة بالكامل وتغطيتها': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
+  'فحص الهايجين الشخصي للفريق (الزي، الأظافر، وغطاء الشعر)': 'تأكد من الالتزام التام بالزي النظيف، قص الأظافر، وارتداء غطاء الشعر أثناء التحضير.'
 };
 
 function isLate(sh){
@@ -191,7 +184,8 @@ function todayStr(){
 
 const ST = { 
   user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
-  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' 
+  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, inputVal:'', taken:false, busy:false, authErr:'',
+  latestAlert: ''
 };
 
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
@@ -231,6 +225,17 @@ function recOf(taskId, sh){
   return DONE.find(r=>r.taskId===taskId && r.shift===sh);
 }
 
+function triggerNotify(msg) {
+  ST.latestAlert = msg;
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🚨 تنبيه أخطار KANSAS CHICKEN', { body: msg, icon: 'icon-192.png' });
+  }
+}
+
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission();
+}
+
 function fail(ctx, e){ 
   alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); 
 }
@@ -261,7 +266,16 @@ function subDone(){
   if(unsubDone) unsubDone();
   unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
     s=>{ 
+      const prevCount = DONE.length;
       DONE = s.docs.map(d=>({id:d.id,...d.data()})); 
+      if (DONE.length > prevCount && prevCount !== 0) {
+        const newest = DONE[DONE.length - 1];
+        if (newest.isViolation) {
+          triggerNotify(`🚨 خطر سلامة غذاء: تسجيل قراءة غير مطابقة للمواصفات من الموظف (${newest.employee})`);
+        } else {
+          triggerNotify(`تم إنجاز تسليم جديد في الشيفت الحالي بواسطة (${newest.employee})`);
+        }
+      }
       refresh(); 
     }, e=>console.warn(e));
 }
@@ -302,9 +316,9 @@ function coverView(){
     <text x="190" y="176" text-anchor="middle" font-size="22" font-weight="500" fill="#1d2630">KANSAS CHICKEN</text>
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
-    <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
+    <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#1d2630"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
-    <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
+    <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#1d2630"/>
     <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
@@ -363,35 +377,120 @@ function logout(){
   signOut(auth); 
 }
 
+/* ---------- AI Bot Evaluation Engine ---------- */
+function calcAIScores(sh) {
+  const list = taskList(sh);
+  if (!list.length) return { cleanScore: 100, haccpScore: 100, totalPct: 0, violations: 0 };
+  
+  let cleanTotal = 0, cleanDone = 0;
+  let haccpTotal = 0, haccpDone = 0;
+  let violations = 0;
+
+  list.forEach(t => {
+    const r = recOf(t.id, sh);
+    const isDone = r && okS(r.status);
+    
+    if (t.zone === 'سلامة الغذاء' || t.type === 'temp') {
+      haccpTotal++;
+      if (isDone) {
+        if (r.isViolation) {
+          violations++;
+        } else {
+          haccpDone++;
+        }
+      }
+    } else {
+      cleanTotal++;
+      if (isDone) cleanDone++;
+    }
+  });
+
+  const cleanScore = cleanTotal ? Math.round((cleanDone / cleanTotal) * 100) : 100;
+  const haccpBase = haccpTotal ? Math.round((haccpDone / haccpTotal) * 100) : 100;
+  const haccpScore = Math.max(0, haccpBase - (violations * 20)); // خصم 20 درجة لكل خرق سلامة غذاء
+  
+  const doneCount = list.filter(t=>okS(recOf(t.id,sh)?.status)).length;
+  const totalPct = Math.round((doneCount / list.length) * 100);
+
+  return { cleanScore, haccpScore, totalPct, violations };
+}
+
 /* ---------- employee ---------- */
 function empView(){
   const list = taskList(ST.shift);
   const doneCount = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
-  const pct = list.length ? Math.round(doneCount/list.length*100) : 0;
+  const ai = calcAIScores(ST.shift);
+  
+  const performanceEval = ai.totalPct === 100 && ai.violations === 0
+    ? '<div style="background:#e8f5e9; color:#2e7d32; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">🏆 أداء نموذجي! أتممت جميع مهام النظافة وسلامة الغذاء بدون أخطاء.</div>'
+    : ai.violations > 0
+    ? `<div style="background:#ffebee; color:#c62828; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ انتباه! رصد البوت عدد (${ai.violations}) خرق لمعايير سلامة الغذاء.</div>`
+    : ai.totalPct >= 85 
+    ? '<div style="background:#fff4e0; color:#8a5a00; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">👍 أداء جيد جداً، استمر في إنجاز باقي المهام.</div>'
+    : '<div style="background:#ffebee; color:#c62828; padding:10px; border-radius:10px; margin-top:8px; text-align:center; font-weight:bold;">⚠️ يرجى استكمال المهام المتبقية للوصول للحد الأدنى المطلوب.</div>';
+
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
-    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
+    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review" style="border:none;">متأخرة</span>' : '<span class="tag" style="background:#f4f6f8; color:#6b7785; border:none;">لسه</span>');
+    const valText = (r && r.value !== undefined && r.value !== '') ? ` | القراءة: <b>${esc(r.value)}</b>` : '';
+    const violationText = (r && r.isViolation) ? `<div class="alertbox">⚠️ القراءة غير مطابقة للمعيار المطلوب!</div>` : '';
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
-      <div class="t"><div>هل تم عمل: ${esc(t.name)}؟</div><div class="muted">${esc(t.zone)}</div>${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}</div>${tag}</div>`;
+      <div class="t">
+        <div>هل تم عمل: ${esc(t.name)}؟</div>
+        <div class="muted">${esc(t.zone)} ${valText}</div>
+        ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
+        ${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
+        ${violationText}
+      </div>
+      ${tag}
+    </div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
+  
   return `
+  ${ST.latestAlert ? `<div class="notify-banner"><span>${esc(ST.latestAlert)}</span><button class="small sec" style="color:#fff;border-color:#fff" onclick="ST.latestAlert='';render()">إغلاق</button></div>` : ''}
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
-  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم: <b>${pct}%</b>${pct ? " · " + grade(pct) : ""}</div><div class="muted">يتم تسجيل المهمة مباشرة فور التقاط الصورة والضغط على Done 👍.</div></div>
+  
+  <!-- كارت تقييم البوت التلقائي -->
+  <div class="score-card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:16px; font-weight:bold;">🤖 تقييم البوت التلقائي للشيفت</span>
+      <span style="background:#F5B800; color:#1d2630; padding:3px 8px; border-radius:6px; font-weight:bold;">${grade(ai.totalPct)}</span>
+    </div>
+    <div class="score-row">
+      <span>مؤشر النظافة والهايجين 🧹:</span>
+      <b>${ai.cleanScore}%</b>
+    </div>
+    <div class="score-row">
+      <span>مؤشر سلامة الغذاء (HACCP) 🌡️:</span>
+      <b style="${ai.haccpScore < 100 ? 'color:#ffab91' : ''}">${ai.haccpScore}%</b>
+    </div>
+    <div class="score-row">
+      <span>نسبة الإنجاز الكلية:</span>
+      <b>${doneCount} / ${list.length} (${ai.totalPct}%)</b>
+    </div>
+  </div>
+
+  <div class="card">
+    <div>إنجاز المهام: <b>${doneCount}</b> من ${list.length}</div>
+    <div class="bar"><div style="width:${ai.totalPct}%"></div></div>
+    ${performanceEval}
+  </div>
   ${rows}
-  <p class="muted" style="text-align:center">التصوير بالكاميرا أساسي لتأكيد تنفيذ المهمة.</p>`;
+  <p class="muted" style="text-align:center">التصوير بالكاميرا وإدخال بيانات سلامة الغذاء أساسي للتأكيد.</p>`;
 }
 
 function openTask(id){
   const r = recOf(id, ST.shift);
   if(r && okS(r.status) && r.status!=='rejected') return;
-  ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
+  ST.cur = id; ST.photo = null; ST.inputVal = ''; ST.taken = false; render(); startCam();
 }
 
 function taskView(){
   const t = findTask(ST.cur);
+  const isTemp = t.type === 'temp';
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>هل تم عمل: ${esc(t.name)}؟</h2>
@@ -401,10 +500,17 @@ function taskView(){
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
     <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>المصدر: كاميرا التطبيق فقط</div>
   </div>
+  ${isTemp ? `
+    <div class="card">
+      <label><b>تسجيل القراءة الرقمية (درجة الحرارة):</b></label>
+      <input type="number" id="numericVal" placeholder="أدخل الرقم هنا (مثلاً: 38)" oninput="ST.inputVal=this.value">
+      <div class="muted" style="margin-top:4px">تأكد من دقة الترمومتر قبل إدخال القراءة.</div>
+    </div>
+  ` : ''}
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة التصوير</button>
-  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍</button>`;
+  <button id="sendBtn" style="display:none; background:#2e7d32; color:#fff;" onclick="submitPhoto()">Done 👍</button>`;
 }
 
 async function startCam(){
@@ -430,7 +536,22 @@ function capture(){
   if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
   const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
   const c = document.createElement('canvas'); c.width=w; c.height=h;
-  c.getContext('2d').drawImage(v,0,0,w,h);
+  const ctx = c.getContext('2d');
+  ctx.drawImage(v,0,0,w,h);
+  
+  // فحص جودة الصورة والسطوع بواسطة البوت التلقائي (AI Quality Check)
+  const imgData = ctx.getImageData(0, 0, w, h);
+  let colorSum = 0;
+  for (let i = 0; i < imgData.data.length; i += 4) {
+    colorSum += (imgData.data[i] + imgData.data[i+1] + imgData.data[i+2]) / 3;
+  }
+  const brightness = colorSum / (w * h);
+
+  if (brightness < 30) { // صورة مظلمة جداً
+    alert('🤖 البوت التلقائي: الصورة مظلمة جداً وغير واضحة! يرجى تشغيل الإضاءة وإعادة التصوير لنظافة المكان.');
+    return;
+  }
+
   ST.photo = c.toDataURL('image/jpeg',0.6); ST.taken = true;
   stopCam();
   v.style.display='none';
@@ -457,19 +578,36 @@ function closeTask(){
 
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
+  const t = findTask(ST.cur);
+  if(t.type === 'temp' && (!ST.inputVal || ST.inputVal.trim() === '')){
+    alert('من فضلك أدخل درجة الحرارة بالأرقام أولاً.');
+    return;
+  }
+  
+  let isViolation = false;
+  if(t.type === 'temp') {
+    const num = parseFloat(ST.inputVal);
+    if (t.limitType === 'max' && num > t.limit) isViolation = true;
+    if (t.limitType === 'min' && num < t.limit) isViolation = true;
+  }
+
   ST.busy = true;
   document.getElementById('sendBtn').disabled = true;
-  const t = findTask(ST.cur); const now = new Date();
+  const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'approved'
+    photo: ST.photo, value: ST.inputVal || '', isViolation: isViolation, status: 'approved'
   };
+
   try{
     await setDoc(doc(fdb,'done',id), rec);
+    if(isViolation) {
+      triggerNotify(`🚨 تنبيه خطر: القراءة المسجلة لـ (${t.name}) مخالفة لسلامة الغذاء!`);
+    }
     ST.busy = false; closeTask();
   }catch(e){
     ST.busy = false; document.getElementById('sendBtn').disabled = false;
@@ -485,7 +623,8 @@ function mgrView(){
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : repView();
   return `
-  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
+  ${ST.latestAlert ? `<div class="notify-banner"><span>${esc(ST.latestAlert)}</span><button class="small sec" style="color:#fff;border-color:#fff" onclick="ST.latestAlert='';render()">إغلاق</button></div>` : ''}
+  <div class="top"><div><h1>لوحة المدير الإدارية</h1><div class="muted">${esc(ST.user.email)}</div></div>
     <button class="sec small" onclick="logout()">خروج</button></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
@@ -500,17 +639,26 @@ function revView(){
   const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
   const shifts = ST.revShift==='all' ? SHIFTS : [ST.revShift];
   const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
+  
+  const amAi = calcAIScores('صباحي');
+  const pmAi = calcAIScores('مسائي');
+
   const cards = recs.map(r=>`
     <div class="card">
       <div class="row"><b>هل تم عمل: ${esc(r.taskName)}؟</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
-      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>${r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>
+      ${r.value !== undefined && r.value !== '' ? `<div style="margin-top:4px"><b>القراءة الرقمية: ${esc(r.value)}</b></div>` : ''}
+      ${r.isViolation ? `<div class="alertbox">🚨 خطر تشغيلي: القراءة غير مطابقة لسلامة الغذاء!</div>` : ''}
+      ${r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button class="sec" onclick="rejectRec('${r.id}')">رفض وإعادة التصوير</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
+  
   const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})${isLate(x.sh)?' · <b style="color:#c62828">متأخرة</b>':''}</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+  
   return `
   <div class="card">
     <label>التاريخ</label><input type="date" value="${ST.date}" onchange="setDate(this.value)">
@@ -521,6 +669,18 @@ function revView(){
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
+
+  <!-- ملخص تقييم البوت للمدير -->
+  <div class="score-card">
+    <b>🤖 تقرير البوت اليومي:</b>
+    <div class="score-row">
+      <span>شيفت الصباح - نظافة: <b>${amAi.cleanScore}%</b> | سلامة غذاء: <b>${amAi.haccpScore}%</b></span>
+    </div>
+    <div class="score-row">
+      <span>شيفت المساء - نظافة: <b>${pmAi.cleanScore}%</b> | سلامة غذاء: <b>${pmAi.haccpScore}%</b></span>
+    </div>
+  </div>
+
   <div class="card"><b>لم تُنفّذ</b>${miss}</div>
   ${cards}`;
 }
@@ -539,6 +699,7 @@ function rejectRec(id){
   const why = prompt('اكتب سبب الرفض (هيظهر للموظف لإعادة التصوير):');
   if(why === null) return;
   updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
+  triggerNotify('تم رفض مهمة وتنبيه الموظف لإعادة التصوير');
 }
 
 function removeRec(id){ 
@@ -547,7 +708,6 @@ function removeRec(id){
 }
 
 function tasksView(){
-  if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
   const lists = SHIFTS.map(sh=>{
     const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
@@ -559,20 +719,51 @@ function tasksView(){
     return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
   }).join('');
   return `
-  <div class="card"><h2>إضافة مهمة</h2>
+  <div class="card">
+    <h2>إدارة ودمج مهام الهايجين</h2>
+    <p class="muted">يمكنك إضافة مهام الهايجين وسلامة الغذاء الجديدة فوق المهام الحالية بضغط زر الدمج (لن يتم مسح أي مهام أو تقارير قديمة).</p>
+    <button style="background:#2e7d32; color:#fff;" onclick="mergeDefaultTasks()">➕ دمج وإضافة مهام الهايجين وسلامة الغذاء</button>
+  </div>
+  <div class="card"><h2>إضافة مهمة فردية جديدة</h2>
     <label>اسم المهمة</label><input id="nt_name">
     <label>المنطقة</label><input id="nt_zone">
     <label>الشيفت</label><select id="nt_shift"><option>صباحي</option><option>مسائي</option></select>
-    <button onclick="addTask()">إضافة</button></div>
+    <label>نوع المهمة</label>
+    <select id="nt_type">
+      <option value="bool">تأكيد عادي بالصورة</option>
+      <option value="temp">درجة حرارة رقمية (سلامة غذاء)</option>
+    </select>
+    <button onclick="addTask()">إضافة المهمة</button></div>
   ${lists}`;
+}
+
+async function mergeDefaultTasks(){
+  if(!confirm('هل تريد إضافة مهام الهايجين وسلامة الغذاء الجديدة إلى القائمة الحالية؟')) return;
+  try {
+    const existingNames = new Set(TASKS.map(t => t.name));
+    let addedCount = 0;
+    
+    for (const [shift, zone, name, type, limit, limitType] of DEFAULT_TASKS) {
+      if (!existingNames.has(name)) {
+        await addDoc(collection(fdb,'tasks'), {
+          name, zone, shift, type: type||'bool', limit: limit||0, limitType: limitType||'none', order: Date.now() + addedCount, active:true
+        });
+        addedCount++;
+      }
+    }
+    alert(`تمت إضافة عدد (${addedCount}) مهمة جديدة بنجاح دون المساس بالمهام القديمة أو السجلات!`);
+  } catch(e) {
+    fail('دمج المهام', e);
+  }
 }
 
 function addTask(){
   const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
   const shift = document.getElementById('nt_shift').value;
+  const type = document.getElementById('nt_type').value;
   if(!name){ alert('اكتب اسم المهمة'); return; }
-  addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
+  addDoc(collection(fdb,'tasks'), {name, zone, shift, type, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
 }
 
 function editTip(id){
@@ -590,11 +781,6 @@ function toggleTask(id, active){
 function delTask(id){ 
   if(confirm('تحذف المهمة من القايمة؟')) 
     deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); 
-}
-
-function importDefaults(){
-  Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
-    .catch(e=>fail('الاستيراد', e));
 }
 
 function grade(p){ 
@@ -632,7 +818,9 @@ function repView(){
     const ok = g.list.filter(r=>okS(r.status)).length;
     const p = total ? Math.round(ok/total*100) : 0;
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
-        <div><b>هل تم عمل: ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)}</div>
+        <div><b>هل تم عمل: ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · <span style="color:#2e7d32; font-weight:bold;">${stLabel(r.status)}</span></div>
+        ${r.value !== undefined && r.value !== '' ? `<div>القراءة المسجلة: <b>${esc(r.value)}</b></div>` : ''}
+        ${r.isViolation ? `<div style="color:#c62828">⚠️ قراءة غير مطابقة لسلامة الغذاء</div>` : ''}
         ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
         ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
       </div>`).join('');
@@ -683,7 +871,7 @@ setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
 
 Object.assign(window, { 
   ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
-  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth 
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, mergeDefaultTasks, setMonth 
 });
 </script>
 </body>
