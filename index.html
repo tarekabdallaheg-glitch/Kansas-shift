@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F5B800">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>KANSAS CHICKEN - البوت الذكي لنظافة وسلامة الغذاء</title>
+<title>KANSAS CHICKEN - نظام الهايجين وتقييم الأداء الذكي</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
 *{box-sizing:border-box}
@@ -24,8 +24,8 @@ button.danger{color:var(--bad);border-color:var(--bad)}
 button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
 button:disabled{opacity:.45}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
-.tabs{display:flex;gap:6px;margin-bottom:12px}
-.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line)}
+.tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto}
+.tab{flex:1;margin:0;padding:8px 6px;background:var(--card);color:var(--text);border:1px solid var(--line);font-size:13px;white-space:nowrap;text-align:center}
 .tab.on{background:var(--main);color:var(--onmain);border-color:var(--main)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.btns button{flex:1;margin:0;padding:9px;font-size:13px}
@@ -625,9 +625,9 @@ async function submitPhoto(){
 
 /* ---------- manager ---------- */
 function mgrView(){
-  const tabs = [['rev','المراجعة واللوحة'],['tasks','المهام'],['rep','التقرير']]
+  const tabs = [['rev','المراجعة'],['tasks','المهام'],['perf','الأداء 🏆'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
-  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : repView();
+  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='perf' ? perfView() : repView();
   return `
   ${ST.latestAlert ? `<div class="notify-banner"><span>${esc(ST.latestAlert)}</span><button class="small sec" style="color:#fff;border-color:#fff" onclick="ST.latestAlert='';render()">إغلاق</button></div>` : ''}
   <div class="top"><div><h1>لوحة المدير الإدارية</h1><div class="muted">${esc(ST.user.email)}</div></div>
@@ -637,7 +637,7 @@ function mgrView(){
 
 function setTab(k){ 
   ST.tab=k; 
-  if(k==='rep') loadReport(); 
+  if(k==='rep' || k==='perf') loadReport(); 
   autoMergeOnOpen(); 
   render(); 
 }
@@ -672,7 +672,7 @@ function revView(){
     <label>الشيفت</label>
     <select onchange="ST.revShift=this.value;render()">
       <option value="all" ${ST.revShift==='all'?'selected':''}>الاتنين</option>
-      ${SHIFTS.map(s=>`<option ${ST.revShift===s?'selected':''}>${s}</option>`).join('')}
+      ${SHIFTS.map(s=>`<option ${ST.revShift==='s'?'selected':''}>${s}</option>`).join('')}
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
@@ -805,6 +805,49 @@ function grade(p){
   return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; 
 }
 
+/* ---------- لوحة تقييم أداء الموظفين (Leaderboard) ---------- */
+function perfView(){
+  const emps = {};
+  ST.report.forEach(r=>{
+    const name = r.employee || 'مجهول';
+    emps[name] = emps[name] || { total: 0, approved: 0, rejected: 0, violations: 0 };
+    emps[name].total++;
+    if(okS(r.status)) emps[name].approved++;
+    if(r.status === 'rejected') emps[name].rejected++;
+    if(r.isViolation) emps[name].violations++;
+  });
+
+  const sortedEmps = Object.keys(emps).map(name => {
+    const data = emps[name];
+    const score = data.total ? Math.round((data.approved / data.total) * 100) - (data.violations * 10) : 0;
+    return { name, ...data, score: Math.max(0, score) };
+  }).sort((a,b) => b.score - a.score);
+
+  const rows = sortedEmps.map((e, index) => {
+    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index+1}`;
+    return `<tr>
+      <td><b>${medal} ${esc(e.name)}</b></td>
+      <td>${e.total}</td>
+      <td style="color:#2e7d32; font-weight:bold;">${e.approved}</td>
+      <td style="color:#c62828;">${e.rejected}</td>
+      <td><b>${e.score}%</b></td>
+      <td>${grade(e.score)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6">ما فيش بيانات أداء مسجلة للشهر ده حتى الآن.</td></tr>';
+
+  return `
+  <div class="card">
+    <h2>🏆 لوحة شرف وتقييم أداء الموظفين</h2>
+    <p class="muted">يتم حساب النقاط والترتيب بناءً على إنجاز المهام، دقة القراءات، وخلو السجل من الأخطاء والمرفوضات.</p>
+  </div>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <tr><th>الموظف</th><th>المهام</th><th>معتمدة</th><th>مرفوضة</th><th>النقاط</th><th>التقدير</th></tr>
+      ${rows}
+    </table>
+  </div>`;
+}
+
 function repView(){
   const [y,m] = ST.month.split('-').map(Number);
   const days = new Date(y, m, 0).getDate();
@@ -821,13 +864,7 @@ function repView(){
     rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${any?pct+'%':'-'}</td><td>${any?grade(pct):'-'}</td></tr>`;
   }
   const avg = workDays ? Math.round(sumPct/workDays) : 0;
-  const emps = {};
-  ST.report.forEach(r=>{ const k=r.employee||'?'; emps[k]=emps[k]||{sub:0,ok:0,rej:0}; emps[k].sub++; if(okS(r.status)) emps[k].ok++; if(r.status==='rejected') emps[k].rej++; });
-  const empRows = Object.keys(emps).sort().map(k=>{
-    const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
-    return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
-  }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
-
+  
   const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
   const groups = {};
   dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
@@ -859,8 +896,6 @@ function repView(){
   <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
     <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
-  <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
