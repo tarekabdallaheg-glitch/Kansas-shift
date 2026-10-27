@@ -44,6 +44,22 @@ button:disabled{opacity:.45}
 .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
 .warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+.logo{width:76px;height:76px;margin:0 auto;border-radius:22px;background:var(--main);color:var(--brand);font-size:44px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(245,184,0,.35)}
+body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixed}
+.login-wrap{padding-top:36px}
+.greet{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:15px}
+.login-card{padding:20px;border-radius:20px;box-shadow:0 12px 30px rgba(29,38,48,.12);border:0}
+.login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4);transition:transform .15s}
+.login-btn:active{transform:scale(.97)}
+@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%;padding:12px}}
+@media (prefers-color-scheme: dark){
+:root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643}
+body{background:var(--bg) !important}
+.brand{color:#ff6b6b}
+.warnbox{background:#3a2e14;color:#ffd58a}
+.tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}
+.placeholder{background:#1f2730}
+}
 </style>
 </head>
 <body>
@@ -80,13 +96,32 @@ const DEFAULT_TASKS = [
  ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
  ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
  ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
- ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
+   ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
 ];
 
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
-  function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function isLate(sh){
+  // صباحي: 6ص - 3م  |  مسائي: 6م - 6ص (اليوم اللي بعده)
+  const end = new Date(ST.date+'T00:00:00');
+  if(sh==='صباحي'){ end.setHours(15,0,0,0); }
+  else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
+  return Date.now() > end.getTime();
+}
+function getQ(){ try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } }
+function setQ(q){ try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} }
+async function flushQ(){
+  const q = getQ();
+  if(!q.length || !navigator.onLine || !ST.user) return;
+  const keep = [];
+  for(const it of q){
+    try{ await setDoc(doc(fdb,'done',it.id), it.rec); }catch(e){ keep.push(it); }
+  }
+  setQ(keep);
+}
+window.addEventListener('online', flushQ);
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
   revShift:'all', report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
@@ -119,6 +154,7 @@ onAuthStateChanged(auth, u=>{
     ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
     ST.date = todayStr(); subDone();
     if(ST.role==='mgr') loadReport();
+    flushQ();
   }else{
     ST.role=null; ST.cur=null; if(unsubDone) unsubDone(); DONE=[];
   }
@@ -135,15 +171,21 @@ function render(){
 
 /* ---------- login ---------- */
 function loginView(){
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
+  const defShift = h < 16 ? 'صباحي' : 'مسائي';
   return `
-  <div class="brand">KANSAS CHICKEN</div>
-  <p class="muted" style="text-align:center">تطبيق الشيفتات</p>
-  <div class="card">
-    <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
-    <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
-    <label>الشيفت (للموظف)</label><select id="lshift"><option>صباحي</option><option>مسائي</option></select>
-    <button onclick="login()">دخول</button>
-    ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
+  <div class="login-wrap">
+    <div class="logo">K</div>
+    <div class="brand" style="margin-top:14px">KANSAS CHICKEN</div>
+    <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
+    <div class="card login-card">
+      <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
+      <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
+      <label>الشيفت</label><select id="lshift"><option ${defShift==='صباحي'?'selected':''}>صباحي</option><option ${defShift==='مسائي'?'selected':''}>مسائي</option></select>
+      <button class="login-btn" onclick="login()">دخول</button>
+      ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
+    </div>
   </div>`;
 }
 async function login(){
@@ -167,10 +209,12 @@ function empView(){
   const list = taskList(ST.shift);
   const doneCount = list.filter(t=>subS(recOf(t.id,ST.shift)?.status)).length;
   const pct = list.length ? Math.round(doneCount/list.length*100) : 0;
+  const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
+  const resPct = list.length ? Math.round(apprN/list.length*100) : 0;
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
-    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : '<span class="tag">لسه</span>';
+    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
       <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div></div>${tag}</div>`;
@@ -178,7 +222,7 @@ function empView(){
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <button class="sec small" onclick="logout()">خروج</button></div>
-  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div></div>
+  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم (المعتمد): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div><div class="muted">النتيجة بتتحسب من المهام اللي المدير اعتمدها، والحد للنجاح 85%.</div></div>
   ${rows}
   <p class="muted" style="text-align:center">المهمة بتتسجل بعد ما تصوّر بالكاميرا، والمدير بيراجعها.</p>`;
 }
@@ -190,7 +234,7 @@ function openTask(id){
 function taskView(){
   const t = findTask(ST.cur);
   return `
-  <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
+    <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>${esc(t.name)}</h2>
   <div class="card">
     <video id="cam" autoplay playsinline muted></video>
@@ -207,7 +251,7 @@ async function startCam(){
   try{
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
     const v = document.getElementById('cam');
-        if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
+    if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
   }catch(e){
     const ph = document.getElementById('ph');
     if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
@@ -250,7 +294,9 @@ async function submitPhoto(){
     ST.busy = false; closeTask();
   }catch(e){
     ST.busy = false; document.getElementById('sendBtn').disabled = false;
-    fail('إرسال المهمة', e);
+    const q = getQ(); q.push({id, rec}); setQ(q);
+    closeTask();
+    alert('النت مش شغال. المهمة اتحفظت على الموبايل وهتتبعت أوتوماتيك لما النت يرجع.');
   }
 }
 
@@ -281,7 +327,7 @@ function revView(){
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
-  const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+  const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})${isLate(x.sh)?' · <b style="color:#c62828">متأخرة</b>':''}</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
   return `
   <div class="card">
     <label>التاريخ</label><input type="date" value="${ST.date}" onchange="setDate(this.value)">
@@ -310,7 +356,7 @@ function tasksView(){
         <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
         <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
       </div>`).join('');
-    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
+        return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
   }).join('');
   return `
   <div class="card"><h2>إضافة مهمة</h2>
@@ -321,7 +367,7 @@ function tasksView(){
   ${lists}`;
 }
 function addTask(){
-    const name = document.getElementById('nt_name').value.trim();
+  const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
   const shift = document.getElementById('nt_shift').value;
   if(!name){ alert('اكتب اسم المهمة'); return; }
@@ -334,25 +380,48 @@ function importDefaults(){
     .catch(e=>fail('الاستيراد', e));
 }
 
+function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
 function repView(){
   const [y,m] = ST.month.split('-').map(Number);
   const days = new Date(y, m, 0).getDate();
   const tot = {'صباحي': taskList('صباحي').length, 'مسائي': taskList('مسائي').length};
-  let rows = '';
+  const all = tot['صباحي'] + tot['مسائي'];
+  let rows = '', passDays = 0, workDays = 0, sumPct = 0;
   for(let d=1; d<=days; d++){
     const date = ST.month+'-'+String(d).padStart(2,'0');
     const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
     const a = cnt('صباحي'), b = cnt('مسائي');
-    const all = tot['صباحي'] + tot['مسائي'];
     const pct = all ? Math.round((a+b)/all*100) : 0;
-    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${pct}%</td></tr>`;
+    const any = ST.report.some(r=>r.date===date);
+    if(any){ workDays++; sumPct += pct; if(pct>=85) passDays++; }
+    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${any?pct+'%':'-'}</td><td>${any?grade(pct):'-'}</td></tr>`;
   }
+  const avg = workDays ? Math.round(sumPct/workDays) : 0;
+  const emps = {};
+  ST.report.forEach(r=>{ const k=r.employee||'?'; emps[k]=emps[k]||{sub:0,ok:0,rej:0}; emps[k].sub++; if(okS(r.status)) emps[k].ok++; if(r.status==='rejected') emps[k].rej++; });
+  const empRows = Object.keys(emps).sort().map(k=>{
+    const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
+    return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
   return `
   <div class="card">
     <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
-    <div class="muted" style="margin-top:6px">عدد المهام المعتمدة كل يوم من أصل المهام المفعّلة.</div>
+    <button onclick="window.print()">تحميل PDF (طباعة)</button>
+    <div class="muted" style="margin-top:6px">في نافذة الطباعة اختار <b>Save as PDF</b>.</div>
   </div>
-  <div class="card" style="overflow-x:auto"><table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th></tr>${rows}</table></div>`;
+  <div id="printArea">
+    <h2 style="text-align:center">تقرير شهر ${ST.month} · KANSAS CHICKEN</h2>
+    <div class="card">
+      <b>الملخص:</b> أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط الإنجاز: ${avg}% · التقدير: <b>${workDays?grade(avg):'-'}</b>
+      <div class="muted">حد النجاح 85%. ممتاز 95%+، جيد جداً 90%+، ناجح 85%+، راسب أقل من 85%.</div>
+    </div>
+    <div class="card" style="overflow-x:auto"><b>التقدير اليومي</b>
+      <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+    <div class="card" style="overflow-x:auto"><b>التقييم لكل موظف</b>
+      <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table>
+      <div class="muted">نسبة الاعتماد = المعتمدة من إجمالي تسجيلات الموظف في الشهر.</div>
+    </div>
+  </div>`;
 }
 function setMonth(v){ ST.month=v; loadReport(); }
 function loadReport(){
