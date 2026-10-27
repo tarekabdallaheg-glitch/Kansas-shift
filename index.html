@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F5B800">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
 <title>KANSAS CHICKEN - الشيفتات</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--line:#e3e8ee;--brand:#D32F2F}
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 #app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px}
@@ -18,7 +20,7 @@ label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
 input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px}
 button{width:100%;padding:13px;border:0;border-radius:12px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
 button.sec{background:transparent;color:var(--text);border:1px solid var(--main)}
-button.danger{color:#c62828;border-color:#c62828}
+button.danger{color:var(--bad);border-color:var(--bad)}
 button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
 button:disabled{opacity:.45}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
@@ -49,6 +51,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
@@ -58,8 +61,11 @@ const firebaseConfig = {
   messagingSenderId: "781063241169",
   appId: "1:781063241169:web:205b4051b262de257e34f0"
 };
-const MANAGER_CODE = '6319';
-const fdb = getFirestore(initializeApp(firebaseConfig));
+const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
+
+const app = initializeApp(firebaseConfig);
+const fdb = getFirestore(app);
+const auth = getAuth(app);
 
 const DEFAULT_TASKS = [
  ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
@@ -80,15 +86,14 @@ const DEFAULT_TASKS = [
 
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
-const ST = { role:null, user:null, shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
-  revShift:'all', report:[], cur:null, photo:null, taken:false, busy:false };
-let TASKS=[], STAFF=[], DONE=[], LOGINS=[], unsubDone=null, camStream=null;
+  function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
+  revShift:'all', report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' };
+let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
-function ds(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function todayStr(){return ds(new Date());}
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
-const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const okS = s => s==='approved';
 const subS = s => s==='pending' || s==='approved';
 function stLabel(s){return ({pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'مرفوضة، أعيد التصوير'})[s]||'لسه';}
@@ -96,11 +101,10 @@ function stCls(s){return s==='approved'?'done':(s==='pending'||s==='rejected'?'r
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
 function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
+function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); }
 function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
-function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e && (e.code||e.message)) || '')+')'); }
 
 onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
-onSnapshot(collection(fdb,'staff'), s=>{ STAFF = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
 
 function subDone(){
   if(unsubDone) unsubDone();
@@ -108,44 +112,57 @@ function subDone(){
     s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
 }
 
+onAuthStateChanged(auth, u=>{
+  ST.user = u;
+  if(u){
+    ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
+    ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
+    ST.date = todayStr(); subDone();
+    if(ST.role==='mgr') loadReport();
+  }else{
+    ST.role=null; ST.cur=null; if(unsubDone) unsubDone(); DONE=[];
+  }
+  render();
+});
+
 function render(){
   const app = document.getElementById('app');
-  if(ST.role==='mgr') app.innerHTML = mgrView();
-  else if(!ST.user) app.innerHTML = loginView();
+  if(!ST.user) app.innerHTML = loginView();
+  else if(ST.role==='mgr') app.innerHTML = mgrView();
   else if(ST.cur) app.innerHTML = taskView();
   else app.innerHTML = empView();
 }
 
+/* ---------- login ---------- */
 function loginView(){
-  const opts = STAFF.filter(x=>x.active!==false).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
   return `
   <div class="brand">KANSAS CHICKEN</div>
   <p class="muted" style="text-align:center">تطبيق الشيفتات</p>
   <div class="card">
-    ${opts ? `<label>الاسم</label><select id="lstaff">${opts}</select>
-    <label>الشيفت</label><select id="lshift"><option>صباحي</option><option>مسائي</option></select>
-    <button onclick="login()">دخول</button>`
-    : '<div class="muted">لسه ما فيش موظفين مضافين. المدير لازم يضيفهم الأول.</div>'}
-    <label style="margin-top:16px">كود المدير</label>
-    <input id="mpin" type="password" inputmode="numeric" maxlength="6" placeholder="••••">
-    <button class="sec" onclick="mgrLogin()">دخول كمدير</button>
+    <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
+    <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
+    <label>الشيفت (للموظف)</label><select id="lshift"><option>صباحي</option><option>مسائي</option></select>
+    <button onclick="login()">دخول</button>
+    ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
   </div>`;
 }
-function login(){
-  const s = STAFF.find(x=>x.id===document.getElementById('lstaff').value);
-  if(!s || s.active===false){ alert('الموظف ده مش متفعل'); return; }
-  ST.user = s.name; ST.shift = document.getElementById('lshift').value; ST.role='emp';
-  ST.date = todayStr(); subDone();
-  addDoc(collection(fdb,'logins'), {staffId:s.id, name:s.name, shift:ST.shift, date:ST.date, at:Date.now()}).catch(()=>{});
-  render();
+async function login(){
+  const email = document.getElementById('lemail').value.trim();
+  const pass = document.getElementById('lpass').value;
+  const shift = document.getElementById('lshift').value;
+  if(!email || !pass){ ST.authErr='اكتب الإيميل والباسورد'; render(); return; }
+  try{
+    ST.shift = shift;
+    await signInWithEmailAndPassword(auth, email, pass);
+    ST.authErr = '';
+  }catch(e){
+    ST.authErr = 'الإيميل أو الباسورد غلط، أو الحساب مش موجود. كلم المدير.';
+    render();
+  }
 }
-function mgrLogin(){
-  const code = document.getElementById('mpin').value.trim();
-  if(code !== MANAGER_CODE){ alert('كود المدير غلط'); return; }
-  ST.role='mgr'; ST.user='المدير'; ST.date=todayStr(); subDone(); loadReport(); render();
-}
-function logout(){ ST.user=null; ST.role=null; ST.cur=null; stopCam(); if(unsubDone) unsubDone(); render(); }
+function logout(){ stopCam(); signOut(auth); }
 
+/* ---------- employee ---------- */
 function empView(){
   const list = taskList(ST.shift);
   const doneCount = list.filter(t=>subS(recOf(t.id,ST.shift)?.status)).length;
@@ -159,7 +176,7 @@ function empView(){
       <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div></div>${tag}</div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. كلم المدير.</div>';
   return `
-  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.user)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
+  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <button class="sec small" onclick="logout()">خروج</button></div>
   <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div></div>
   ${rows}
@@ -190,7 +207,7 @@ async function startCam(){
   try{
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
     const v = document.getElementById('cam');
-    if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
+        if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
   }catch(e){
     const ph = document.getElementById('ph');
     if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
@@ -220,11 +237,11 @@ async function submitPhoto(){
   ST.busy = true;
   document.getElementById('sendBtn').disabled = true;
   const t = findTask(ST.cur); const now = new Date();
-  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id;
+  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
-    shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.user,
+    shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
     photo: ST.photo, status: 'pending'
   };
@@ -237,16 +254,17 @@ async function submitPhoto(){
   }
 }
 
+/* ---------- manager ---------- */
 function mgrView(){
-  const tabs = [['rev','المراجعة'],['tasks','المهام'],['staff','الموظفين'],['rep','التقرير']]
+  const tabs = [['rev','المراجعة'],['tasks','المهام'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
-  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='staff' ? staffView() : repView();
+  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : repView();
   return `
-  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">KANSAS CHICKEN</div></div>
+  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
     <button class="sec small" onclick="logout()">خروج</button></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
-function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='staff') loadLogins(); render(); }
+function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); render(); }
 
 function revView(){
   const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
@@ -303,7 +321,7 @@ function tasksView(){
   ${lists}`;
 }
 function addTask(){
-  const name = document.getElementById('nt_name').value.trim();
+    const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
   const shift = document.getElementById('nt_shift').value;
   if(!name){ alert('اكتب اسم المهمة'); return; }
@@ -314,30 +332,6 @@ function delTask(id){ if(confirm('تحذف المهمة من القايمة؟'))
 function importDefaults(){
   Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
     .catch(e=>fail('الاستيراد', e));
-}
-
-function staffView(){
-  const rows = STAFF.map(x=>{
-    const last = LOGINS.filter(l=>l.staffId===x.id).sort((a,b)=>b.at-a.at)[0];
-    const lastTxt = last ? fmtDate(last.date)+' · '+last.shift+' · '+new Date(last.at).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}) : 'ما دخلش لسه';
-    return `<div class="task" style="cursor:default;${x.active===false?'opacity:.5':''}">
-      <div class="t">${esc(x.name)}<div class="muted">آخر دخول: ${lastTxt}</div></div>
-      <button class="sec small" onclick="toggleStaff('${x.id}',${x.active!==false})">${x.active===false?'تفعيل':'إيقاف'}</button></div>`;
-  }).join('') || '<div class="muted">ما فيش موظفين</div>';
-  return `
-  <div class="card"><h2>إضافة موظف</h2>
-    <label>اسم الموظف</label><input id="ns_name">
-    <button onclick="addStaff()">إضافة موظف</button></div>
-  ${rows}`;
-}
-function addStaff(){
-  const name = document.getElementById('ns_name').value.trim();
-  if(!name){ alert('اكتب اسم الموظف'); return; }
-  addDoc(collection(fdb,'staff'), {name, active:true, created:Date.now()}).catch(e=>fail('إضافة الموظف', e));
-}
-function toggleStaff(id, active){ updateDoc(doc(fdb,'staff',id), {active:!active}).catch(e=>fail('التعديل', e)); }
-function loadLogins(){
-  getDocs(collection(fdb,'logins')).then(s=>{ LOGINS = s.docs.map(d=>d.data()); render(); }).catch(e=>console.warn(e));
 }
 
 function repView(){
@@ -367,10 +361,8 @@ function loadReport(){
     .catch(e=>console.warn(e));
 }
 
-Object.assign(window, { ST, render, login, mgrLogin, logout, openTask, closeTask, startCam, capture, retake, submitPhoto,
-  setTab, setDate, setStatus, removeRec, addTask, toggleTask, delTask, importDefaults, addStaff, toggleStaff, setMonth });
-
-render();
+Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto,
+  setTab, setDate, setStatus, removeRec, addTask, toggleTask, delTask, importDefaults, setMonth });
 </script>
 </body>
 </html>
