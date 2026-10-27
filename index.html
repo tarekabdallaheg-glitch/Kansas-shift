@@ -34,9 +34,9 @@ button:disabled{opacity:.45}
 .task{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;cursor:pointer}
 .task .t{flex:1}
 .dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
-.dot.done{background:var(--ok)}.dot.review{background:var(--warn)}
+.dot.done{background:var(--ok)}.dot.review{background:var(--warn)}.dot.bad{background:var(--bad)}
 .tag{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap}
-.tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}
+.tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}.tag.bad{background:#ffebee;color:var(--bad)}
 #cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;object-fit:cover;display:none}
 #shot{width:100%;border-radius:12px;display:none}
 .shot{width:100%;border-radius:10px;margin-top:8px}
@@ -44,6 +44,7 @@ button:disabled{opacity:.45}
 .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
 .warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+.badbox{background:#ffebee;color:#c62828;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
 .logo{width:76px;height:76px;margin:0 auto;border-radius:22px;background:var(--main);color:var(--brand);font-size:44px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(245,184,0,.35)}
 body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixed}
 .login-wrap{padding-top:36px}
@@ -69,7 +70,8 @@ body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixe
 body{background:var(--bg) !important}
 .brand{color:#ff6b6b}
 .warnbox{background:#3a2e14;color:#ffd58a}
-.tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}
+.badbox{background:#3a1d1d;color:#ff8a8a}
+.tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}.tag.bad{background:#3a1d1d}
 .placeholder{background:#1f2730}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
@@ -81,6 +83,7 @@ body{background:var(--bg) !important}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getAI, GoogleAIBackend, getGenerativeModel } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
@@ -95,6 +98,51 @@ const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
 const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
+
+let GEM = null;
+async function gemini(){
+  if(GEM !== null) return GEM;
+  try{
+    const ai = getAI(app, { backend: new GoogleAIBackend() });
+    GEM = getGenerativeModel(ai, { model: 'gemini-2.5-flash-lite' });
+  }catch(e){ GEM = false; }
+  return GEM;
+}
+
+// فحص الهايجين بواسطة جيميني (المفتش الأول)
+async function aiCleanCheck(t, photo){
+  const model = await gemini();
+  if(!model || !photo) return { ok: true, reason: '' };
+  try{
+    const r = await model.generateContent([
+      { text: `أنت مفتش سلامة وصحة غذاء وهايجين صارم جداً لمطعم "كنساس فرايد تشيكن". المهمة هي: "${t.name}" في منطقة "${t.zone}". ارفض أي صورة يوجد بها أي إهمال في النظافة، أو خطأ في الهايجين الشخصي، أو عدم مطابقة لدرجات الحرارة أو معايير المطعم. أجب بصيغة JSON مفردة هكذا بالضبط: {"ok": true} لو المهمة منفذة بمعايير نظافة وهايجين تامة، أو {"ok": false, "reason": "السبب بالعربي مختصراً"} لو فيها أي خطأ أو تقصير.` },
+      { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
+    ]);
+    const txt = (r.response.text() || '').trim();
+    const clean = txt.replace(/```json/g,'').replace(/```/g,'').trim();
+    const obj = JSON.parse(clean);
+    return { ok: !!obj.ok, reason: obj.reason || 'المهمة لم تنفذ بمعايير الهايجين الصحيحة.' };
+  }catch(e){ 
+    return { ok: true, reason: '' }; 
+  }
+}
+
+// فحص بوت المساعد لسلامة الغذاء والحرارة والهايجين
+async function botCheckHygiene(t, photo, tempVal){
+  if(tempVal !== null && !isNaN(tempVal)){
+    if(t.name.includes('الثلاجات') && tempVal >= 39){
+      return { ok: false, reason: 'درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F) ولا تتطابق مع الحد المسموح (< 39°F).' };
+    }
+    if(t.name.includes('الفريزر') && tempVal > 0){
+      return { ok: false, reason: 'درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F).' };
+    }
+  }
+  const check = await aiCleanCheck(t, photo);
+  if(check.ok === false){
+    return { ok: false, reason: check.reason };
+  }
+  return { ok: true, reason: '' };
+}
 
 const DEFAULT_TASKS = [
  ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
@@ -116,10 +164,10 @@ const DEFAULT_TASKS = [
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
 const TIPS = {
- 'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
+ 'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب والجفّفه، واتأكد من عدم وجود بقع.',
  'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
  'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
- 'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولو أعلى من الحد المسموح بلّغ المدير فوراً.',
+ 'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولازم تكون أقل من 39°F.',
  'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
  'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
  'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
@@ -132,7 +180,7 @@ const TIPS = {
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
  'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
- 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر طباعة فاتورة تجريبية.',
+ 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
  'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
@@ -143,53 +191,73 @@ const TIPS = {
  'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
  'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
 };
+
 const REFERENCE = [
- {t:'الهايجين الشخصي', i:['اغسل إيدك بالماء والصابون قبل البدء، وبعد الحمام، وبعد لمس الشعر أو الموبايل أو الفلوس','ارتدي زي نظيف وغطاء شعر أثناء التحضير','قص أظافرك، واخلع الساعات والمجوهرات قبل الشغل','ممنوع الأكل والشرب والتدخين في منطقة التحضير','لو عندك إسهال أو قيء أو حرارة، ما تشتغلش وبلغ المدير']},
- {t:'سلامة الغذاء والحرارة', i:['المنتجات الباردة في الثلاجة أقل من 39°F (الحد في نظامنا)، والحد العام في FDA Food Code هو 41°F','الفريزر 0°F أو أقل','الهولدنج الساخن أعلى من 140°F (الحد في نظامنا)، والحد العام في FDA Food Code هو 135°F','الدجاج لازم يوصل داخلياً لـ 165°F على الأقل','افصل أدوات اللحم النيّ عن الخضار والجاهز، وألواح مختلفة لكل واحد','قيس حرارة الشحنة عند الاستلام، وارفض أي حاجة مش مطابقة','القديم يتصرف الأول (FIFO)، وأي منتج منتهي يترمي']},
- {t:'النظافة العامة والتعقيم', i:['الأسطح: نضّف الأول، بعدين اشطف، بعدين عقّم، وسيب المعقّم الوقت المكتوب على العبوة','استخدم معقّم معتمد للأغذية بس','الأرضيات والحمامات: ابدأ من الأنظف للأوسخ','أكياس الزبالة تتقفل كويس، والحاويات تتقفل','أي حشرات أو قوارض: بلّغ المدير فوراً']},
- {t:'الزيت والمقلاة', i:['افحص لون وريحة الزيت قبل التشغيل، ولو داكن أو ريحته وحشة بلّغ المدير','صفّي الزيت يومياً بعد ما يبرد','ما تسيبش الزيت يتحرق على النار']},
- {t:'امتى تبلغ المدير فوراً', i:['أي قراءة حرارة مخالفة','تسريب ميه أو غاز أو كهربا','حشرات أو قوارض','كسر زجاج أو أداة في الأكل','إصابة أو مرض لأي موظف']}
+ {
+   t:'الهايجين الشخصي والنظافة العامة',
+   i:[
+     'غسل اليدين: بالماء الساخن والصابون لمدة لا تقل عن 20 ثانية (قبل البدء، بعد استخدام الحمام، بعد لمس الوجه أو الشعر أو الهواتف أو النقود).',
+     'الزي الرسمي: ارتداء زي نظيف بالكامل، غطاء الرأس (Hairnet)، وقناع الوجه عند الحاجة، وضرورة تقليم الأظافر وعدم ارتداء الساعات أو الخواتم.',
+     'حالة الموظف الصحية: يمنع تماماً عمل أي موظف يعاني من أعراض مرضية (إسهال، قيء، حرارة مرتفعة، التهاب جروح مكشوفة) ويجب إبلاغ المدير فوراً.',
+     'خطوات التعقيم الصحيحة: التنظيف بالمنظف أولاً لإزالة الدهون، ثم الشطف بالماء، ثم استخدام المطهر المعتمد للأغذية مع ترك المطهر يجف بالهواء للوقت المحدد.'
+   ]
+ },
+ {
+   t:'درجات الحرارة وسلامة الغذاء (Critical Control Points)',
+   i:[
+     'الثلاجات والمبردات: يجب أن تكون درجة الحرارة أقل من 39°F (4°C) لضمان سلامة المنتجات الطازجة.',
+     'الفريزر (التجميد): يجب أن يكون على درجة حرارة 0°F (-18°C) أو أقل.',
+     'الهولدنج الساخن (Hot Holding): الأغذية الساخنة المعروضة يجب أن تظل عند درجة حرارة أعلى من 140°F (60°C).',
+     'درجة طهي الدجاج: يجب أن تصل حرارة الدجاج الداخلية أثناء القلي أو الشوي إلى 165°F (74°C) على الأقل.',
+     'منع التلوث المتبادل: فصل ألواح التقطيع والأدوات (ألواح حمراء للحوم النيئة، خضراء للخضروات، بيضاء للأغذية الجاهزة) واستخدام القفازات وتغييرها باستمرار.',
+     'قاعدة FIFO: صرف المخزون الأقدم أولاً (First In, First Out) والتخلص الفوري من أي خامات منتهية الصلاحية.'
+   ]
+ },
+ {
+   t:'الزيت والمقالي والتشغيل الآمن',
+   i:[
+     'فحص الزيت: فحص لون وريحة الزيت بانتظام قبل التشغيل؛ وفي حال وجود رائحة كريهة أو لون داكن محترق، يتم إيقاف المقلاة وإبلاغ المدير.',
+     'التصفية والتنظيف: تصفية الزيت يومياً بعد أن يبرد تماماً وإزالة الرواسب المحروقة.',
+     'الأمان الكهربائي: فصل التيار الكهربائي قبل إجراء أي غسيل أو صيانة للمعدات والفرن.'
+   ]
+ },
+ {
+   t:'حالات الطوارئ والتبليغ الفوري للمدير',
+   i:[
+     'أي قراءة حرارة غير مطابقة للمواصفات في الثلاجات أو المنتجات.',
+     'حدوث أي تسريب مياه أو غاز أو ماس كهربائي.',
+     'ظهور أي حشرات، قوارض، أو علامات نشاط آفات.',
+     'كسر زجاج أو سقوط مواد غريبة داخل الأغذية.',
+     'حدوث إصابة لأي موظف أثناء الشيفت.'
+   ]
+ }
 ];
+
 function refView(){
   const secs = REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="margin:6px 0;font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
-  return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي عامة، والمدير يتأكد منها حسب قوانين البلدية ومواصفات المطعم.</p>`;
-}
-let GEM = null;
-async function gemini(){
-  if(GEM !== null) return GEM;
-  try{
-    const m = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js');
-    const ai = m.getAI(app, { backend: new m.GoogleAIBackend() });
-    GEM = m.getGenerativeModel(ai, { model: 'gemini-2.5-flash-lite' });
-  }catch(e){ GEM = false; console.warn('Gemini غير متاح', e); }
-  return GEM;
-}
-async function aiCleanCheck(t, photo){
-  const model = await gemini();
-  if(!model || !photo) return '';
-  try{
-    const r = await model.generateContent([
-      { text: 'أنت مفتش نظافة لمطعم. المهمة: "' + t.name + '". قيّم الصورة في سطر واحد بالعربي: نظيف أو محتاج تحسين أو غير نظيف، ثم سبب قصير.' },
-      { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
-    ]);
-    return (r.response.text() || '').slice(0, 200);
-  }catch(e){ return ''; }
+  return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي أساسيات سلامة الغذاء، والمدير يراجعها بصفة دورية.</p>`;
 }
 
+// توسيع معلومات وإجابات البوت بدقة صارمة لكل أسئلة الجودة والهايجين
 const BOT_RULES = [
-  { k:['ثلاج','تبريد','حرار'], a:() => REFERENCE[1].i.slice(0,2).join(' • ') },
-  { k:['فريزر','تجميد'], a:() => 'الفريزر لازم يكون 0°F أو أقل.' },
-  { k:['دجاج','فراخ','طهي'], a:() => 'الدجاج لازم يوصل داخلياً لـ 165°F على الأقل.' },
-  { k:['زيت','مقلاة'], a:() => REFERENCE[3].i.join(' • ') },
-  { k:['إيد','ايد','غسل','هايجين','زي','شعر'], a:() => REFERENCE[0].i.slice(0,3).join(' • ') },
-  { k:['حشر','فار','قوارض'], a:() => 'أي حشرات أو قوارض: بلّغ المدير فوراً، وسجّل السؤال عشان يشوفه.' },
-  { k:['تنظيف','تعقيم','معقم','نضاف'], a:() => REFERENCE[2].i.slice(0,2).join(' • ') },
+  { k:['ثلاج','تبريد','حرار','39'], a:() => 'معيار الثلاجات: يجب أن تكون درجة الحرارة أقل من 39°F (4°C) لضمان سلامة المنتجات الطازجة.' },
+  { k:['فريزر','تجميد','0','تجميد'], a:() => 'معيار الفريزر: يجب أن يكون على درجة حرارة 0°F (-18°C) أو أقل.' },
+  { k:['ساخن','هولدنج','140','عرض'], a:() => 'معيار الهولدنج الساخن: الأغذية الساخنة المعروضة يجب أن تظل عند درجة حرارة أعلى من 140°F (60°C).' },
+  { k:['دجاج','فراخ','طهي','165','قلي'], a:() => 'معيار طهي الدجاج: يجب أن تصل حرارة الدجاج الداخلية أثناء القلي أو الشوي إلى 165°F (74°C) على الأقل.' },
+  { k:['تلوث','أدوات','لوح','قطيع','تقطيع','متبادل'], a:() => 'منع التلوث المتبادل: فصل ألواح التقطيع (حمراء للحوم، خضراء للخضروات، بيضاء للجاهزة) واستمرار تغيير القفازات.' },
+  { k:['صلاح','منته','fifo','قديم','تاريخ'], a:() => 'قاعدة FIFO: صرف المخزون الأقدم أولاً والتخلص الفوري من أي خامات منتهية الصلاحية.' },
+  { k:['زيت','مقلاة','تحمير','محروق','تصفية'], a:() => 'إدارة الزيت والمقالي: فحص لون وريحة الزيت بانتظام، وتصفيته يومياً بعد أن يبرد تماماً وإزالة الرواسب المحروقة.' },
+  { k:['إيد','ايد','غسل','هايجين','زي','شعر','أظافر','تعقيم','لبس'], a:() => 'الهايجين الشخصي: غسل اليدين بالماء الساخن والصابون لمدة لا تقل عن 20 ثانية، ارتداء زي نظيف وغطاء رأس (Hairnet)، وتقليم الأظافر وعدم ارتداء الساعات.' },
+  { k:['مرض','تعب','إسهال','قيء','حرارة'], a:() => 'الحالة الصحية: يمنع تماماً عمل أي موظف يعاني من أعراض مرضية (إسهال، قيء، حرارة) ويجب إبلاغ المدير فوراً.' },
+  { k:['حشر','فار','قوارض','طوارئ','تسريب','كسر','إصابة','مشكلة'], a:() => 'حالات الطوارئ: الإبلاغ الفوري للمدير عند وجود أي تسريب، آفات، كسور زجاج، أو إصابات.' },
+  { k:['تنظيف','تعقيم','نضاف','أصلح','غسيل','تطهير'], a:() => 'خطوات التعقيم: التنظيف بالمنظف أولاً لإزالة الدهون، الشطف بالماء، ثم استخدام المطهر المعتمد للأغذية وتركه يجف بالهواء.' },
   { k:['شيفت','مهام','متبقي','ناقص','باقي'], a:() => {
       const sh = ST.shift;
       const left = taskList(sh).filter(t=>!subS(recOf(t.id,sh)?.status));
       return left.length ? 'باقي عليك ' + left.length + ' مهام في شيفت ' + sh + ': ' + left.slice(0,5).map(t=>t.name).join('، ') : 'كل مهام شيفت ' + sh + ' اتنفذت ✓';
   } },
 ];
+
 function botAnswer(q){
   const text = q.toLowerCase();
   for(const r of BOT_RULES){
@@ -197,6 +265,7 @@ function botAnswer(q){
   }
   return '';
 }
+
 async function askBot(){
   const el = document.getElementById('botQ');
   const q = (el.value || '').trim();
@@ -205,25 +274,26 @@ async function askBot(){
   el.value = '';
   let ans = botAnswer(q);
   if(!ans){
-    ans = 'معنديش إجابة واضحة للسؤال ده. سجّلته للمدير، وهيرد عليك.';
+    ans = 'تنبيه صارم: أي تهاون في الهايجين أو سلامة الغذاء مرفوض تماماً. يرجى مراجعة المرجع فوراً أو إبلاغ المدير.';
     try{
       await addDoc(collection(fdb,'questions'), { text:q, employee:ST.name, uid:ST.user.uid, shift:ST.shift, date:todayStr(), answer:'', answered:false, created:Date.now() });
-    }catch(e){ ans = 'حصلت مشكلة في تسجيل السؤال. جرّب تاني، ولو فضلت كده كلم المدير.'; }
+    }catch(e){}
   }
   ST.chatMsgs.push({ who:'bot', text:ans });
   render();
 }
+
 function chatView(){
   const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'المساعد'}</b><div>${esc(m.text)}</div></div>`).join('')
-    || '<div class="muted">اسألني عن سلامة الغذاء، والنظافة، والمهام، أو شيفتك.</div>';
+    || '<div class="muted">اسألني عن صحة وسلامة الغذاء، درجات الحرارة، الهايجين، النظافة والمهام.</div>';
   return `
   <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
   ${msgs}
   <div class="card">
-    <input id="botQ" placeholder="اكتب سؤالك هنا" onkeydown="if(event.key==='Enter')askBot()">
+    <input id="botQ" placeholder="اكتب سؤالك هنا (حرارة،هايجين،سلامة غذاء)" onkeydown="if(event.key==='Enter')askBot()">
     <button onclick="askBot()">إرسال</button>
   </div>
-  <p class="muted" style="text-align:center">المساعد بيرد على سلامة الغذاء والنظافة والمهام والشيفتات بس.</p>`;
+  <p class="muted" style="text-align:center">المساعد لا يسمح بأي خطأ في الهايجين ويطلب إعادة المهمة فوراً عند المخالفة.</p>`;
 }
 
 let QS = [];
@@ -252,7 +322,6 @@ function answerQ(id){
 }
 
 function isLate(sh){
-  // صباحي: 6ص - 3م  |  مسائي: 6م - 6ص (اليوم اللي بعده)
   const end = new Date(ST.date+'T00:00:00');
   if(sh==='صباحي'){ end.setHours(15,0,0,0); }
   else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
@@ -280,8 +349,8 @@ function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
 const okS = s => s==='approved'||s==='done';
 const subS = s => s==='pending' || s==='done' || s==='approved';
-function stLabel(s){return ({done:'تم 👍',pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'مرفوضة، أعيد التصوير'})[s]||'لسه';}
-function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'||s==='rejected'?'review':'');}
+function stLabel(s){return ({done:'تم 👍',pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'Not Done 👎🏻'})[s]||'لسه';}
+function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
 function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
@@ -330,9 +399,9 @@ function coverView(){
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
+    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -351,7 +420,6 @@ function render(){
   else app.innerHTML = empView();
 }
 
-/* ---------- login ---------- */
 function loginView(){
   const h = new Date().getHours();
   const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
@@ -386,11 +454,8 @@ async function login(){
 }
 function logout(){ stopCam(); signOut(auth); }
 
-/* ---------- employee ---------- */
 function empView(){
   const list = taskList(ST.shift);
-  const doneCount = list.filter(t=>subS(recOf(t.id,ST.shift)?.status)).length;
-  const pct = list.length ? Math.round(doneCount/list.length*100) : 0;
   const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
   const resPct = list.length ? Math.round(apprN/list.length*100) : 0;
   const rows = list.map(t=>{
@@ -399,14 +464,26 @@ function empView(){
     const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
-      <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div>${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}</div>${tag}</div>`;
+      <div class="t">
+        <div>${esc(t.name)}</div>
+        <div class="muted">${esc(t.zone)}</div>
+        ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
+        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'خطأ في الهايجين أو النظافة - يرجى إعادة المهمة')})</span></div>`:''}
+      </div>
+      ${tag}
+    </div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="ST.showRef=true;render()">المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">المساعد</button><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
-  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم (المعتمد): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div><div class="muted">النتيجة بتتحسب من المهام اللي المدير اعتمدها، والحد للنجاح 85%.</div></div>
+  <div class="card">
+    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
+    <div class="bar"><div style="width:${resPct}%"></div></div>
+    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
+    <div class="muted">المهام المرفوضة (Not Done 👎🏻) بسبب الهايجين تخصم من رصيد النقاط وتتطلب إعادة إنجاز المهمة.</div>
+  </div>
   ${rows}
-  <p class="muted" style="text-align:center">المهمة بتتسجل بعد ما تصوّر بالكاميرا، والمدير بيراجعها.</p>`;
+  <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
 }
 function openTask(id){
   const r = recOf(id, ST.shift);
@@ -415,19 +492,21 @@ function openTask(id){
 }
 function taskView(){
   const t = findTask(ST.cur);
+  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
-  <h2>هل تم عمل: ${esc(t.name)}؟</h2>
+  <h2>إنجاز مهمة: ${esc(t.name)}</h2>
   <div class="card">
+    ${isTempTask ? `<label>درجة الحرارة المسجلة (°F):</label><input id="tempVal" type="number" step="0.1" placeholder="مثال: 36 أو -5" style="margin-bottom:10px">` : ''}
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
-    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>المصدر: كاميرا التطبيق فقط</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة جيمي والبوت تلقائياً.</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
-  <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة التصوير</button>
-  <button id="sendBtn" style="display:none" onclick="submitPhoto()">تم 👍</button>`;
+  <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">تم 👍 (إرسال للفحص)</button>`;
 }
 async function startCam(){
   try{
@@ -446,7 +525,7 @@ function capture(){
   const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
   const c = document.createElement('canvas'); c.width=w; c.height=h;
   c.getContext('2d').drawImage(v,0,0,w,h);
-  ST.photo = c.toDataURL('image/jpeg',0.6); ST.taken = true;
+  ST.photo = c.toDataURL('image/jpeg',0.5); ST.taken = true;
   stopCam();
   v.style.display='none';
   const img = document.getElementById('shot'); img.src = ST.photo; img.style.display='block';
@@ -460,29 +539,49 @@ function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
 function closeTask(){ stopCam(); ST.cur=null; render(); }
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
+  const t = findTask(ST.cur);
+  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
+  let tempVal = null;
+  if(isTempTask){
+    const tempInput = document.getElementById('tempVal');
+    tempVal = tempInput ? parseFloat(tempInput.value) : NaN;
+    if(isNaN(tempVal)){ alert('يرجى إدخال قيمة رقمية صحيحة لدرجة الحرارة قبل الإرسال.'); return; }
+  }
+
   ST.busy = true;
-  document.getElementById('sendBtn').disabled = true;
-  const t = findTask(ST.cur); const now = new Date();
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  sendBtn.innerText = '🔍 بوت الجيمي يراجع الهايجين وسلامة الغذاء...';
+  
+  const check = await botCheckHygiene(t, ST.photo, tempVal);
+  
+  if(!check.ok){
+    ST.busy = false;
+    alert('⚠️ Not Done 👎🏻\nتم رفض المهمة بواسطة البوت وجيمي بسبب مخالفة معايير الهايجين أو سلامة الغذاء:\n' + check.reason + '\n\nيرجى تصحيح الخطأ وإعادة تنفيذ المهمة وتصويرها من جديد.');
+    retake();
+    return;
+  }
+
+  const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'done', aiNote: await aiCleanCheck(t, ST.photo)
+    photo: ST.photo, status: 'done', tempVal: tempVal, aiNote: 'تم الفحص والمراجعة بنجاح بواسطة البوت وجيمي'
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
     ST.busy = false; closeTask();
   }catch(e){
-    ST.busy = false; document.getElementById('sendBtn').disabled = false;
+    ST.busy = false; sendBtn.disabled = false; sendBtn.innerText = 'تم 👍';
     const q = getQ(); q.push({id, rec}); setQ(q);
     closeTask();
     alert('النت مش شغال. المهمة اتحفظت على الموبايل وهتتبعت أوتوماتيك لما النت يرجع.');
   }
 }
 
-/* ---------- manager ---------- */
 function mgrView(){
   const tabs = [['rev','المراجعة'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
@@ -496,21 +595,33 @@ function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuest
 
 function revView(){
   const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
+  const rejectedRecs = recs.filter(r=>r.status==='rejected');
   const shifts = ST.revShift==='all' ? SHIFTS : [ST.revShift];
   const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
+  
+  const alertHtml = rejectedRecs.length ? `
+    <div class="badbox">
+      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة):</b>
+      <ul style="margin:4px 0 0;padding-right:16px">
+        ${rejectedRecs.map(r=>`<li style="font-size:13px">${esc(r.employee)} - ${esc(r.taskName)} (${esc(r.shift)}): ${esc(r.rejectReason||'مخالفة هايجين')}</li>`).join('')}
+      </ul>
+    </div>` : '';
+
   const cards = recs.map(r=>`
-    <div class="card">
+    <div class="card" style="${r.status==='rejected'?'border-color:var(--bad)':''}">
       <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
-      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>${r.aiNote?`<div class="muted">🤖 ${esc(r.aiNote)}</div>`:''}${r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
+      ${r.status==='rejected'?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
-        <button class="sec" onclick="rejectRec('${r.id}')">رفض</button>
+        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض (Not Done 👎🏻)</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
   const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})${isLate(x.sh)?' · <b style="color:#c62828">متأخرة</b>':''}</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
   return `
+  ${alertHtml}
   <div class="card">
     <label>التاريخ</label><input type="date" value="${ST.date}" onchange="setDate(this.value)">
     <label>الشيفت</label>
@@ -520,7 +631,7 @@ function revView(){
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
-  <div class="card"><b>لم تُنفّذ</b>${miss}</div>
+  <div class="card"><b>لم تُنفّذ</b>{miss}</div>
   ${cards}`;
 }
 function setDate(v){ ST.date=v; subDone(); render(); }
@@ -528,8 +639,8 @@ function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
 }
 function rejectRec(id){
-  const why = prompt('اكتب سبب الرفض (هيظهر للموظف):');
-  if(why === null) return;
+  const why = prompt('اكتب سبب الرفض (Not Done 👎🏻 - مخالفة هايجين أو نظافة):', 'مخالفة معايير الهايجين والنظافة، يرجى إعادة المهمة.');
+  if(!why) return;
   updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
 }
 function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
@@ -599,7 +710,6 @@ function repView(){
     return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
   }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
 
-  // daily report: one block per employee and shift
   const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
   const groups = {};
   dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
@@ -608,8 +718,8 @@ function repView(){
     const ok = g.list.filter(r=>okS(r.status)).length;
     const p = total ? Math.round(ok/total*100) : 0;
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
-        <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)}</div>
-        ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
+        <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
+        ${r.status==='rejected' ? `<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>` : ''}
         ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
       </div>`).join('');
     return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
@@ -630,11 +740,11 @@ function repView(){
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
     <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
   <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>{empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
-    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>{missHtml}</div>
   </div>`;
 }
 function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
