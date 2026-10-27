@@ -101,7 +101,6 @@ const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
 
-// قائمة مهام الهايجين وسلامة الغذاء الجديدة بالكامل
 const DEFAULT_TASKS = [
   ['صباحي','سلامة الغذاء','فحص ثلاجة التبريد وتسجيل الحرارة (أقل من 39°F)','temp',39,'max'],
   ['صباحي','سلامة الغذاء','فحص الفريزر وتسجيل الحرارة (أقل من 0°F)','temp',0,'max'],
@@ -316,9 +315,9 @@ function coverView(){
     <text x="190" y="176" text-anchor="middle" font-size="22" font-weight="500" fill="#1d2630">KANSAS CHICKEN</text>
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
-    <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#1d2630"/>
+    <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
-    <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#1d2630"/>
+    <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
@@ -407,7 +406,7 @@ function calcAIScores(sh) {
 
   const cleanScore = cleanTotal ? Math.round((cleanDone / cleanTotal) * 100) : 100;
   const haccpBase = haccpTotal ? Math.round((haccpDone / haccpTotal) * 100) : 100;
-  const haccpScore = Math.max(0, haccpBase - (violations * 20)); // خصم 20 درجة لكل خرق سلامة غذاء
+  const haccpScore = Math.max(0, haccpBase - (violations * 20));
   
   const doneCount = list.filter(t=>okS(recOf(t.id,sh)?.status)).length;
   const totalPct = Math.round((doneCount / list.length) * 100);
@@ -539,7 +538,6 @@ function capture(){
   const ctx = c.getContext('2d');
   ctx.drawImage(v,0,0,w,h);
   
-  // فحص جودة الصورة والسطوع بواسطة البوت التلقائي (AI Quality Check)
   const imgData = ctx.getImageData(0, 0, w, h);
   let colorSum = 0;
   for (let i = 0; i < imgData.data.length; i += 4) {
@@ -547,7 +545,7 @@ function capture(){
   }
   const brightness = colorSum / (w * h);
 
-  if (brightness < 30) { // صورة مظلمة جداً
+  if (brightness < 30) {
     alert('🤖 البوت التلقائي: الصورة مظلمة جداً وغير واضحة! يرجى تشغيل الإضاءة وإعادة التصوير لنظافة المكان.');
     return;
   }
@@ -632,6 +630,7 @@ function mgrView(){
 function setTab(k){ 
   ST.tab=k; 
   if(k==='rep') loadReport(); 
+  autoMergeOnOpen(); // دمج تلقائي أوتوماتيك أول ما يدخل تبويب المهام
   render(); 
 }
 
@@ -670,7 +669,6 @@ function revView(){
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
 
-  <!-- ملخص تقييم البوت للمدير -->
   <div class="score-card">
     <b>🤖 تقرير البوت اليومي:</b>
     <div class="score-row">
@@ -720,9 +718,9 @@ function tasksView(){
   }).join('');
   return `
   <div class="card">
-    <h2>إدارة ودمج مهام الهايجين</h2>
-    <p class="muted">يمكنك إضافة مهام الهايجين وسلامة الغذاء الجديدة فوق المهام الحالية بضغط زر الدمج (لن يتم مسح أي مهام أو تقارير قديمة).</p>
-    <button style="background:#2e7d32; color:#fff;" onclick="mergeDefaultTasks()">➕ دمج وإضافة مهام الهايجين وسلامة الغذاء</button>
+    <h2>تفعيل مهام الهايجين وسلامة الغذاء أوتوماتيكياً</h2>
+    <p class="muted">النظام يقوم بفحص المهام ودمج الجديدة تلقائياً. يمكنك الضغط يدوياً للتأكيد الفوري:</p>
+    <button style="background:#2e7d32; color:#fff;" onclick="mergeDefaultTasks()">⚡ دمج ونشر مهام الهايجين وسلامة الغذاء فوراً</button>
   </div>
   <div class="card"><h2>إضافة مهمة فردية جديدة</h2>
     <label>اسم المهمة</label><input id="nt_name">
@@ -738,7 +736,6 @@ function tasksView(){
 }
 
 async function mergeDefaultTasks(){
-  if(!confirm('هل تريد إضافة مهام الهايجين وسلامة الغذاء الجديدة إلى القائمة الحالية؟')) return;
   try {
     const existingNames = new Set(TASKS.map(t => t.name));
     let addedCount = 0;
@@ -751,9 +748,23 @@ async function mergeDefaultTasks(){
         addedCount++;
       }
     }
-    alert(`تمت إضافة عدد (${addedCount}) مهمة جديدة بنجاح دون المساس بالمهام القديمة أو السجلات!`);
+    alert(`تمت تفعيل وإضافة عدد (${addedCount}) مهمة جديدة بنجاح وتظهر الآن لكل الموظفين!`);
   } catch(e) {
     fail('دمج المهام', e);
+  }
+}
+
+// دمج أوتوماتيكي صامت أول ما يفتح المدير لوحة المهام
+function autoMergeOnOpen() {
+  if (ST.tab === 'tasks' && ST.role === 'mgr' && TASKS.length > 0) {
+    const existingNames = new Set(TASKS.map(t => t.name));
+    let needsMerge = false;
+    for (const [shift, zone, name] of DEFAULT_TASKS) {
+      if (!existingNames.has(name)) { needsMerge = true; break; }
+    }
+    if (needsMerge) {
+      mergeDefaultTasks();
+    }
   }
 }
 
@@ -775,104 +786,4 @@ function editTip(id){
 }
 
 function toggleTask(id, active){ 
-  updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); 
-}
-
-function delTask(id){ 
-  if(confirm('تحذف المهمة من القايمة؟')) 
-    deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); 
-}
-
-function grade(p){ 
-  return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; 
-}
-
-function repView(){
-  const [y,m] = ST.month.split('-').map(Number);
-  const days = new Date(y, m, 0).getDate();
-  const tot = {'صباحي': taskList('صباحي').length, 'مسائي': taskList('مسائي').length};
-  const all = tot['صباحي'] + tot['مسائي'];
-  let rows = '', passDays = 0, workDays = 0, sumPct = 0;
-  for(let d=1; d<=days; d++){
-    const date = ST.month+'-'+String(d).padStart(2,'0');
-    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
-    const a = cnt('صباحي'), b = cnt('مسائي');
-    const pct = all ? Math.round((a+b)/all*100) : 0;
-    const any = ST.report.some(r=>r.date===date);
-    if(any){ workDays++; sumPct += pct; if(pct>=85) passDays++; }
-    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${any?pct+'%':'-'}</td><td>${any?grade(pct):'-'}</td></tr>`;
-  }
-  const avg = workDays ? Math.round(sumPct/workDays) : 0;
-  const emps = {};
-  ST.report.forEach(r=>{ const k=r.employee||'?'; emps[k]=emps[k]||{sub:0,ok:0,rej:0}; emps[k].sub++; if(okS(r.status)) emps[k].ok++; if(r.status==='rejected') emps[k].rej++; });
-  const empRows = Object.keys(emps).sort().map(k=>{
-    const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
-    return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
-  }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
-
-  const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
-  const groups = {};
-  dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
-  const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
-    const total = taskList(g.shift).length;
-    const ok = g.list.filter(r=>okS(r.status)).length;
-    const p = total ? Math.round(ok/total*100) : 0;
-    const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
-        <div><b>هل تم عمل: ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · <span style="color:#2e7d32; font-weight:bold;">${stLabel(r.status)}</span></div>
-        ${r.value !== undefined && r.value !== '' ? `<div>القراءة المسجلة: <b>${esc(r.value)}</b></div>` : ''}
-        ${r.isViolation ? `<div style="color:#c62828">⚠️ قراءة غير مطابقة لسلامة الغذاء</div>` : ''}
-        ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
-        ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
-      </div>`).join('');
-    return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
-      النتيجة: <b>${p}%</b> (${grade(p)}) · المنجز ${ok} من ${total}
-      ${items}</div>`;
-  }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
-  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
-  const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
-
-  return `
-  <div class="card">
-    <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
-    <label>اليوم (للتقرير اليومي)</label><input type="date" value="${ST.reportDay}" onchange="setReportDay(this.value)">
-    <button onclick="window.print()">تحميل PDF (تقرير اليوم)</button>
-    <div class="muted" style="margin-top:6px">في نافذة الطباعة اختار <b>Save as PDF</b>.</div>
-  </div>
-  <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
-    <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
-    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
-  <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
-  <div id="printArea">
-    <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
-    ${groupHtml}
-    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
-  </div>`;
-}
-
-function setReportDay(v){ 
-  ST.reportDay=v; 
-  if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } 
-  render(); 
-}
-
-function setMonth(v){ 
-  ST.month=v; 
-  loadReport(); 
-}
-
-function loadReport(){
-  getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
-    .then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); })
-    .catch(e=>console.warn(e));
-}
-
-setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
-
-Object.assign(window, { 
-  ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
-  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, mergeDefaultTasks, setMonth 
-});
-</script>
-</body>
-</html>
+  updateDoc
