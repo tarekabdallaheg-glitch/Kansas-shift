@@ -83,9 +83,9 @@ body{background:var(--bg) !important}
 <body>
 <div id="app"></div>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
@@ -357,7 +357,7 @@ function loginView(){
 }
 
 async function login(){
-  const email = document.getElementById('lemail'].value.trim();
+  const email = document.getElementById('lemail').value.trim();
   const pass = document.getElementById('lpass').value;
   const shift = document.getElementById('lshift').value;
   if(!email || !pass){ ST.authErr='اكتب الإيميل والباسورد'; render(); return; }
@@ -376,7 +376,7 @@ function logout(){
   signOut(auth); 
 }
 
-/* ---------- AI Smart Evaluation Engine (تحليل وتصنيف ذكي لكل المهام القديمة والجديدة) ---------- */
+/* ---------- AI Smart Evaluation Engine ---------- */
 function calcAIScores(sh) {
   const list = taskList(sh);
   if (!list.length) return { cleanScore: 100, haccpScore: 100, totalPct: 0, violations: 0 };
@@ -402,7 +402,6 @@ function calcAIScores(sh) {
         }
       }
     } else {
-      // اعتبر أي مهمة أخرى (نظافة، هايجين، مطبخ، صالة، واجهة...) تابعة لمؤشر النظافة والتشغيل
       cleanTotal++;
       if (isDone) cleanDone++;
     }
@@ -410,7 +409,7 @@ function calcAIScores(sh) {
 
   const cleanScore = cleanTotal ? Math.round((cleanDone / cleanTotal) * 100) : 100;
   const haccpBase = haccpTotal ? Math.round((haccpDone / haccpTotal) * 100) : 100;
-  const haccpScore = Math.max(0, haccpBase - (violations * 25)); // خصم ذكي 25 درجة لكل مخالفة سلامة غذاء
+  const haccpScore = Math.max(0, haccpBase - (violations * 25));
   
   const doneCount = list.filter(t=>okS(recOf(t.id,sh)?.status)).length;
   const totalPct = Math.round((doneCount / list.length) * 100);
@@ -542,7 +541,6 @@ function capture(){
   const ctx = c.getContext('2d');
   ctx.drawImage(v,0,0,w,h);
   
-  // فحص ذكي لسطوع الصورة للتأكد من نظافة ووضوح مكان العمل
   const imgData = ctx.getImageData(0, 0, w, h);
   let colorSum = 0;
   for (let i = 0; i < imgData.data.length; i += 4) {
@@ -810,3 +808,86 @@ function repView(){
   const tot = {'صباحي': taskList('صباحي').length, 'مسائي': taskList('مسائي').length};
   const all = tot['صباحي'] + tot['مسائي'];
   let rows = '', passDays = 0, workDays = 0, sumPct = 0;
+  for(let d=1; d<=days; d++){
+    const date = ST.month+'-'+String(d).padStart(2,'0');
+    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
+    const a = cnt('صباحي'), b = cnt('مسائي');
+    const pct = all ? Math.round((a+b)/all*100) : 0;
+    const any = ST.report.some(r=>r.date===date);
+    if(any){ workDays++; sumPct += pct; if(pct>=85) passDays++; }
+    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${any?pct+'%':'-'}</td><td>${any?grade(pct):'-'}</td></tr>`;
+  }
+  const avg = workDays ? Math.round(sumPct/workDays) : 0;
+  const emps = {};
+  ST.report.forEach(r=>{ const k=r.employee||'?'; emps[k]=emps[k]||{sub:0,ok:0,rej:0}; emps[k].sub++; if(okS(r.status)) emps[k].ok++; if(r.status==='rejected') emps[k].rej++; });
+  const empRows = Object.keys(emps).sort().map(k=>{
+    const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
+    return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
+
+  const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
+  const groups = {};
+  dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
+  const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
+    const total = taskList(g.shift).length;
+    const ok = g.list.filter(r=>okS(r.status)).length;
+    const p = total ? Math.round(ok/total*100) : 0;
+    const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
+        <div><b>هل تم عمل: ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · <span style="color:#2e7d32; font-weight:bold;">${stLabel(r.status)}</span></div>
+        ${r.value !== undefined && r.value !== '' ? `<div>القراءة المسجلة: <b>${esc(r.value)}</b></div>` : ''}
+        ${r.isViolation ? `<div style="color:#c62828">⚠️ قراءة غير مطابقة لسلامة الغذاء</div>` : ''}
+        ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
+        ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
+      </div>`).join('');
+    return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
+      النتيجة: <b>${p}%</b> (${grade(p)}) · المنجز ${ok} من ${total}
+      ${items}</div>`;
+  }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
+  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
+  const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+
+  return `
+  <div class="card">
+    <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
+    <label>اليوم (للتقرير اليومي)</label><input type="date" value="${ST.reportDay}" onchange="setReportDay(this.value)">
+    <button onclick="window.print()">تحميل PDF (تقرير اليوم)</button>
+    <div class="muted" style="margin-top:6px">في نافذة الطباعة اختار <b>Save as PDF</b>.</div>
+  </div>
+  <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
+    <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+  <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
+  <div id="printArea">
+    <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
+    ${groupHtml}
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
+  </div>`;
+}
+
+function setReportDay(v){ 
+  ST.reportDay=v; 
+  if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } 
+  render(); 
+}
+
+function setMonth(v){ 
+  ST.month=v; 
+  loadReport(); 
+}
+
+function loadReport(){
+  getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
+    .then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); })
+    .catch(e=>console.warn(e));
+}
+
+setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
+
+Object.assign(window, { 
+  ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, mergeDefaultTasks, autoMergeOnOpen, setMonth 
+});
+</script>
+</body>
+</html>
