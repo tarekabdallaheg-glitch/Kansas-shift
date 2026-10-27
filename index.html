@@ -51,7 +51,8 @@ body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixe
 .login-card{padding:20px;border-radius:20px;box-shadow:0 12px 30px rgba(29,38,48,.12);border:0}
 .login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4);transition:transform .15s}
 .login-btn:active{transform:scale(.97)}
-@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%;padding:12px}}
+#printArea{display:none}
+@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}.emp-block{page-break-inside:avoid}}
 @media (prefers-color-scheme: dark){
 :root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643}
 body{background:var(--bg) !important}
@@ -60,6 +61,7 @@ body{background:var(--bg) !important}
 .tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}
 .placeholder{background:#1f2730}
 }
+.rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
 </style>
 </head>
 <body>
@@ -94,14 +96,42 @@ const DEFAULT_TASKS = [
  ['صباحي','الصالة','نظافة ستارة التهوية'],['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
  ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
  ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
- ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
+   ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
  ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
-   ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
+ ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
 ];
 
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
+const TIPS = {
+ 'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
+ 'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
+ 'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
+ 'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولو أعلى من الحد المسموح بلّغ المدير فوراً.',
+ 'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
+ 'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
+ 'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
+ 'تجهيز التتبيلة وتسجيل وقت التجهيز': 'جهّز التتبيلة بالكميات المحددة، وسجّل وقت التجهيز، ومتستخدمهاش بعد الوقت المحدد.',
+ 'تنظيف الكاونتر وأماكن التحضير': 'نظّف الأسطح بمنظف معتمد للأغذية واشطفها وجففها، وخلي أدوات اللحم بعيدة عن الجاهز.',
+ 'فحص تواريخ صلاحية الخامات': 'راجع تاريخ الصلاحية على كل صنف، وارمي أي حاجة منتهية، وخلي القديم قدام الجديد.',
+ 'استلام المنتجات بدرجات حرارة': 'قيّس حرارة الشحنة عند الاستلام، وارفض أي منتج مش مطابق للحد المسموح.',
+ 'قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)': 'قيس حرارة المنتج بترمومتر نظيف، والباردة أقل من 39°F، والساخنة أعلى من 140°F، وسجّل القراءة.',
+ 'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
+ 'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
+ 'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
+ 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر طباعة فاتورة تجريبية.',
+ 'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
+ 'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
+ 'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
+ 'تنظيف الثلاجات من الداخل والتأكد من قفلها': 'نظّف رفوف الثلاجة من الداخل، واتأكد إن الباب بيقفل كويس.',
+ 'التخلص من المخلفات وتنظيف منطقة الزبالة': 'اقفل أكياس الزبالة كويس، وحطها في المكان المخصص، ونظّف المنطقة حواليها.',
+ 'تنظيف الصالة والأرضيات': 'امسح الأرضيات وانضف الترابيزات والكراسي، واتأكد إن مفيش أي بقع.',
+ 'تأمين المخزن وتسجيل الجرد اليومي': 'اقفل المخزن، وسجّل الجرد اليومي، واتأكد إن الخامات مرتبة ومغطاة.',
+ 'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
+ 'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
+};
 function isLate(sh){
   // صباحي: 6ص - 3م  |  مسائي: 6م - 6ص (اليوم اللي بعده)
   const end = new Date(ST.date+'T00:00:00');
@@ -123,7 +153,7 @@ async function flushQ(){
 window.addEventListener('online', flushQ);
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
-  revShift:'all', report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' };
+  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -177,7 +207,7 @@ function loginView(){
   return `
   <div class="login-wrap">
     <div class="logo">K</div>
-    <div class="brand" style="margin-top:14px">KANSAS CHICKEN</div>
+        <div class="brand" style="margin-top:14px">KANSAS CHICKEN</div>
     <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
     <div class="card login-card">
       <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
@@ -217,7 +247,7 @@ function empView(){
     const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
-      <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div></div>${tag}</div>`;
+      <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div>${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}</div>${tag}</div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. كلم المدير.</div>';
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
@@ -234,7 +264,7 @@ function openTask(id){
 function taskView(){
   const t = findTask(ST.cur);
   return `
-    <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
+  <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>${esc(t.name)}</h2>
   <div class="card">
     <video id="cam" autoplay playsinline muted></video>
@@ -303,7 +333,7 @@ async function submitPhoto(){
 /* ---------- manager ---------- */
 function mgrView(){
   const tabs = [['rev','المراجعة'],['tasks','المهام'],['rep','التقرير']]
-    .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+      .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : repView();
   return `
   <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
@@ -319,11 +349,11 @@ function revView(){
   const cards = recs.map(r=>`
     <div class="card">
       <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
-      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>${r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
-        <button class="sec" onclick="setStatus('${r.id}','rejected')">رفض</button>
+        <button class="sec" onclick="rejectRec('${r.id}')">رفض</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
@@ -345,6 +375,11 @@ function setDate(v){ ST.date=v; subDone(); render(); }
 function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
 }
+function rejectRec(id){
+  const why = prompt('اكتب سبب الرفض (هيظهر للموظف):');
+  if(why === null) return;
+  updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
+}
 function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
 
 function tasksView(){
@@ -353,10 +388,11 @@ function tasksView(){
     const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
         <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+        <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
         <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
         <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
       </div>`).join('');
-        return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
+    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
   }).join('');
   return `
   <div class="card"><h2>إضافة مهمة</h2>
@@ -372,6 +408,13 @@ function addTask(){
   const shift = document.getElementById('nt_shift').value;
   if(!name){ alert('اكتب اسم المهمة'); return; }
   addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
+}
+function editTip(id){
+  const t = findTask(id);
+  const cur = t.tip || TIPS[t.name] || '';
+  const v = prompt('اكتب النصيحة للمهمة (هتظهر للموظف):', cur);
+  if(v === null) return;
+  updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
 }
 function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
 function delTask(id){ if(confirm('تحذف المهمة من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
@@ -403,26 +446,46 @@ function repView(){
     const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
     return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
   }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
+
+  // daily report: one block per employee and shift
+  const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
+  const groups = {};
+    dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
+  const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
+    const total = taskList(g.shift).length;
+    const ok = g.list.filter(r=>okS(r.status)).length;
+    const p = total ? Math.round(ok/total*100) : 0;
+    const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
+        <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)}</div>
+        ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
+        ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
+      </div>`).join('');
+    return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
+      النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
+      ${items}</div>`;
+  }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
+  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
+  const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+
   return `
   <div class="card">
     <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
-    <button onclick="window.print()">تحميل PDF (طباعة)</button>
+    <label>اليوم (للتقرير اليومي)</label><input type="date" value="${ST.reportDay}" onchange="setReportDay(this.value)">
+    <button onclick="window.print()">تحميل PDF (تقرير اليوم)</button>
     <div class="muted" style="margin-top:6px">في نافذة الطباعة اختار <b>Save as PDF</b>.</div>
   </div>
+  <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
+    <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+  <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
   <div id="printArea">
-    <h2 style="text-align:center">تقرير شهر ${ST.month} · KANSAS CHICKEN</h2>
-    <div class="card">
-      <b>الملخص:</b> أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط الإنجاز: ${avg}% · التقدير: <b>${workDays?grade(avg):'-'}</b>
-      <div class="muted">حد النجاح 85%. ممتاز 95%+، جيد جداً 90%+، ناجح 85%+، راسب أقل من 85%.</div>
-    </div>
-    <div class="card" style="overflow-x:auto"><b>التقدير اليومي</b>
-      <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
-    <div class="card" style="overflow-x:auto"><b>التقييم لكل موظف</b>
-      <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table>
-      <div class="muted">نسبة الاعتماد = المعتمدة من إجمالي تسجيلات الموظف في الشهر.</div>
-    </div>
+    <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
+    ${groupHtml}
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
   </div>`;
 }
+function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
 function setMonth(v){ ST.month=v; loadReport(); }
 function loadReport(){
   getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
@@ -431,7 +494,7 @@ function loadReport(){
 }
 
 Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto,
-  setTab, setDate, setStatus, removeRec, addTask, toggleTask, delTask, importDefaults, setMonth });
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay });
 </script>
 </body>
 </html>
