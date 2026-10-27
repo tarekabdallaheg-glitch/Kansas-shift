@@ -11,7 +11,7 @@
     </filter>
   </defs>
   <rect width="192" height="192" rx="40" fill="#000000"/>
-  <g filter="url(#neon-glow)">ضاف
+  <g filter="url(#neon-glow)">
     <polygon points="44,38 148,38 96,106" fill="#ff0033" stroke="#ff0033" stroke-width="4" stroke-linejoin="round"/>
     <text x="96" y="148" font-family="Arial, sans-serif" font-size="26" font-weight="900" fill="#ff0033" text-anchor="middle" letter-spacing="4" stroke="#ff0033" stroke-width="1.2">KANSAS</text>
   </g>
