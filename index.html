@@ -2,171 +2,71 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#F5B800">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
 <title>KANSAS CHICKEN - الشيفتات</title>
-
 <style>
-:root {
-  --bg:#f4f6f8;
-  --card:#fff;
-  --text:#1d2630;
-  --muted:#6b7785;
-  --main:#F5B800;
-  --onmain:#1d2630;
-  --ok:#2e7d32;
-  --warn:#e08e00;
-  --bad:#c62828;
-  --line:#e3e8ee;
-  --brand:#D32F2F;
-}
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--line:#e3e8ee;--ok:#2e7d32;--bad:#c62828}
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,Tahoma,sans-serif;
-  background:linear-gradient(160deg,#fff7d6,#f4f6f8 45%,#ffe3e0) fixed;
-  color:var(--text);
-  min-height:100vh;
-}
-#app{max-width:520px;margin:auto;min-height:100vh;padding:16px}
-h1{font-size:20px;margin:6px 0 4px}
-h2{font-size:17px;margin:0 0 8px}
-.muted{color:var(--muted);font-size:13px}
-.brand{
-  font-size:30px;font-weight:900;color:var(--brand);
-  text-align:center;letter-spacing:1px;margin-top:20px
-}
-.card{
-  background:var(--card);border:1px solid var(--line);
-  border-radius:14px;padding:14px;margin-bottom:12px
-}
-label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
-input,select,textarea{
-  width:100%;padding:11px;border-radius:10px;
-  border:1px solid var(--line);background:var(--card);
-  color:var(--text);font-size:15px
-}
-textarea{min-height:80px}
-button{
-  width:100%;padding:13px;border:0;border-radius:12px;
-  background:var(--main);color:var(--onmain);
-  font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px
-}
-button.sec{background:transparent;color:var(--text);border:1px solid var(--main)}
-button.danger{color:var(--bad);border-color:var(--bad)}
-button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
-button:disabled{opacity:.45}
-.top,.row{
-  display:flex;justify-content:space-between;
-  align-items:center;gap:8px;margin-bottom:10px
-}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.tab{
-  flex:1;min-width:65px;margin:0;padding:10px;
-  background:var(--card);color:var(--text);
-  border:1px solid var(--line)
-}
-.tab.on{background:var(--main);border-color:var(--main)}
-.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.btns button{flex:1;margin:0;padding:9px;font-size:13px}
-.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
-.bar>div{height:100%;background:var(--main)}
-.task{
-  display:flex;align-items:center;gap:10px;padding:12px;
-  border-radius:12px;background:var(--card);
-  border:1px solid var(--line);margin-bottom:8px;cursor:pointer
-}
-.task .t{flex:1}
-.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
-.dot.done{background:var(--ok)}
-.dot.review{background:var(--warn)}
-.tag{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap}
-.tag.done{background:#e8f5e9;color:var(--ok)}
-.tag.review{background:#fff4e0;color:var(--warn)}
-#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;object-fit:cover;display:none}
-#shot,.shot{width:100%;border-radius:10px;margin-top:8px;display:none}
-.placeholder{
-  width:100%;aspect-ratio:3/4;background:#2b3440;
-  border-radius:12px;display:flex;align-items:center;
-  justify-content:center;color:#cfd8e1;text-align:center;padding:16px
-}
-.meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}
-th{color:var(--muted);font-weight:normal}
-.warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
-.logo{
-  width:76px;height:76px;margin:0 auto;border-radius:22px;
-  background:var(--main);color:var(--brand);font-size:44px;
-  font-weight:900;display:flex;align-items:center;justify-content:center
-}
-.login-wrap{padding-top:36px}
-.greet{text-align:center;color:var(--muted);margin:6px 0 18px}
-.login-card{padding:20px;border-radius:20px;box-shadow:0 12px 30px #1d26301f;border:0}
-.login-btn{padding:16px;font-size:17px}
-.splash{
-  position:fixed;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;background:var(--bg);z-index:9
-}
-.sp-name{font-size:24px;font-weight:900;margin-top:18px;letter-spacing:2px;direction:ltr}
-.sp-bar{width:140px;height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden}
-.sp-bar>div{height:100%;width:100%;background:var(--main)}
-.cover{max-width:380px;margin:auto;padding-top:24px;text-align:center}
-#printArea{display:none}
-.rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}
-.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
-@media print{
-  body *{visibility:hidden}
-  #printArea,#printArea *{visibility:visible}
-  #printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}
-  .emp-block{page-break-inside:avoid}
-}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text)}
+#app{max-width:600px;margin:auto;padding:14px;min-height:100vh}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+h1{font-size:21px}h2{font-size:17px}
+.muted{font-size:13px;color:var(--muted)}
+label{display:block;margin:10px 0 5px;font-size:13px}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--text);font-size:15px}
+button{padding:12px;border:0;border-radius:10px;background:var(--main);color:#222;font-size:14px;font-weight:bold;cursor:pointer;margin-top:7px}
+.sec{background:transparent;border:1px solid var(--main)}
+.danger{color:var(--bad);border-color:var(--bad)}
+.small{padding:7px;margin:2px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tabs,.btns{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.tabs button,.btns button{flex:1}
+.tab.on{background:#222;color:#fff}
+.task{padding:12px;border:1px solid var(--line);border-radius:10px;margin:7px 0;cursor:pointer}
+.tag{font-size:12px;color:var(--muted)}
+img,video{max-width:100%;border-radius:10px}
+#cam{width:100%;display:none}
+#shot{display:none;width:100%}
+.bar{height:9px;background:var(--line);border-radius:9px;overflow:hidden}
+.bar div{height:100%;background:var(--main)}
+.warn{padding:10px;background:#fff1cf;border-radius:9px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+td,th{padding:7px;border-bottom:1px solid var(--line);text-align:center}
+#app .brand{text-align:center;font-size:26px;font-weight:bold;color:#c62828}
 @media(prefers-color-scheme:dark){
-  :root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643}
-  body{background:var(--bg)!important}
-  .brand{color:#ff6b6b}
-  .warnbox{background:#3a2e14;color:#ffd58a}
-  .tag{background:#2a3643}
-  .tag.done{background:#1d3a22}
-  .tag.review{background:#3d2f12}
+:root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#a6b1bd;--line:#303c49}
 }
 </style>
 </head>
-
 <body>
-<div id="app"></div>
+<div id="app">جاري تشغيل KANSAS CHICKEN...</div>
 
 <script type="module">
 import {initializeApp}
 from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 
 import {
-  getFirestore,collection,doc,addDoc,setDoc,updateDoc,
-  deleteDoc,getDocs,query,where,onSnapshot
+ getFirestore,collection,doc,addDoc,updateDoc,deleteDoc,getDocs
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 import {
-  getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
+ getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 
 const firebaseConfig={
-  apiKey:"AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
-  authDomain:"kansas-shift-c9e60.firebaseapp.com",
-  projectId:"kansas-shift-c9e60",
-  storageBucket:"kansas-shift-c9e60.firebasestorage.app",
-  messagingSenderId:"781063241169",
-  appId:"1:781063241169:web:205b4051b262de257e34f0"
+ apiKey:"AIzaSyCjacuxhQdErOv2909ilWrLOfW1lOwNCOc",
+ authDomain:"kansas-shift-c9e60.firebaseapp.com",
+ projectId:"kansas-shift-c9e60",
+ storageBucket:"kansas-shift-c9e60.firebasestorage.app",
+ messagingSenderId:"781063241169",
+ appId:"1:781063241169:web:205b4051b262de257e34f0"
 };
 
 const MANAGER_EMAIL="tarekabdallah.eg@gmail.com";
-const app=initializeApp(firebaseConfig);
-const fdb=getFirestore(app);
-const auth=getAuth(app);
-
-const SHIFTS=["صباحي","مسائي"];
-const SK={"صباحي":"am","مسائي":"pm"};
+const fb=initializeApp(firebaseConfig);
+const db=getFirestore(fb);
+const auth=getAuth(fb);
 
 const DEFAULT_TASKS=[
 ["صباحي","الواجهة","عتب الأبواب"],
@@ -198,932 +98,513 @@ const DEFAULT_TASKS=[
 ["مسائي","الواجهة","إطفاء الأنوار وتأمين الأبواب"]
 ];
 
-const REFERENCE=[
-{t:"الهايجين الشخصي",i:[
-"اغسل إيدك بالماء والصابون قبل البدء وبعد الحمام وبعد لمس الموبايل أو الفلوس",
-"ارتدي زي نظيف وغطاء شعر أثناء التحضير",
-"قص أظافرك واخلع الساعات والمجوهرات قبل الشغل",
-"ممنوع الأكل والشرب والتدخين في منطقة التحضير",
-"لو عندك إسهال أو قيء أو حرارة، بلغ المدير ولا تتعامل مع الطعام"
-]},
-{t:"سلامة الغذاء والحرارة",i:[
-"المنتجات الباردة: اتبع درجة الحرارة المعتمدة في إجراءات الفرع",
-"الفريزر 0°F أو أقل",
-"المنتجات الساخنة: اتبع الحد المعتمد في إجراءات الفرع",
-"الدجاج لازم يوصل داخلياً إلى 165°F على الأقل",
-"افصل أدوات الطعام النيء عن الطعام الجاهز",
-"قيس حرارة الشحنة عند الاستلام وارفض غير المطابق",
-"استخدم الأقدم أولاً (FIFO) وتخلص من المنتج المنتهي"
-]},
-{t:"النظافة العامة والتعقيم",i:[
-"نظف السطح أولاً ثم اشطفه ثم عقمه حسب تعليمات العبوة",
-"استخدم معقماً معتمداً للأسطح الملامسة للأغذية",
-"نظف من المنطقة الأنظف إلى الأوسخ",
-"أغلق أكياس القمامة والحاويات جيداً",
-"بلغ المدير فوراً عن أي حشرات أو قوارض"
-]},
-{t:"الزيت والمقلاة",i:[
-"افحص لون ورائحة الزيت قبل التشغيل",
-"صفّ الزيت بعد أن يبرد حسب إجراءات الفرع",
-"لا تترك الزيت يحترق على النار"
-]},
-{t:"متى تبلغ المدير فوراً",i:[
-"أي قراءة حرارة مخالفة",
-"تسريب ماء أو غاز أو كهرباء",
-"حشرات أو قوارض",
-"كسر زجاج أو أداة داخل الطعام",
-"إصابة أو مرض لأي موظف"
-]}
-];
-
 const TIPS={
 "عتب الأبواب":"امسح العتب من التراب والدهون وجففه.",
 "الزجاج":"نظف الزجاج بمنظف مناسب وقطعة مايكروفايبر.",
-"فحص الثلاجات وتسجيل درجة الحرارة":"سجل درجة الحرارة وبلغ المدير عند وجود قراءة مخالفة.",
+"فحص الثلاجات وتسجيل درجة الحرارة":"سجل درجة الحرارة وبلغ المدير عن أي قراءة مخالفة.",
 "تشغيل الزيت في المقلاة وفحص نظافته":"افحص لون ورائحة الزيت قبل التشغيل.",
 "تنظيف الحمامات وتعبئة المستلزمات":"نظف وعقم الحمام واملأ الصابون والمناديل."
 };
 
-function todayStr(){
-  const d=new Date();
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-function fmtDate(s){
-  if(!s)return "";
-  const [y,m,d]=s.split("-");
-  return d+"/"+m+"/"+y;
-}
-function weekday(s){
-  const [y,m,d]=s.split("-").map(Number);
-  return new Date(y,m-1,d).toLocaleDateString("ar-EG",{weekday:"long"});
-}
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
-}[c]));
-
 const ST={
-  user:null,role:null,name:"",shift:"صباحي",
-  tab:"rev",date:todayStr(),month:todayStr().slice(0,7),
-  revShift:"all",reportDay:todayStr(),report:[],
-  cur:null,photo:null,taken:false,busy:false,
-  authErr:"",showRef:false,showChat:false,chatMsgs:[],
-  coverDone:false,splashDone:false,authReady:false
+ user:null,role:"employee",ready:false,
+ shift:"صباحي",tab:"rev",tasks:[],records:[],questions:[],
+ activeTask:null,photo:null,stream:null,showRef:false,
+ month:new Date().getFullYear()+"-"+String(new Date().getMonth()+1).padStart(2,"0")
 };
 
-let TASKS=[];
-let DONE=[];
-let QS=[];
-let unsubDone=null;
-let unsubTasks=null;
-let camStream=null;
-
-const okS=s=>s==="approved"||s==="done";
-const subS=s=>s==="pending"||s==="done"||s==="approved";
-function stLabel(s){
-  return ({done:"تم 👍",pending:"بانتظار المراجعة",
-  approved:"معتمدة",rejected:"مرفوضة، أعيد التصوير"})[s]||"لسه";
-}
-function stCls(s){
-  return (s==="approved"||s==="done")?"done":
-    (s==="pending"||s==="rejected"?"review":"");
-}
-function taskList(sh){
-  return TASKS.filter(t=>t.active!==false&&t.shift===sh)
-    .sort((a,b)=>(a.order||0)-(b.order||0));
-}
-function findTask(id){return TASKS.find(t=>t.id===id);}
-function recOf(id,sh){return DONE.find(r=>r.taskId===id&&r.shift===sh);}
-function fail(ctx,e){
-  alert(ctx+" ما اتمش. اتأكد من الإنترنت والصلاحيات.\n"+
-    (e?.code||e?.message||""));
-}
-function grade(p){
-  return p>=95?"ممتاز":p>=90?"جيد جداً":p>=85?"ناجح":"راسب";
-}
-function isLate(sh){
-  const end=new Date(ST.date+"T00:00:00");
-  if(sh==="صباحي")end.setHours(15,0,0,0);
-  else{end.setDate(end.getDate()+1);end.setHours(6,0,0,0);}
-  return Date.now()>end.getTime();
-}
-  ','ممنوع التعامل مع الطعام عند وجود أعراض مرضية قد تنقل العدوى']},
-{t:'سلامة الغذاء',i:['افصل النيء عن المطهو والجاهز للأكل','استخدم أدوات نظيفة ومخصصة لكل نوع من الطعام','قِس درجات الحرارة بترمومتر نظيف ومعاير','سجّل درجات الحرارة وأوقات التحضير حسب نظام الفرع','لا تستخدم أي منتج مجهول التاريخ أو منتهي الصلاحية']},
-{t:'درجات الحرارة',i:['احفظ المنتجات الباردة وفق الحد المعتمد في سياسة الشركة','احتفظ بالطعام الساخن فوق 140°F إذا كان هذا هو الحد المعتمد في الفرع','لا تعتمد على شكل المنتج لتحديد سلامته؛ استخدم الترمومتر','أبلغ المدير فورًا عن أي قراءة خارج الحدود المعتمدة']},
-{t:'التنظيف والتعقيم',i:['أزل بقايا الطعام قبل التعقيم','استخدم مواد التنظيف بالتركيز المحدد على الملصق','لا تخلط مواد التنظيف مع بعضها','افصل الكهرباء قبل تنظيف المعدات الكهربائية وفق تعليمات الشركة','ضع علامة تحذير عند تنظيف الأرضية المبللة']},
-{t:'إغلاق الشيفت',i:['راجع المهام المطلوبة وتأكد من اكتمالها','سجّل النواقص والتوالف والملاحظات','تأكد من إغلاق الثلاجات والمخزن والأبواب','سلّم الشيفت التالي أي ملاحظات مهمة']},
-];
-
-let ST = {
- user:null,
- role:'employee',
- authReady:false,
- splashDone:false,
- tab:'rev',
- shift:'صباحي',
- tasks:[],
- records:[],
- questions:[],
- reportMonth:new Date().toISOString().slice(0,7),
- reportDay:new Date().toISOString().slice(0,10),
- activeTask:null,
- cameraStream:null,
- capturedImage:null,
- showRef:false,
- loading:false
-};
-
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
- '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
 }[c]));
 
 function today(){
- return new Date().toISOString().slice(0,10);
+ const d=new Date();
+ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
-function dateLabel(d=today()){
- return new Date(d+'T12:00:00').toLocaleDateString('ar-EG',{
-  weekday:'long',year:'numeric',month:'long',day:'numeric'
- });
-}
+function msg(s){alert(s);}
 
-function notify(msg){
- alert(msg);
-}
-
-function setTab(k){
- ST.tab=k;
- if(k==='rep') loadReport();
- if(k==='qs') loadQuestions();
- render();
-}
-
-function splashView(){
- return `
- <div class="splash">
-  <div class="logo sp-logo">K</div>
-  <div class="sp-name">KANSAS CHICKEN</div>
-  <div class="muted">نظام متابعة مهام الشيفت</div>
-  <div class="sp-bar"><div></div></div>
+function header(){
+ return `<div class="row">
+ <div><b>KANSAS CHICKEN</b><div class="muted">${esc(ST.user?.email||"")}</div></div>
+ <button class="small sec" onclick="logout()">خروج</button>
  </div>`;
 }
 
 function loginView(){
- return `
- <div class="login-wrap">
-  <div class="logo">K</div>
-  <div class="brand">KANSAS CHICKEN</div>
-  <div class="greet">نظام متابعة مهام الشيفت</div>
-  <div class="card login-card">
-   <h2>تسجيل الدخول</h2>
-   <p class="muted">سجّل الدخول باستخدام البريد الإلكتروني وكلمة المرور المسجلين بالنظام.</p>
-   <label for="email">البريد الإلكتروني</label>
-   <input id="email" type="email" autocomplete="username" placeholder="name@example.com">
-   <label for="password">كلمة المرور</label>
-   <input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور">
-   <button class="login-btn" onclick="login()">دخول</button>
-   <div class="meta">لو بيانات الدخول غير صحيحة، راجع مسؤول النظام.</div>
-  </div>
+ return `<div class="card" style="margin-top:40px">
+ <div class="brand">KANSAS CHICKEN</div>
+ <h2>تسجيل الدخول</h2>
+ <label>البريد الإلكتروني</label>
+ <input id="email" type="email" autocomplete="username">
+ <label>كلمة المرور</label>
+ <input id="password" type="password" autocomplete="current-password">
+ <button onclick="login()">دخول</button>
  </div>`;
 }
 
 async function login(){
- const email=$('email')?.value.trim();
- const password=$('password')?.value;
- if(!email || !password){
-  notify('اكتب البريد الإلكتروني وكلمة المرور.');
-  return;
- }
+ const email=$("email")?.value.trim();
+ const password=$("password")?.value;
+ if(!email||!password){msg("اكتب البريد الإلكتروني وكلمة المرور.");return;}
  try{
   await signInWithEmailAndPassword(auth,email,password);
  }catch(e){
   console.error(e);
-  notify('تعذر تسجيل الدخول. راجع البريد الإلكتروني وكلمة المرور واتصال الإنترنت.');
+  msg("فشل تسجيل الدخول: "+(e.code||"راجع بيانات الدخول"));
  }
 }
 
 async function logout(){
+ if(ST.stream)ST.stream.getTracks().forEach(t=>t.stop());
+ await signOut(auth);
+}
+
+async function refresh(){
  try{
-  if(ST.cameraStream){
-   ST.cameraStream.getTracks().forEach(t=>t.stop());
-   ST.cameraStream=null;
-  }
-  await signOut(auth);
+  const [ts,rs]=await Promise.all([
+   getDocs(collection(db,"tasks")),
+   getDocs(collection(db,"records"))
+  ]);
+  ST.tasks=ts.docs.map(d=>({id:d.id,...d.data()}));
+  ST.records=rs.docs.map(d=>({id:d.id,...d.data()}));
  }catch(e){
   console.error(e);
-  notify('تعذر تسجيل الخروج.');
+  msg("تعذر تحميل البيانات. راجع صلاحيات Firestore.");
  }
 }
 
-function headerView(){
- return `
- <div class="top">
-  <div>
-   <div style="font-weight:bold">KANSAS CHICKEN</div>
-   <div class="muted">${esc(ST.user?.email||'')}</div>
-  </div>
-  <button class="small sec" onclick="logout()">خروج</button>
- </div>`;
+function setShift(s){ST.shift=s;ST.activeTask=null;render();}
+function setTab(t){ST.tab=t;render();}
+
+function openTask(id){ST.activeTask=id;ST.photo=null;render();}
+function closeTask(){
+ if(ST.stream)ST.stream.getTracks().forEach(t=>t.stop());
+ ST.stream=null;ST.activeTask=null;ST.photo=null;render();
 }
-
-function employeeView(){
- const tasks=ST.tasks.filter(t=>t.active!==false && t.shift===ST.shift);
- const done=tasks.filter(t=>ST.records.some(r=>
-  r.taskId===t.id && r.date===today() &&
-  r.userEmail===ST.user?.email && r.status==='approved'
- )).length;
- const pct=tasks.length?Math.round(done/tasks.length*100):0;
-
+  function employeeView(){
+ const today=new Date().toISOString().slice(0,10);
+ const tasks=ST.tasks.filter(t=>t.shift===ST.shift);
+ const done=id=>ST.records.some(r=>r.taskId===id&&r.date===today&&r.userEmail===ST.user.email&&r.status!=="rejected");
  return `
- ${headerView()}
- <div class="card">
-  <div class="row">
-   <div>
-    <h1>مهام الشيفت</h1>
-    <div class="muted">${dateLabel()}</div>
+ <header class="top">
+   <div><b>KANSAS CHICKEN</b><small>نظام متابعة الشيفت</small></div>
+   <button onclick="logout()">خروج</button>
+ </header>
+ <main>
+   <h2>أهلاً ${esc(ST.user.displayName||ST.user.email)}</h2>
+   <div class="row">
+    <button class="${ST.shift==="صباحي"?"active":""}" onclick="setShift('صباحي')">الشيفت الصباحي</button>
+    <button class="${ST.shift==="مسائي"?"active":""}" onclick="setShift('مسائي')">الشيفت المسائي</button>
    </div>
-   <span class="tag">${esc(ST.shift)}</span>
-  </div>
-  <div class="tabs">
-   <button class="tab ${ST.shift==='صباحي'?'on':''}" onclick="setShift('صباحي')">الصباحي</button>
-   <button class="tab ${ST.shift==='مسائي'?'on':''}" onclick="setShift('مسائي')">المسائي</button>
-  </div>
-  <div class="row">
-   <span>المهام المعتمدة</span>
-   <strong>${done} / ${tasks.length}</strong>
-  </div>
-  <div class="bar"><div style="width:${pct}%"></div></div>
-  <div class="muted" style="margin-top:6px">${pct}% مكتمل</div>
- </div>
- <div class="card">
-  <h2>قائمة المهام</h2>
-  ${tasks.length?tasks.map(t=>{
-   const rec=ST.records.find(r=>
-    r.taskId===t.id && r.date===today() &&
-    r.userEmail===ST.user?.email
-   );
-   const status=rec?.status||'pending';
-   const label=status==='approved'?'تم الاعتماد':
-    status==='review'?'بانتظار المراجعة':
-    status==='rejected'?'مرفوضة':'لم يتم التنفيذ';
-   return `
-    <div class="task" onclick="openTask('${esc(t.id)}')">
-     <span class="dot ${status==='approved'?'done':status==='review'?'review':''}"></span>
-     <div class="t">
-      <div>${esc(t.name)}</div>
-      <div class="muted">${esc(t.section||'عام')}</div>
-     </div>
-     <span class="tag ${status==='approved'?'done':status==='review'?'review':''}">${label}</span>
-    </div>`;
-  }).join(''):'<div class="muted">لا توجد مهام لهذا الشيفت.</div>'}
- </div>
- ${ST.activeTask?taskDetailView():''}
- <div class="card">
-  <h2>اسأل عن مهمة</h2>
-  <div class="muted">اكتب سؤالك وسيظهر الرد إن كانت المعلومة متاحة في المرجع.</div>
-  <input id="botQ" placeholder="اكتب سؤالك هنا">
-  <button onclick="askBot()">إرسال السؤال</button>
-  <div id="botAnswer"></div>
- </div>
- <div class="card">
-  <button class="sec" onclick="ST.showRef=true;render()">فتح مرجع التشغيل</button>
- </div>
- ${ST.showRef?refView():''}`;
-}
-
-function setShift(s){
- ST.shift=s;
- ST.activeTask=null;
- render();
+   ${ST.showRef?refView():`
+   <div class="tabs">
+    <button class="${ST.tab==="rev"?"active":""}" onclick="setTab('rev')">المهام</button>
+    <button class="${ST.tab==="qs"?"active":""}" onclick="setTab('qs')">اسأل المدير</button>
+   </div>
+   ${ST.tab==="qs"?`
+    <section class="card">
+     <h3>اسأل المدير</h3>
+     <textarea id="questionText" placeholder="اكتب سؤالك هنا"></textarea>
+     <button onclick="askBot()">إرسال السؤال</button>
+     <div id="questionList"></div>
+    </section>
+   `:`
+    <p>مهام الشيفت: ${tasks.length}</p>
+    ${tasks.map(t=>`
+     <section class="card">
+      <div class="row between">
+       <div><b>${esc(t.name)}</b><small>${esc(t.section||"عام")}</small></div>
+       <span>${done(t.id)?"✅ تم الإرسال":"⏳ لم تُنفذ"}</span>
+      </div>
+      <button onclick="openTask('${t.id}')">فتح المهمة</button>
+     </section>
+    `).join("")||"<p>لا توجد مهام لهذا الشيفت حاليًا.</p>"}
+   `}
+   `}
+   <button class="secondary" onclick="ST.showRef=!ST.showRef;render()">دليل التشغيل</button>
+ </main>
+ `;
 }
 
 function taskDetailView(){
- const t=ST.tasks.find(x=>x.id===ST.activeTask);
- if(!t) return '';
- const tip=TIPS[t.name]||'نفّذ المهمة حسب تعليمات التشغيل المعتمدة في الفرع.';
+ const task=ST.tasks.find(t=>t.id===ST.activeTask);
+ if(!task)return `<main><p>المهمة غير موجودة.</p><button onclick="closeTask()">رجوع</button></main>`;
  return `
- <div class="card">
-  <div class="row">
-   <h2>${esc(t.name)}</h2>
-   <button class="small sec" onclick="closeTask()">إغلاق</button>
-  </div>
-  <div class="muted">${esc(t.section||'عام')} — ${esc(t.shift)}</div>
-  <p>${esc(tip)}</p>
-  <div class="warnbox">بعد تنفيذ المهمة، التقط صورة واضحة تُظهر النتيجة قبل إرسالها للمراجعة.</div>
-  <video id="cam" autoplay playsinline></video>
-  <img id="shot" alt="صورة المهمة">
-  <div id="camPlaceholder" class="placeholder">اضغط على تشغيل الكاميرا لالتقاط صورة المهمة</div>
-  <div class="btns">
-   <button onclick="startCam()">تشغيل الكاميرا</button>
-   <button class="sec" onclick="capture()">التقاط الصورة</button>
-  </div>
-  <div class="btns">
-   <button class="sec" onclick="retake()">إعادة التصوير</button>
-   <button onclick="submitPhoto()">إرسال للمراجعة</button>
-  </div>
-  <div class="meta">تأكد من وضوح الصورة قبل الإرسال. لا ترسل صورة لا تخص المهمة.</div>
- </div>`;
-}
-
-function openTask(id){
- ST.activeTask=id;
- ST.capturedImage=null;
- render();
-}
-
-function closeTask(){
- if(ST.cameraStream){
-  ST.cameraStream.getTracks().forEach(t=>t.stop());
-  ST.cameraStream=null;
- }
- ST.activeTask=null;
- ST.capturedImage=null;
- render();
+ <header class="top">
+  <b>KANSAS CHICKEN</b>
+  <button onclick="closeTask()">رجوع</button>
+ </header>
+ <main>
+  <section class="card">
+   <h2>${esc(task.name)}</h2>
+   <p>القسم: ${esc(task.section||"عام")}</p>
+   <p>نفّذ المهمة ثم التقط صورة واضحة لإثبات التنفيذ.</p>
+   <video id="cam" autoplay playsinline></video>
+   <canvas id="canvas" hidden></canvas>
+   <div id="photoArea">
+    ${ST.photo?`<img class="preview" src="${ST.photo}" alt="صورة المهمة">`:""}
+   </div>
+   <div class="row">
+    <button onclick="startCam()">فتح الكاميرا</button>
+    <button onclick="capture()">التقاط الصورة</button>
+   </div>
+   <div class="row">
+    <button class="secondary" onclick="retake()">إعادة التصوير</button>
+    <button onclick="submitPhoto()">إرسال للمراجعة</button>
+   </div>
+   <p id="taskMsg"></p>
+  </section>
+ </main>
+ `;
 }
 
 async function startCam(){
- const video=$('cam');
- if(!video){
-  notify('افتح المهمة أولاً.');
-  return;
- }
  try{
-  if(!navigator.mediaDevices?.getUserMedia){
-   notify('المتصفح لا يدعم تشغيل الكاميرا. افتح الموقع عبر HTTPS.');
-   return;
-  }
-  ST.cameraStream=await navigator.mediaDevices.getUserMedia({
-   video:{facingMode:'environment'},
-   audio:false
+  if(ST.stream)ST.stream.getTracks().forEach(t=>t.stop());
+  ST.stream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:"environment"},audio:false
   });
-  video.srcObject=ST.cameraStream;
-  video.style.display='block';
-  const p=$('camPlaceholder');
-  if(p)p.style.display='none';
-  const shot=$('shot');
-  if(shot)shot.style.display='none';
+  const video=document.getElementById("cam");
+  video.srcObject=ST.stream;
+  await video.play();
  }catch(e){
-  console.error(e);
-  notify('تعذر فتح الكاميرا. تأكد من إذن الكاميرا واستخدم الموقع عبر HTTPS.');
+  alert("تعذر فتح الكاميرا. تأكد من السماح باستخدام الكاميرا وفتح الموقع عبر HTTPS.");
  }
 }
 
 function capture(){
- const video=$('cam');
- if(!video || !video.videoWidth){
-  notify('شغّل الكاميرا وانتظر حتى تظهر الصورة.');
+ const video=document.getElementById("cam");
+ if(!video||!video.videoWidth){
+  alert("افتح الكاميرا وانتظر ظهور الصورة أولًا.");
   return;
  }
- const canvas=document.createElement('canvas');
- canvas.width=video.videoWidth;
- canvas.height=video.videoHeight;
- canvas.getContext('2d').drawImage(video,0,0);
- ST.capturedImage=canvas.toDataURL('image/jpeg',0.75);
- const shot=$('shot');
- if(shot){
-  shot.src=ST.capturedImage;
-  shot.style.display='block';
- }
- video.style.display='none';
- if(ST.cameraStream){
-  ST.cameraStream.getTracks().forEach(t=>t.stop());
-  ST.cameraStream=null;
- }
+ const canvas=document.getElementById("canvas");
+ const maxWidth=640;
+ const scale=Math.min(1,maxWidth/video.videoWidth);
+ canvas.width=Math.round(video.videoWidth*scale);
+ canvas.height=Math.round(video.videoHeight*scale);
+ const ctx=canvas.getContext("2d");
+ ctx.drawImage(video,0,0,canvas.width,canvas.height);
+ ST.photo=canvas.toDataURL("image/jpeg",0.55);
+ document.getElementById("photoArea").innerHTML=
+  `<img class="preview" src="${ST.photo}" alt="صورة المهمة">`;
 }
 
 function retake(){
- ST.capturedImage=null;
- const shot=$('shot');
- if(shot)shot.style.display='none';
- const video=$('cam');
- if(video)video.style.display='none';
- const p=$('camPlaceholder');
- if(p)p.style.display='flex';
+ ST.photo=null;
+ const area=document.getElementById("photoArea");
+ if(area)area.innerHTML="";
 }
-  async function submitPhoto(){
- if(!ST.activeTask){
-  notify('اختار المهمة الأول.');
-  return;
- }
- if(!ST.capturedImage){
-  notify('لازم تلتقط صورة للمهمة الأول.');
-  return;
- }
 
+async function submitPhoto(){
  const task=ST.tasks.find(t=>t.id===ST.activeTask);
- if(!task){
-  notify('المهمة غير موجودة.');
+ if(!task||!ST.photo){
+  alert("لازم تفتح الكاميرا وتلتقط صورة الأول.");
   return;
  }
-
+ const btnMsg=document.getElementById("taskMsg");
+ if(btnMsg)btnMsg.textContent="جارٍ إرسال المهمة...";
  try{
-  await addDoc(collection(fdb,'records'),{
+  const today=new Date().toISOString().slice(0,10);
+  await addDoc(collection(db,"records"),{
    taskId:task.id,
    taskName:task.name,
-   section:task.section||'عام',
-   shift:task.shift,
-   date:today(),
+   section:task.section||"عام",
+   shift:ST.shift,
+   date:today,
    userEmail:ST.user.email,
    userName:ST.user.displayName||ST.user.email,
-   image:ST.capturedImage,
-   status:'review',
-   createdAt:new Date().toISOString(),
-   managerNote:''
+   image:ST.photo,
+   status:"review",
+   managerNote:"",
+   createdAt:new Date().toISOString()
   });
-
-  notify('تم إرسال المهمة للمراجعة.');
-  ST.capturedImage=null;
+  if(ST.stream)ST.stream.getTracks().forEach(t=>t.stop());
+  ST.stream=null;
   ST.activeTask=null;
-  await refreshAll();
+  ST.photo=null;
+  await refresh();
+  render();
+  alert("تم إرسال المهمة للمدير للمراجعة.");
  }catch(e){
   console.error(e);
-  notify('تعذر إرسال المهمة. تأكد من اتصال الإنترنت وصلاحيات قاعدة البيانات.');
+  if(btnMsg)btnMsg.textContent="فشل الإرسال. تأكد من اتصال الإنترنت وصلاحيات Firebase.";
  }
 }
 
-function refView(){
- const secs=REFERENCE.map(s=>`
-  <div class="card">
-   <h2>${esc(s.t)}</h2>
-   <ul>${s.i.map(i=>`<li style="margin:8px 0">${esc(i)}</li>`).join('')}</ul>
-  </div>
- `).join('');
+function managerView(){
+ let content="";
+ if(ST.tab==="rev")content=reviewView();
+ else if(ST.tab==="tasks")content=tasksView();
+ else if(ST.tab==="qs")content=questionsView();
+ else if(ST.tab==="report")content=reportView();
+ else if(ST.tab==="ref")content=refView();
 
  return `
- <div class="card">
-  <div class="row">
-   <h1>مرجع التشغيل</h1>
-   <button class="small sec" onclick="ST.showRef=false;render()">رجوع</button>
+ <header class="top">
+  <div><b>KANSAS CHICKEN</b><small>لوحة المدير</small></div>
+  <button onclick="logout()">خروج</button>
+ </header>
+ <main>
+  <h2>لوحة إدارة الشيفت</h2>
+  <div class="tabs">
+   <button class="${ST.tab==="rev"?"active":""}" onclick="setTab('rev')">مراجعة المهام</button>
+   <button class="${ST.tab==="tasks"?"active":""}" onclick="setTab('tasks')">إدارة المهام</button>
+   <button class="${ST.tab==="qs"?"active":""}" onclick="setTab('qs')">أسئلة الموظفين</button>
+   <button class="${ST.tab==="report"?"active":""}" onclick="setTab('report')">التقرير</button>
+   <button class="${ST.tab==="ref"?"active":""}" onclick="setTab('ref')">دليل التشغيل</button>
   </div>
-  <div class="muted">إرشادات تشغيل وسلامة الغذاء.</div>
- </div>
- ${secs}`;
-}
-
-function mgrView(){
- return `
- ${headerView()}
- <div class="card">
-  <h1>لوحة المدير</h1>
-  <div class="muted">${dateLabel()}</div>
- </div>
- <div class="tabs">
-  <button class="tab ${ST.tab==='rev'?'on':''}" onclick="setTab('rev')">المراجعة</button>
-  <button class="tab ${ST.tab==='tasks'?'on':''}" onclick="setTab('tasks')">المهام</button>
-  <button class="tab ${ST.tab==='qs'?'on':''}" onclick="setTab('qs')">الأسئلة</button>
-  <button class="tab ${ST.tab==='rep'?'on':''}" onclick="setTab('rep')">التقارير</button>
-  <button class="tab ${ST.tab==='ref'?'on':''}" onclick="setTab('ref')">المرجع</button>
- </div>
- ${ST.tab==='rev'?reviewView():
-   ST.tab==='tasks'?tasksView():
-   ST.tab==='qs'?questionsView():
-   ST.tab==='rep'?reportView():
-   ST.tab==='ref'?refView():''}
+  ${content}
+ </main>
  `;
 }
 
 function reviewView(){
- const list=ST.records.filter(r=>r.status==='review');
+ const records=[...ST.records].sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||""));
  return `
- <div class="card">
-  <h2>المهام المرسلة للمراجعة</h2>
-  ${list.length?list.map(r=>`
-   <div class="card">
+ <h3>المهام المرسلة للمراجعة</h3>
+ ${records.map(r=>`
+  <section class="card">
+   <b>${esc(r.taskName||"مهمة")}</b>
+   <p>الموظف: ${esc(r.userName||r.userEmail||"غير معروف")}</p>
+   <p>الشيفت: ${esc(r.shift||"-")} | التاريخ: ${esc(r.date||"-")}</p>
+   <p>الحالة: ${statusText(r.status)}</p>
+   ${r.image?`<img class="preview" src="${r.image}" alt="إثبات تنفيذ المهمة">`:""}
+   ${r.status==="review"?`
+    <textarea id="note_${r.id}" placeholder="ملاحظة المدير (اختياري)"></textarea>
     <div class="row">
-     <strong>${esc(r.taskName||'مهمة')}</strong>
-     <span class="tag review">بانتظار المراجعة</span>
+     <button onclick="decideRecord('${r.id}','approved')">اعتماد</button>
+     <button class="danger" onclick="decideRecord('${r.id}','rejected')">رفض</button>
     </div>
-    <div class="meta">
-     الموظف: ${esc(r.userName||r.userEmail)}<br>
-     الشيفت: ${esc(r.shift)}<br>
-     التاريخ: ${esc(r.date)}
-    </div>
-    ${r.image?`<img class="shot" src="${r.image}" alt="صورة المهمة">`:''}
-    <label>ملاحظة المدير</label>
-    <input id="note_${esc(r.id)}" placeholder="اكتب ملاحظة عند الحاجة">
-    <div class="btns">
-     <button onclick="approveRec('${esc(r.id)}')">اعتماد</button>
-     <button class="sec" onclick="rejectRec('${esc(r.id)}')">رفض</button>
-     <button class="sec danger" onclick="removeRec('${esc(r.id)}')">حذف</button>
-    </div>
-   </div>
-  `).join(''):'<div class="muted">لا توجد مهام تنتظر المراجعة.</div>'}
- </div>`;
+   `:`
+    <p>ملاحظة المدير: ${esc(r.managerNote||"لا توجد")}</p>
+   `}
+  </section>
+ `).join("")||"<p>لا توجد مهام مرسلة حتى الآن.</p>"}
+ `;
 }
 
-async function approveRec(id){
+function statusText(s){
+ if(s==="approved")return "✅ معتمدة";
+ if(s==="rejected")return "❌ مرفوضة";
+ return "⏳ في انتظار المراجعة";
+}
+
+async function decideRecord(id,status){
+ const record=ST.records.find(r=>r.id===id);
+ if(!record)return;
+ const note=document.getElementById("note_"+id);
  try{
-  const note=$('note_'+id)?.value||'';
-  await updateDoc(doc(fdb,'records',id),{
-   status:'approved',
-   managerNote:note,
-   reviewedAt:new Date().toISOString(),
-   reviewedBy:ST.user.email
+  await updateDoc(doc(db,"records",id),{
+   status,
+   managerNote:note?note.value.trim():"",
+   reviewedAt:new Date().toISOString()
   });
-  await refreshAll();
+  await refresh();
+  render();
  }catch(e){
-  console.error(e);
-  notify('تعذر اعتماد المهمة.');
- }
-}
-
-async function rejectRec(id){
- try{
-  const note=$('note_'+id)?.value||'';
-  if(!note.trim()&&!confirm('هل تريد رفض المهمة بدون كتابة ملاحظة؟'))return;
-  await updateDoc(doc(fdb,'records',id),{
-   status:'rejected',
-   managerNote:note,
-   reviewedAt:new Date().toISOString(),
-   reviewedBy:ST.user.email
-  });
-  await refreshAll();
- }catch(e){
-  console.error(e);
-  notify('تعذر رفض المهمة.');
- }
-}
-
-async function removeRec(id){
- if(!confirm('هل أنت متأكد من حذف هذا السجل؟'))return;
- try{
-  await deleteDoc(doc(fdb,'records',id));
-  await refreshAll();
- }catch(e){
-  console.error(e);
-  notify('تعذر حذف السجل.');
+  alert("تعذر تحديث المهمة. راجع صلاحيات Firestore.");
  }
 }
 
 function tasksView(){
  return `
- <div class="card">
-  <h2>إضافة مهمة جديدة</h2>
-  <label>اسم المهمة</label>
+ <h3>إضافة مهمة جديدة</h3>
+ <section class="card">
   <input id="newTaskName" placeholder="اسم المهمة">
-  <label>القسم</label>
-  <input id="newTaskSection" placeholder="مثال: المطبخ">
-  <label>الشيفت</label>
+  <input id="newTaskSection" placeholder="القسم، مثل المطبخ أو الصالة">
   <select id="newTaskShift">
    <option value="صباحي">صباحي</option>
    <option value="مسائي">مسائي</option>
   </select>
   <button onclick="addTask()">إضافة المهمة</button>
- </div>
- <div class="card">
-  <h2>المهام الحالية</h2>
-  ${ST.tasks.map(t=>`
-   <div class="task">
-    <div class="t">
-     <strong>${esc(t.name)}</strong>
-     <div class="muted">${esc(t.section||'عام')} — ${esc(t.shift)}</div>
-    </div>
-    <span class="tag">${t.active===false?'موقوفة':'نشطة'}</span>
-    <button class="small sec" onclick="toggleTask('${esc(t.id)}')">
-     ${t.active===false?'تفعيل':'إيقاف'}
-    </button>
-    <button class="small sec danger" onclick="delTask('${esc(t.id)}')">حذف</button>
-   </div>
-  `).join('')}
-  <button class="sec" onclick="importDefaults()">استيراد المهام الافتراضية</button>
- </div>`;
+  <button class="secondary" onclick="importDefaults()">إضافة المهام الافتراضية</button>
+ </section>
+ <h3>المهام الحالية</h3>
+ ${ST.tasks.map(t=>`
+  <section class="card">
+   <b>${esc(t.name)}</b>
+   <p>${esc(t.section||"عام")} — ${esc(t.shift)}</p>
+   <button class="danger" onclick="removeTask('${t.id}')">حذف المهمة</button>
+  </section>
+ `).join("")||"<p>لا توجد مهام.</p>"}
+ `;
 }
 
 async function addTask(){
- const name=$('newTaskName')?.value.trim();
- const section=$('newTaskSection')?.value.trim()||'عام';
- const shift=$('newTaskShift')?.value||'صباحي';
-
- if(!name){
-  notify('اكتب اسم المهمة.');
-  return;
- }
-
+ const name=document.getElementById("newTaskName").value.trim();
+ const section=document.getElementById("newTaskSection").value.trim()||"عام";
+ const shift=document.getElementById("newTaskShift").value;
+ if(!name){alert("اكتب اسم المهمة.");return;}
  try{
-  await addDoc(collection(fdb,'tasks'),{
-   name,section,shift,active:true,
-   createdAt:new Date().toISOString()
+  await addDoc(collection(db,"tasks"),{
+   name,section,shift,createdAt:new Date().toISOString()
   });
-  await refreshAll();
-  notify('تمت إضافة المهمة.');
- }catch(e){
-  console.error(e);
-  notify('تعذرت إضافة المهمة.');
- }
+  await refresh();
+  render();
+ }catch(e){alert("تعذر إضافة المهمة. راجع صلاحيات Firestore.");}
 }
 
-async function toggleTask(id){
- const t=ST.tasks.find(x=>x.id===id);
- if(!t)return;
+async function removeTask(id){
+ if(!confirm("متأكد إنك عايز تحذف المهمة؟"))return;
  try{
-  await updateDoc(doc(fdb,'tasks',id),{active:t.active===false});
-  await refreshAll();
- }catch(e){
-  console.error(e);
-  notify('تعذر تعديل المهمة.');
- }
-}
-
-async function delTask(id){
- if(!confirm('هل تريد حذف المهمة؟'))return;
- try{
-  await deleteDoc(doc(fdb,'tasks',id));
-  await refreshAll();
- }catch(e){
-  console.error(e);
-  notify('تعذر حذف المهمة.');
- }
+  await deleteDoc(doc(db,"tasks",id));
+  await refresh();
+  render();
+ }catch(e){alert("تعذر حذف المهمة.");}
 }
 
 async function importDefaults(){
- if(!confirm('إضافة المهام الافتراضية إلى قاعدة البيانات؟'))return;
+ if(!confirm("إضافة المهام الافتراضية غير الموجودة؟"))return;
  try{
   const existing=new Set(ST.tasks.map(t=>`${t.shift}|${t.section}|${t.name}`));
-  let count=0;
-  for(const item of DEFAULT_TASKS){
-   const [shift,section,name]=item;
-   const key=`${shift}|${section}|${name}`;
-   if(existing.has(key))continue;
-   await addDoc(collection(fdb,'tasks'),{
-    shift,section,name,active:true,
-    createdAt:new Date().toISOString()
-   });
-   count++;
+  for(const t of DEFAULT_TASKS){
+   const key=`${t.shift}|${t.section}|${t.name}`;
+   if(!existing.has(key)){
+    await addDoc(collection(db,"tasks"),t);
+   }
   }
-  await refreshAll();
-  notify(`تمت إضافة ${count} مهمة.`);
+  await refresh();
+  render();
+  alert("تمت مراجعة وإضافة المهام الافتراضية غير الموجودة.");
+ }catch(e){alert("تعذرت إضافة المهام. راجع صلاحيات Firestore.");}
+}
+
+async function loadQuestions(){
+ if(!ST.user||ST.role!=="manager")return;
+ try{
+  const snap=await getDocs(collection(db,"questions"));
+  ST.questions=snap.docs.map(d=>({id:d.id,...d.data()}));
  }catch(e){
-  console.error(e);
-  notify('تعذر استيراد المهام.');
+  console.error("Questions:",e);
  }
 }
 
 function questionsView(){
  return `
- <div class="card">
-  <h2>أسئلة الموظفين</h2>
-  ${ST.questions.length?ST.questions.map(q=>`
-   <div class="card">
-    <strong>${esc(q.question||'')}</strong>
-    <div class="meta">
-     الموظف: ${esc(q.userEmail||'غير معروف')}<br>
-     التاريخ: ${esc(q.date||'')}
-    </div>
-    <p>${q.answer?`الإجابة: ${esc(q.answer)}`:'لم تتم الإجابة بعد.'}</p>
-    ${!q.answer?`
-     <label>الإجابة</label>
-     <input id="ans_${esc(q.id)}" placeholder="اكتب الإجابة">
-     <button onclick="answerQ('${esc(q.id)}')">إرسال الإجابة</button>
-    `:''}
-   </div>
-  `).join(''):'<div class="muted">لا توجد أسئلة.</div>'}
- </div>`;
+ <h3>أسئلة الموظفين</h3>
+ ${ST.questions.map(q=>`
+  <section class="card">
+   <b>${esc(q.userName||q.userEmail||"موظف")}</b>
+   <p>${esc(q.text||"")}</p>
+   <small>${esc(q.createdAt||"")}</small>
+   <p>الرد: ${esc(q.answer||"لم يتم الرد بعد")}</p>
+   ${!q.answer?`
+    <textarea id="answer_${q.id}" placeholder="اكتب رد المدير"></textarea>
+    <button onclick="answerQ('${q.id}')">إرسال الرد</button>
+   `:""}
+  </section>
+ `).join("")||"<p>لا توجد أسئلة حتى الآن.</p>"}
+ `;
 }
 
 async function askBot(){
- const el=$('botQ');
- if(!el)return;
- const question=el.value.trim();
- if(!question){
-  notify('اكتب السؤال أولاً.');
-  return;
- }
-
- const answer=$('botAnswer');
- if(answer)answer.textContent='جاري البحث عن إجابة...';
-
- const normalized=question.toLowerCase();
- const match=Object.entries(TIPS).find(([key,value])=>
-  normalized.includes(key.toLowerCase())||
-  key.toLowerCase().includes(normalized)
- );
-
+ const field=document.getElementById("questionText");
+ const textValue=field?field.value.trim():"";
+ if(!textValue){alert("اكتب سؤالك الأول.");return;}
  try{
-  if(match){
-   if(answer)answer.textContent=match[1];
-  }else{
-   await addDoc(collection(fdb,'questions'),{
-    question,
-    userEmail:ST.user?.email||'',
-    date:today(),
-    answer:'',
-    createdAt:new Date().toISOString()
-   });
-   if(answer)answer.textContent='تم إرسال سؤالك للمدير للمراجعة.';
-  }
- }catch(e){
-  console.error(e);
-  if(answer)answer.textContent='تعذر إرسال السؤال. حاول مرة أخرى.';
- }
+  await addDoc(collection(db,"questions"),{
+   text:textValue,
+   userEmail:ST.user.email,
+   userName:ST.user.displayName||ST.user.email,
+   answer:"",
+   createdAt:new Date().toISOString()
+  });
+  alert("تم إرسال السؤال.");
+  render();
+ }catch(e){alert("تعذر إرسال السؤال. راجع صلاحيات Firestore.");}
 }
 
 async function answerQ(id){
- const el=$('ans_'+id);
- if(!el)return;
- const answer=el.value.trim();
- if(!answer){
-  notify('اكتب الإجابة أولاً.');
-  return;
- }
+ const field=document.getElementById("answer_"+id);
+ const answer=field?field.value.trim():"";
+ if(!answer){alert("اكتب الرد الأول.");return;}
  try{
-  await updateDoc(doc(fdb,'questions',id),{
-   answer,
-   answeredBy:ST.user.email,
-   answeredAt:new Date().toISOString()
+  await updateDoc(doc(db,"questions",id),{
+   answer,answeredAt:new Date().toISOString()
   });
   await loadQuestions();
   render();
- }catch(e){
-  console.error(e);
-  notify('تعذر حفظ الإجابة.');
- }
-}
-  async function loadQuestions(){
- try{
-  const snap=await getDocs(collection(fdb,'questions'));
-  ST.questions=snap.docs.map(d=>({id:d.id,...d.data()}))
-   .sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
- }catch(e){
-  console.error(e);
-  ST.questions=[];
- }
-}
-
-async function loadReport(){
- await refreshAll();
+ }catch(e){alert("تعذر إرسال الرد.");}
 }
 
 function reportView(){
- const month=ST.reportMonth;
- const list=ST.records.filter(r=>(r.date||'').startsWith(month));
- const approved=list.filter(r=>r.status==='approved').length;
- const rejected=list.filter(r=>r.status==='rejected').length;
- const pending=list.filter(r=>r.status==='review').length;
- const employees=[...new Set(list.map(r=>r.userEmail).filter(Boolean))];
-
+ const month=ST.month;
+ const records=ST.records.filter(r=>(r.date||"").startsWith(month));
+ const approved=records.filter(r=>r.status==="approved").length;
+ const rejected=records.filter(r=>r.status==="rejected").length;
+ const pending=records.filter(r=>r.status==="review").length;
  return `
- <div class="card">
-  <h2>تقرير الشهر</h2>
-  <label>اختيار الشهر</label>
-  <input type="month" value="${esc(month)}" onchange="setMonth(this.value)">
-  <div class="row" style="margin-top:14px">
-   <span>إجمالي السجلات</span><strong>${list.length}</strong>
-  </div>
-  <div class="row" style="margin-top:10px">
-   <span>المهام المعتمدة</span><strong>${approved}</strong>
-  </div>
-  <div class="row" style="margin-top:10px">
-   <span>المهام المرفوضة</span><strong>${rejected}</strong>
-  </div>
-  <div class="row" style="margin-top:10px">
-   <span>بانتظار المراجعة</span><strong>${pending}</strong>
-  </div>
-  <div class="row" style="margin-top:10px">
-   <span>عدد الموظفين المسجلين</span><strong>${employees.length}</strong>
-  </div>
-  <button onclick="printReport()">طباعة التقرير</button>
- </div>
- <div class="card">
-  <h2>تفاصيل السجلات</h2>
-  ${list.length?`
-   <table>
-    <thead><tr><th>التاريخ</th><th>الموظف</th><th>المهمة</th><th>الحالة</th></tr></thead>
-    <tbody>
-     ${list.map(r=>`
-      <tr>
-       <td>${esc(r.date||'')}</td>
-       <td>${esc(r.userName||r.userEmail||'')}</td>
-       <td>${esc(r.taskName||'')}</td>
-       <td>${esc(r.status==='approved'?'معتمدة':r.status==='rejected'?'مرفوضة':r.status==='review'?'مراجعة':'غير محددة')}</td>
-      </tr>
-     `).join('')}
-    </tbody>
-   </table>
-  `:'<div class="muted">لا توجد سجلات في الشهر المحدد.</div>'}
- </div>
- <div id="printArea">
-  <h2>KANSAS CHICKEN — تقرير المهام</h2>
-  <p>الشهر: ${esc(month)}</p>
-  <p>إجمالي السجلات: ${list.length}</p>
-  <p>المعتمدة: ${approved} — المرفوضة: ${rejected} — قيد المراجعة: ${pending}</p>
-  <table>
-   <thead><tr><th>التاريخ</th><th>الموظف</th><th>المهمة</th><th>الحالة</th></tr></thead>
-   <tbody>
-    ${list.map(r=>`
-     <tr>
-      <td>${esc(r.date||'')}</td>
-      <td>${esc(r.userName||r.userEmail||'')}</td>
-      <td>${esc(r.taskName||'')}</td>
-      <td>${esc(r.status||'')}</td>
-     </tr>
-    `).join('')}
-   </tbody>
-  </table>
- </div>`;
+ <h3>تقرير المهام</h3>
+ <label>اختار الشهر</label>
+ <input type="month" value="${month}" onchange="changeMonth(this.value)">
+ <section class="card">
+  <p>إجمالي المهام المرسلة: <b>${records.length}</b></p>
+  <p>المهام المعتمدة: <b>${approved}</b></p>
+  <p>المهام المرفوضة: <b>${rejected}</b></p>
+  <p>في انتظار المراجعة: <b>${pending}</b></p>
+  <button onclick="window.print()">طباعة التقرير</button>
+ </section>
+ `;
 }
 
-function printReport(){
- window.print();
-}
-
-function setMonth(m){
- ST.reportMonth=m;
+function changeMonth(value){
+ ST.month=value;
  render();
 }
 
-function setReportDay(d){
- ST.reportDay=d;
- render();
-}
-
-async function refreshAll(){
- try{
-  const [taskSnap,recordSnap]=await Promise.all([
-   getDocs(collection(fdb,'tasks')),
-   getDocs(collection(fdb,'records'))
-  ]);
-
-  ST.tasks=taskSnap.docs.map(d=>({id:d.id,...d.data()}));
-  ST.records=recordSnap.docs.map(d=>({id:d.id,...d.data()}));
-
-  render();
- }catch(e){
-  console.error(e);
-  notify('تعذر تحميل البيانات. راجع الإنترنت وصلاحيات Firestore.');
- }
+function refView(){
+ return `
+ <section class="card">
+  <h3>دليل التشغيل</h3>
+  <p>١. نفّذ المهمة حسب تعليمات المدير وإجراءات المطعم.</p>
+  <p>٢. تأكد من نظافة المكان والأدوات قبل التصوير.</p>
+  <p>٣. التقط صورة واضحة تُظهر نتيجة تنفيذ المهمة.</p>
+  <p>٤. أرسل المهمة وانتظر مراجعة المدير.</p>
+  <p>٥. إذا تم رفض المهمة، راجع ملاحظة المدير وأعد التنفيذ عند الحاجة.</p>
+  <button onclick="ST.showRef=false;setTab('rev')">رجوع للمهام</button>
+ </section>
+ `;
 }
 
 function render(){
- const root=$('app');
- if(!root)return;
-
- if(!ST.splashDone){
-  root.innerHTML=splashView();
+ const app=document.getElementById("app");
+ if(!app)return;
+ if(!ST.ready){
+  app.innerHTML=`<main><p>جارٍ تحميل التطبيق...</p></main>`;
   return;
  }
-
- if(!ST.authReady){
-  root.innerHTML=`
-   <div class="card" style="margin-top:40px;text-align:center">
-    جاري التحقق من تسجيل الدخول...
-   </div>`;
-  return;
- }
-
  if(!ST.user){
-  root.innerHTML=loginView();
+  app.innerHTML=loginView();
   return;
  }
-
- if(ST.role==='manager'){
-  root.innerHTML=mgrView();
- }else{
-  root.innerHTML=employeeView();
+ if(ST.activeTask){
+  app.innerHTML=taskDetailView();
+  return;
  }
+ app.innerHTML=ST.role==="manager"?managerView():employeeView();
 }
+
+Object.assign(window,{
+ login,logout,setShift,setTab,openTask,closeTask,
+ startCam,capture,retake,submitPhoto,
+ decideRecord,addTask,removeTask,importDefaults,
+ askBot,answerQ,changeMonth,render
+});
 
 onAuthStateChanged(auth,async user=>{
  ST.user=user;
- ST.authReady=true;
-
+ ST.role=user&&user.email&&user.email.toLowerCase()===MANAGER_EMAIL.toLowerCase()
+  ?"manager":"employee";
+ ST.ready=true;
  if(user){
-  ST.role=(user.email||'').toLowerCase()===MANAGER_EMAIL.toLowerCase()
-   ?'manager':'employee';
-
-  await refreshAll();
- }else{
-  ST.role='employee';
-  ST.tasks=[];
-  ST.records=[];
-  ST.questions=[];
+  await refresh();
+  if(ST.role==="manager")await loadQuestions();
  }
-
  render();
 });
-
-setTimeout(()=>{
- ST.splashDone=true;
- render();
-},1800);
-
-Object.assign(window,{
- ST,render,login,logout,openTask,closeTask,startCam,capture,retake,
- submitPhoto,refreshAll,setTab,setShift,setDate,setStatus,rejectRec,
- removeRec,addTask,toggleTask,delTask,importDefaults,setMonth,
- setReportDay,askBot,answerQ,loadQuestions,approveRec,printReport
-});
-
-function setDate(d){
- ST.reportDay=d;
- render();
-}
-
-function setStatus(id,status){
- const r=ST.records.find(x=>x.id===id);
- if(!r)return;
- r.status=status;
- render();
-}
 </script>
 </body>
 </html>
