@@ -97,61 +97,81 @@ const fdb = getFirestore(app);
 const auth = getAuth(app);
 
 const DEFAULT_TASKS = [
-   ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
- ['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],
- ['صباحي','المطبخ','تشغيل الفرن والمعدات وفحص الحرارة'],['صباحي','المطبخ','نظافة الهوايات'],
- ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز'],['صباحي','المطبخ','تنظيف الكاونتر وأماكن التحضير'],
- ['صباحي','المخزن','فحص تواريخ صلاحية الخامات'],['صباحي','المخزن','استلام المنتجات بدرجات حرارة'],
- ['صباحي','المخزن','قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)'],
- ['صباحي','الصالة','تنظيف الصالة وترتيب الكراسي والترابيزات'],['صباحي','الصالة','نظافة الأرضية'],
- ['صباحي','الصالة','نظافة ستارة التهوية'],['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
- ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
- ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
- ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
- ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
- ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
- ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
+  ['صباحي','الواجهة','عتب الأبواب'],
+  ['صباحي','الواجهة','الزجاج'],
+  ['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
+  ['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],
+  ['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],
+  ['صباحي','المطبخ','تشغيل الفرن والمعدات وفحص الحرارة'],
+  ['صباحي','المطبخ','نظافة الهوايات'],
+  ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز'],
+  ['صباحي','المطبخ','تنظيف الكاونتر وأماكن التحضير'],
+  ['صباحي','المخزن','فحص تواريخ صلاحية الخامات'],
+  ['صباحي','المخزن','استلام المنتجات بدرجات حرارة'],
+  ['صباحي','المخزن','قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)'],
+  ['صباحي','الصالة','تنظيف الصالة وترتيب الكراسي والترابيزات'],
+  ['صباحي','الصالة','نظافة الأرضية'],
+  ['صباحي','الصالة','نظافة ستارة التهوية'],
+  ['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
+  ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
+  ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],
+  ['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
+  ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],
+  ['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
+  ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],
+  ['مسائي','الصالة','تنظيف الصالة والأرضيات'],
+  ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
+  ['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
+  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],
+  ['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
 ];
 
 const SK = {'صباحي':'am','مسائي':'pm'};
 const SHIFTS = ['صباحي','مسائي'];
 const TIPS = {
- 'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
- 'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
- 'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
- 'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولو أعلى من الحد المسموح بلّغ المدير فوراً.',
- 'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
- 'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
- 'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
- 'تجهيز التتبيلة وتسجيل وقت التجهيز': 'جهّز التتبيلة بالكميات المحددة، وسجّل وقت التجهيز، ومتستخدمهاش بعد الوقت المحدد.',
- 'تنظيف الكاونتر وأماكن التحضير': 'نظّف الأسطح بمنظف معتمد للأغذية واشطفها وجففها، وخلي أدوات اللحم بعيدة عن الجاهز.',
- 'فحص تواريخ صلاحية الخامات': 'راجع تاريخ الصلاحية على كل صنف، وارمي أي حاجة منتهية، وخلي القديم قدام الجديد.',
- 'استلام المنتجات بدرجات حرارة': 'قيّس حرارة الشحنة عند الاستلام، وارفض أي منتج مش مطابق للحد المسموح.',
- 'قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)': 'قيس حرارة المنتج بترمومتر نظيف، والباردة أقل من 39°F، والساخنة أعلى من 140°F، وسجّل القراءة.',
- 'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
- 'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
- 'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
- 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
- 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر طباعة فاتورة تجريبية.',
- 'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
- 'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
- 'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
- 'تنظيف الثلاجات من الداخل والتأكد من قفلها': 'نظّف رفوف الثلاجة من الداخل، واتأكد إن الباب بيقفل كويس.',
- 'التخلص من المخلفات وتنظيف منطقة الزبالة': 'اقفل أكياس الزبالة كويس، وحطها في المكان المخصص، ونظّف المنطقة حواليها.',
- 'تنظيف الصالة والأرضيات': 'امسح الأرضيات وانضف الترابيزات والكراسي، واتأكد إن مفيش أي بقع.',
- 'تأمين المخزن وتسجيل الجرد اليومي': 'اقفل المخزن، وسجّل الجرد اليومي، واتأكد إن الخامات مرتبة ومغطاة.',
- 'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
- 'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
+  'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب وجفّفه، واتأكد من عدم وجود بقع.',
+  'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
+  'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
+  'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولو أعلى من الحد المسموح بلّغ المدير فوراً.',
+  'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
+  'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
+  'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
+  'تجهيز التتبيلة وتسجيل وقت التجهيز': 'جهّز التتبيلة بالكميات المحددة، وسجّل وقت التجهيز، ومتستخدمهاش بعد الوقت المحدد.',
+  'تنظيف الكاونتر وأماكن التحضير': 'نظّف الأسطح بمنظف معتمد للأغذية واشطفها وجففها، وخلي أدوات اللحم بعيدة عن الجاهز.',
+  'فحص تواريخ صلاحية الخامات': 'راجع تاريخ الصلاحية على كل صنف، وارمي أي حاجة منتهية، وخلي القديم قدام الجديد.',
+  'استلام المنتجات بدرجات حرارة': 'قيّس حرارة الشحنة عند الاستلام، وارفض أي منتج مش مطابق للحد المسموح.',
+  'قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)': 'قيس حرارة المنتج بترمومتر نظيف، والباردة أقل من 39°F، والساخنة أعلى من 140°F، وسجّل القراءة.',
+  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
+  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
+  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
+  'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
+  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر طباعة فاتورة تجريبية.',
+  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
+  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
+  'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
+  'تنظيف الثلاجات من الداخل والتأكد من قفلها': 'نظّف رفوف الثلاجة من الداخل، واتأكد إن الباب بيقفل كويس.',
+  'التخلص من المخلفات وتنظيف منطقة الزبالة': 'اقفل أكياس الزبالة كويس، وحطها في المكان المخصص، ونظّف المنطقة حواليها.',
+  'تنظيف الصالة والأرضيات': 'امسح الأرضيات وانضف الترابيزات والكراسي، واتأكد إن مفيش أي بقع.',
+  'تأمين المخزن وتسجيل الجرد اليومي': 'اقفل المخزن، وسجّل الجرد اليومي، واتأكد إن الخامات مرتبة ومغطاة.',
+  'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
+  'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
 };
+
 function isLate(sh){
-  // صباحي: 6ص - 3م  |  مسائي: 6م - 6ص (اليوم اللي بعده)
   const end = new Date(ST.date+'T00:00:00');
   if(sh==='صباحي'){ end.setHours(15,0,0,0); }
   else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
   return Date.now() > end.getTime();
 }
-function getQ(){ try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } }
-function setQ(q){ try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} }
+
+function getQ(){ 
+  try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } 
+}
+
+function setQ(q){ 
+  try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} 
+}
+
 async function flushQ(){
   const q = getQ();
   if(!q.length || !navigator.onLine || !ST.user) return;
@@ -161,35 +181,89 @@ async function flushQ(){
   }
   setQ(keep);
 }
+
 window.addEventListener('online', flushQ);
-function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
-  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' };
+
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+const ST = { 
+  user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
+  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'' 
+};
+
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
-function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
-const okS = s => s==='approved';
-const subS = s => s==='pending' || s==='approved';
-function stLabel(s){return ({pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'مرفوضة، أعيد التصوير'})[s]||'لسه';}
-function stCls(s){return s==='approved'?'done':(s==='pending'||s==='rejected'?'review':'');}
-function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
-function findTask(id){return TASKS.find(t=>t.id===id);}
-function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
-function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); }
-function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
+
+function fmtDate(s){
+  const [y,m,d]=s.split('-');
+  return d+'/'+m+'/'+y;
+}
+
+function weekday(s){
+  const [y,m,d]=s.split('-').map(Number);
+  return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});
+}
+
+const okS = s => s==='approved'||s==='done';
+const subS = s => s==='approved' || s==='done' || s==='pending';
+
+function stLabel(s){
+  return ({approved:'Done 👍',done:'Done 👍',pending:'Done 👍',rejected:'مرفوضة، أعيد التصوير'})[s]||'لسه';
+}
+
+function stCls(s){
+  return (s==='approved'||s==='done'||s==='pending')?'done':(s==='rejected'?'review':'');
+}
+
+function taskList(sh){
+  return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));
+}
+
+function findTask(id){
+  return TASKS.find(t=>t.id===id);
+}
+
+function recOf(taskId, sh){
+  return DONE.find(r=>r.taskId===taskId && r.shift===sh);
+}
+
+function fail(ctx, e){ 
+  alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); 
+}
+
+function refresh(){ 
+  if(ST.role==='emp' && ST.cur) return; 
+  render(); 
+}
 
 let unsubTasks = null;
 function subTasks(){
   if(unsubTasks) unsubTasks();
-  unsubTasks = onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+  unsubTasks = onSnapshot(collection(fdb,'tasks'), s=>{ 
+    TASKS = s.docs.map(d=>({id:d.id,...d.data()})); 
+    refresh(); 
+  }, e=>console.warn(e));
 }
-  function refreshAll(){ if(!ST.user) return; subTasks(); subDone(); if(ST.role==='mgr') loadReport(); render(); }
+
+function refreshAll(){ 
+  if(!ST.user) return; 
+  subTasks(); 
+  subDone(); 
+  if(ST.role==='mgr') loadReport(); 
+  render(); 
+}
+
 function subDone(){
   if(unsubDone) unsubDone();
   unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
-    s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+    s=>{ 
+      DONE = s.docs.map(d=>({id:d.id,...d.data()})); 
+      refresh(); 
+    }, e=>console.warn(e));
 }
 
 onAuthStateChanged(auth, u=>{
@@ -198,11 +272,18 @@ onAuthStateChanged(auth, u=>{
   if(u){
     ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
     ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
-    ST.date = todayStr(); subDone(); subTasks();
+    ST.date = todayStr(); 
+    subDone(); 
+    subTasks();
     if(ST.role==='mgr') loadReport();
     flushQ();
   }else{
-    ST.role=null; ST.cur=null; if(unsubDone) unsubDone(); if(unsubTasks) unsubTasks(); DONE=[]; TASKS=[];
+    ST.role=null; 
+    ST.cur=null; 
+    if(unsubDone) unsubDone(); 
+    if(unsubTasks) unsubTasks(); 
+    DONE=[]; 
+    TASKS=[];
   }
   render();
 });
@@ -211,6 +292,7 @@ function splashView(){
   const word = 'KANSAS CHICKEN'.split('').map((c,i)=>`<span class="sl" style="animation-delay:${(0.15+i*0.07).toFixed(2)}s">${c===' ' ? '&nbsp;' : c}</span>`).join('');
   return `<div class="splash"><div class="logo sp-logo">K</div><div class="sp-name">${word}</div><div class="sp-bar"><div></div></div></div>`;
 }
+
 function coverView(){
   return `<div class="cover">
     <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار K، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
@@ -230,6 +312,7 @@ function coverView(){
     <button onclick="ST.coverDone=true;render()">ابدأ</button>
   </div>`;
 }
+
 function render(){
   const app = document.getElementById('app');
   if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
@@ -259,6 +342,7 @@ function loginView(){
     </div>
   </div>`;
 }
+
 async function login(){
   const email = document.getElementById('lemail').value.trim();
   const pass = document.getElementById('lpass').value;
@@ -273,51 +357,56 @@ async function login(){
     render();
   }
 }
-function logout(){ stopCam(); signOut(auth); }
+
+function logout(){ 
+  stopCam(); 
+  signOut(auth); 
+}
 
 /* ---------- employee ---------- */
 function empView(){
   const list = taskList(ST.shift);
-  const doneCount = list.filter(t=>subS(recOf(t.id,ST.shift)?.status)).length;
+  const doneCount = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
   const pct = list.length ? Math.round(doneCount/list.length*100) : 0;
-  const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
-  const resPct = list.length ? Math.round(apprN/list.length*100) : 0;
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
     const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
-      <div class="t"><div>${esc(t.name)}</div><div class="muted">${esc(t.zone)}</div>${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}</div>${tag}</div>`;
+      <div class="t"><div>هل تم عمل: ${esc(t.name)}؟</div><div class="muted">${esc(t.zone)}</div>${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}${r && r.status==="rejected" && r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}</div>${tag}</div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
-  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم (المعتمد): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div><div class="muted">النتيجة بتتحسب من المهام اللي المدير اعتمدها، والحد للنجاح 85%.</div></div>
+  <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم: <b>${pct}%</b>${pct ? " · " + grade(pct) : ""}</div><div class="muted">يتم تسجيل المهمة مباشرة فور التقاط الصورة والضغط على Done 👍.</div></div>
   ${rows}
-  <p class="muted" style="text-align:center">المهمة بتتسجل بعد ما تصوّر بالكاميرا، والمدير بيراجعها.</p>`;
+  <p class="muted" style="text-align:center">التصوير بالكاميرا أساسي لتأكيد تنفيذ المهمة.</p>`;
 }
+
 function openTask(id){
   const r = recOf(id, ST.shift);
-  if(r && subS(r.status) && r.status!=='rejected') return;
+  if(r && okS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
+
 function taskView(){
   const t = findTask(ST.cur);
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
-  <h2>${esc(t.name)}</h2>
+  <h2>هل تم عمل: ${esc(t.name)}؟</h2>
   <div class="card">
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
-        <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
+    <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
     <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>المصدر: كاميرا التطبيق فقط</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة التصوير</button>
-  <button id="sendBtn" style="display:none" onclick="submitPhoto()">إرسال المهمة للمراجعة</button>`;
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍</button>`;
 }
+
 async function startCam(){
   try{
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
@@ -328,7 +417,14 @@ async function startCam(){
     if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
   }
 }
-function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } }
+
+function stopCam(){ 
+  if(camStream){ 
+    camStream.getTracks().forEach(t=>t.stop()); 
+    camStream=null; 
+  } 
+}
+
 function capture(){
   const v = document.getElementById('cam');
   if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
@@ -345,8 +441,20 @@ function capture(){
   document.getElementById('retakeBtn').style.display='block';
   document.getElementById('sendBtn').style.display='block';
 }
-function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
-function closeTask(){ stopCam(); ST.cur=null; render(); }
+
+function retake(){ 
+  ST.photo=null; 
+  ST.taken=false; 
+  render(); 
+  startCam(); 
+}
+
+function closeTask(){ 
+  stopCam(); 
+  ST.cur=null; 
+  render(); 
+}
+
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
   ST.busy = true;
@@ -358,7 +466,7 @@ async function submitPhoto(){
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'pending'
+    photo: ST.photo, status: 'approved'
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
@@ -373,7 +481,7 @@ async function submitPhoto(){
 
 /* ---------- manager ---------- */
 function mgrView(){
-  const tabs = [['rev','المراجعة'],['tasks','المهام'],['rep','التقرير']]
+  const tabs = [['rev','المراجعة واللوحة'],['tasks','المهام'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : repView();
   return `
@@ -381,7 +489,12 @@ function mgrView(){
     <button class="sec small" onclick="logout()">خروج</button></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
-function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); render(); }
+
+function setTab(k){ 
+  ST.tab=k; 
+  if(k==='rep') loadReport(); 
+  render(); 
+}
 
 function revView(){
   const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
@@ -389,12 +502,11 @@ function revView(){
   const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
   const cards = recs.map(r=>`
     <div class="card">
-      <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
+      <div class="row"><b>هل تم عمل: ${esc(r.taskName)}؟</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
       <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)}</div>${r.rejectReason?`<div class="muted" style="color:#c62828">سبب الرفض: ${esc(r.rejectReason)}</div>`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
-        <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
-        <button class="sec" onclick="rejectRec('${r.id}')">رفض</button>
+        <button class="sec" onclick="rejectRec('${r.id}')">رفض وإعادة التصوير</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
@@ -412,23 +524,34 @@ function revView(){
   <div class="card"><b>لم تُنفّذ</b>${miss}</div>
   ${cards}`;
 }
-function setDate(v){ ST.date=v; subDone(); render(); }
+
+function setDate(v){ 
+  ST.date=v; 
+  subDone(); 
+  render(); 
+}
+
 function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
 }
+
 function rejectRec(id){
-  const why = prompt('اكتب سبب الرفض (هيظهر للموظف):');
+  const why = prompt('اكتب سبب الرفض (هيظهر للموظف لإعادة التصوير):');
   if(why === null) return;
   updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
 }
-function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
+
+function removeRec(id){ 
+  if(confirm('تحذف التسجيل ده؟')) 
+    deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); 
+}
 
 function tasksView(){
   if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
   const lists = SHIFTS.map(sh=>{
     const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
-              <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+        <div class="t">هل تم عمل: ${esc(t.name)}؟<div class="muted">${esc(t.zone)}</div></div>
         <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
         <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
         <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
@@ -443,6 +566,7 @@ function tasksView(){
     <button onclick="addTask()">إضافة</button></div>
   ${lists}`;
 }
+
 function addTask(){
   const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
@@ -450,6 +574,7 @@ function addTask(){
   if(!name){ alert('اكتب اسم المهمة'); return; }
   addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
 }
+
 function editTip(id){
   const t = findTask(id);
   const cur = t.tip || TIPS[t.name] || '';
@@ -457,14 +582,25 @@ function editTip(id){
   if(v === null) return;
   updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
 }
-function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
-function delTask(id){ if(confirm('تحذف المهمة من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
+
+function toggleTask(id, active){ 
+  updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); 
+}
+
+function delTask(id){ 
+  if(confirm('تحذف المهمة من القايمة؟')) 
+    deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); 
+}
+
 function importDefaults(){
   Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
     .catch(e=>fail('الاستيراد', e));
 }
 
-function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
+function grade(p){ 
+  return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; 
+}
+
 function repView(){
   const [y,m] = ST.month.split('-').map(Number);
   const days = new Date(y, m, 0).getDate();
@@ -488,7 +624,6 @@ function repView(){
     return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
   }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
 
-  // daily report: one block per employee and shift
   const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
   const groups = {};
   dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
@@ -497,12 +632,12 @@ function repView(){
     const ok = g.list.filter(r=>okS(r.status)).length;
     const p = total ? Math.round(ok/total*100) : 0;
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
-        <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)}</div>
+        <div><b>هل تم عمل: ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)}</div>
         ${r.rejectReason ? `<div class="muted">سبب الرفض: ${esc(r.rejectReason)}</div>` : ''}
         ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
       </div>`).join('');
     return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
-      النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
+      النتيجة: <b>${p}%</b> (${grade(p)}) · المنجز ${ok} من ${total}
       ${items}</div>`;
   }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
   const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
@@ -526,8 +661,18 @@ function repView(){
     <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
   </div>`;
 }
-function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
-function setMonth(v){ ST.month=v; loadReport(); }
+
+function setReportDay(v){ 
+  ST.reportDay=v; 
+  if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } 
+  render(); 
+}
+
+function setMonth(v){ 
+  ST.month=v; 
+  loadReport(); 
+}
+
 function loadReport(){
   getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
     .then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); })
@@ -535,8 +680,11 @@ function loadReport(){
 }
 
 setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
-Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
-  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay });
+
+Object.assign(window, { 
+  ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth 
+});
 </script>
 </body>
 </html>
