@@ -185,14 +185,15 @@ function subTasks(){
   if(unsubTasks) unsubTasks();
   unsubTasks = onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
 }
-
+  function refreshAll(){ if(!ST.user) return; subTasks(); subDone(); if(ST.role==='mgr') loadReport(); render(); }
 function subDone(){
   if(unsubDone) unsubDone();
-    unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
+  unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
     s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
 }
 
 onAuthStateChanged(auth, u=>{
+  ST.authReady = true;
   ST.user = u;
   if(u){
     ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
@@ -231,7 +232,7 @@ function coverView(){
 }
 function render(){
   const app = document.getElementById('app');
-  if(!ST.splashDone){ app.innerHTML = splashView(); return; }
+  if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
   if(!ST.user && !ST.coverDone){ app.innerHTML = coverView(); return; }
   if(!ST.user) app.innerHTML = loginView();
   else if(ST.role==='mgr') app.innerHTML = mgrView();
@@ -291,7 +292,7 @@ function empView(){
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
-    <div style="display:flex;gap:6px"><button class="sec small" onclick="location.reload()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
+    <div style="display:flex;gap:6px"><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
   <div class="card"><div>الإنجاز: <b>${doneCount}</b> من ${list.length}</div><div class="bar"><div style="width:${pct}%"></div></div><div style="margin-top:10px">نتيجة اليوم (المعتمد): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div><div class="muted">النتيجة بتتحسب من المهام اللي المدير اعتمدها، والحد للنجاح 85%.</div></div>
   ${rows}
   <p class="muted" style="text-align:center">المهمة بتتسجل بعد ما تصوّر بالكاميرا، والمدير بيراجعها.</p>`;
@@ -427,10 +428,10 @@ function tasksView(){
   const lists = SHIFTS.map(sh=>{
     const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
-        <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+              <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
         <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
         <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
-                <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
+        <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
       </div>`).join('');
     return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
   }).join('');
@@ -534,7 +535,7 @@ function loadReport(){
 }
 
 setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
-Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto,
+Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
   setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay });
 </script>
 </body>
