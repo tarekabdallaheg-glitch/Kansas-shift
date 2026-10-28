@@ -9,7 +9,10 @@
 <title>KANSAS CHICKEN - الشيفتات</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
-*{box-sizing:border-box}
+*{box-sizing:border-box;min-width:0}
+img,video,canvas,svg,input,select,textarea,table{max-width:100%}
+button{white-space:normal;max-width:100%}
+#app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
 body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 #app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px}
 h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
@@ -124,6 +127,24 @@ async function gemini(){
 function withTimeout(p, ms){
   return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى وقت الانتظار')), ms))]);
 }
+function imageBrightness(photo){
+  return new Promise(res=>{
+    if(!photo) return res(0);
+    const img = new Image();
+    img.onload = ()=>{
+      const c = document.createElement('canvas');
+      c.width = 64; c.height = Math.max(1, Math.round(64*img.height/img.width));
+      const x = c.getContext('2d');
+      x.drawImage(img, 0, 0, c.width, c.height);
+      const d = x.getImageData(0, 0, c.width, c.height).data;
+      let sum = 0, n = 0;
+      for(let i=0; i<d.length; i+=4){ sum += (d[i]+d[i+1]+d[i+2])/3; n++; }
+      res(n ? sum/n : 0);
+    };
+    img.onerror = ()=>res(0);
+    img.src = photo;
+  });
+}
 function isHygieneTask(t){
   const n = t.name || '';
   const z = t.zone || '';
@@ -137,8 +158,8 @@ async function aiCleanCheck(t, photo){
   if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
   const strict = isHygieneTask(t);
   const rule = strict
-    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). قول unsure لو مش متأكد.'
-    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. قول unsure لو مش متأكد.';
+    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.'
+    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.';
   try{
     const r = await withTimeout(model.generateContent([
       { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
@@ -170,6 +191,8 @@ async function botCheckHygiene(t, photo, tempVal){
   const hygiene = isHygieneTask(t);
   const tRes = tempCheck(t, tempVal);
   if(tRes) return { status:'rejected', violation:true, reason:'البوت: ' + tRes };
+  const bright = await imageBrightness(photo);
+  if(bright < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة (سطوع ' + Math.round(bright) + ' من 255)، المدير يراجعها' };
   const ai = await aiCleanCheck(t, photo);
   if(ai.verdict === 'fail' && hygiene) return { status:'rejected', violation:true, reason:'جيمي: ' + (ai.reason || 'الهايجين أو سلامة الغذاء غير مطابقة') };
   if(ai.verdict === 'fail') return { status:'pending', violation:false, reason:'جيمي شاف احتمال اتساخ، المدير يراجع: ' + (ai.reason || '') };
@@ -568,7 +591,15 @@ function capture(){
   if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
   const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
   const c = document.createElement('canvas'); c.width=w; c.height=h;
-  c.getContext('2d').drawImage(v,0,0,w,h);
+  const cx = c.getContext('2d');
+  cx.drawImage(v,0,0,w,h);
+  const px = cx.getImageData(0,0,w,h).data;
+  let sum = 0, n = 0;
+  for(let i=0; i<px.length; i+=16){ sum += (px[i]+px[i+1]+px[i+2])/3; n++; }
+  if((n ? sum/n : 0) < 45){
+    alert('الصورة معتمة جداً. وضّح الإضاءة، وقرّب الكاميرا من المكان، وصوّر تاني.');
+    return;
+  }
   ST.photo = c.toDataURL('image/jpeg',0.5); ST.taken = true;
   stopCam();
   v.style.display='none';
