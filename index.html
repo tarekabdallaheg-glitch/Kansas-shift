@@ -14,7 +14,6 @@ img,video,canvas,svg,input,select,textarea,table{max-width:100%}
 button{white-space:normal;max-width:100%}
 #app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
 body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-#app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px}
 h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
 .muted{color:var(--muted);font-size:13px}
 .brand{font-size:30px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:30px}
@@ -79,7 +78,6 @@ body{background:var(--bg) !important}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
 
-/* fit the content to the phone width (fixes content cut on the side) */
 html,body{max-width:100%;overflow-x:hidden}
 #app{width:100%;max-width:520px;box-sizing:border-box;overflow-x:hidden}
 .top{flex-wrap:wrap}
@@ -110,6 +108,19 @@ const firebaseConfig = {
 };
 const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
 
+// إعدادات بوت تيليجرام الخاص بطارق
+const TELEGRAM_TOKEN = '9162027978:AAG0zg0tGy19Gmjh07c19ge71TtGtFEHYs';
+const TELEGRAM_CHAT_ID = '5260245517';
+
+async function sendTelegramAlert(text) {
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(text)}`;
+    await fetch(url);
+  } catch(e) {
+    console.warn('تعذر إرسال تنبيه تيليجرام:', e);
+  }
+}
+
 const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
@@ -127,6 +138,7 @@ async function gemini(){
 function withTimeout(p, ms){
   return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى وقت الانتظار')), ms))]);
 }
+
 function imageBrightness(photo){
   return new Promise(res=>{
     if(!photo) return res(0);
@@ -145,6 +157,7 @@ function imageBrightness(photo){
     img.src = photo;
   });
 }
+
 function isHygieneTask(t){
   const n = t.name || '';
   const z = t.zone || '';
@@ -152,6 +165,7 @@ function isHygieneTask(t){
     || n.includes('الهايجين') || n.includes('غسل') || n.includes('الزي') || n.includes('صابون')
     || z.includes('الهايجين') || z.includes('سلامة');
 }
+
 let AIMOD = null;
 async function geminiGen(parts){
   if(!AIMOD){
@@ -169,12 +183,13 @@ async function geminiGen(parts){
   }
   throw new Error(lastErr ? (lastErr.message || String(lastErr)) : 'فشل غير معروف');
 }
+
 async function aiCleanCheck(t, photo){
   if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
   const strict = isHygieneTask(t);
   const rule = strict
-    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.'
-    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.';
+    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.'
+    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.';
   try{
     const r = await geminiGen([
       { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
@@ -202,6 +217,7 @@ async function aiCleanCheck(t, photo){
     return { verdict:'unsure', reason:'Gemini ما ردش: ' + ((e && e.message) || 'خطأ') };
   }
 }
+
 function tempCheck(t, tempVal){
   if(tempVal === null || tempVal === undefined || isNaN(tempVal)) return null;
   const n = t.name || '';
@@ -215,6 +231,7 @@ function tempCheck(t, tempVal){
   if(isHot && !isCold && tempVal < 140) return 'المنتج الساخن (' + tempVal + '°F) أقل من 140°F.';
   return null;
 }
+
 async function botCheckHygiene(t, photo, tempVal){
   const hygiene = isHygieneTask(t);
   const tRes = tempCheck(t, tempVal);
@@ -356,6 +373,7 @@ function localAnswer(q){
   }
   return '';
 }
+
 async function askBot(){
   const el = document.getElementById('botQ');
   const q = (el.value || '').trim();
@@ -384,6 +402,20 @@ async function askBot(){
 
   ST.chatMsgs.push({ who:'bot', text:ans });
   render();
+
+  try {
+    await addDoc(collection(fdb, 'questions'), {
+      text: q,
+      employee: ST.name || 'موظف',
+      shift: ST.shift || 'عام',
+      date: ST.date || todayStr(),
+      created: Date.now(),
+      answered: false,
+      answer: ''
+    });
+  } catch(err) {
+    console.warn('تعذر حفظ السؤال:', err);
+  }
 }
 
 function chatView(){
@@ -405,6 +437,7 @@ function loadQuestions(){
     .then(s=>{ QS = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.created-a.created); render(); })
     .catch(e=>console.warn(e));
 }
+
 function questionsView(){
   const cards = QS.map(q => `
     <div class="card">
@@ -416,6 +449,7 @@ function questionsView(){
     </div>`).join('') || '<div class="card muted">ما فيش أسئلة لسه.</div>';
   return `<div class="card"><button class="sec small" onclick="loadQuestions()">تحديث الأسئلة</button></div>${cards}`;
 }
+
 function answerQ(id){
   const v = (document.getElementById('ans_'+id).value || '').trim();
   if(!v){ alert('اكتب الرد'); return; }
@@ -430,8 +464,10 @@ function isLate(sh){
   else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
   return Date.now() > end.getTime();
 }
+
 function getQ(){ try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } }
 function setQ(q){ try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} }
+
 async function flushQ(){
   const q = getQ();
   if(!q.length || !navigator.onLine || !ST.user) return;
@@ -442,7 +478,9 @@ async function flushQ(){
   setQ(keep);
 }
 window.addEventListener('online', flushQ);
+
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
 const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
   revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
@@ -506,6 +544,7 @@ function splashView(){
   const word = 'KANSAS CHICKEN'.split('').map((c,i)=>`<span class="sl" style="animation-delay:${(0.15+i*0.07).toFixed(2)}s">${c===' ' ? '&nbsp;' : c}</span>`).join('');
   return `<div class="splash"><div class="logo sp-logo">K</div><div class="sp-name">${word}</div><div class="sp-bar"><div></div></div></div>`;
 }
+
 function coverView(){
   return `<div class="cover">
     <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار K، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
@@ -525,6 +564,7 @@ function coverView(){
     <button onclick="ST.coverDone=true;render()">ابدأ</button>
   </div>`;
 }
+
 function render(){
   const app = document.getElementById('app');
   if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
@@ -555,6 +595,7 @@ function loginView(){
     </div>
   </div>`;
 }
+
 async function login(){
   const email = document.getElementById('lemail').value.trim();
   const pass = document.getElementById('lpass').value;
@@ -569,6 +610,7 @@ async function login(){
     render();
   }
 }
+
 function logout(){ stopCam(); signOut(auth); }
 
 function empView(){
@@ -603,11 +645,13 @@ function empView(){
   ${rows}
   <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
 }
+
 function openTask(id){
   const r = recOf(id, ST.shift);
   if(r && subS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
+
 function taskView(){
   const t = findTask(ST.cur);
   const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
@@ -626,6 +670,7 @@ function taskView(){
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
   <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي الإلزامي)</button>`;
 }
+
 async function startCam(){
   try{
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
@@ -636,7 +681,9 @@ async function startCam(){
     if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
   }
 }
+
 function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } }
+
 function capture(){
   const v = document.getElementById('cam');
   if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
@@ -661,6 +708,7 @@ function capture(){
   document.getElementById('retakeBtn').style.display='block';
   document.getElementById('sendBtn').style.display='block';
 }
+
 function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
 function closeTask(){ stopCam(); ST.cur=null; ST.busy=false; render(); }
 
@@ -698,6 +746,9 @@ async function submitPhoto(){
       const q = getQ(); q.push({id, rec: rejectedRec}); setQ(q);
     }
 
+    // إرسال تنبيه فوري عبر تيليجرام لطارق عند رفض أي مهمة
+    await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name} (${t.zone})\n⏰ الشيفت: ${ST.shift}\n❌ السبب: ${check.reason}`);
+
     ST.busy = false;
     closeTask();
     alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً وسجلها النظام كـ Not Done:\nسبب الرفض: ' + check.reason + '\n\nتم إخراجك للقائمة، وبإمكانك المحاولة مرة أخرى بالدخول على نفس المهمة وتصويرها بالشكل الصحيح.');
@@ -732,6 +783,7 @@ function mgrView(){
     <button class="sec small" onclick="logout()">خروج</button></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
+
 function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
 
 function revView(){
@@ -775,6 +827,7 @@ function revView(){
   <div class="card"><b>لم تُنفّذ</b>${miss}</div>
   ${cards}`;
 }
+
 function setDate(v){ ST.date=v; subDone(); render(); }
 function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
@@ -806,6 +859,7 @@ function tasksView(){
     <button onclick="addTask()">إضافة</button></div>
   ${lists}`;
 }
+
 function addTask(){
   const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
@@ -813,6 +867,7 @@ function addTask(){
   if(!name){ alert('اكتب اسم المهمة'); return; }
   addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
 }
+
 function editTip(id){
   const t = findTask(id);
   const cur = t.tip || TIPS[t.name] || '';
@@ -820,14 +875,17 @@ function editTip(id){
   if(v === null) return;
   updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
 }
+
 function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
 function delTask(id){ if(confirm('تحذف المهام من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
+
 function importDefaults(){
   Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
     .catch(e=>fail('الاستيراد', e));
 }
 
 function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
+
 function repView(){
   const [y,m] = ST.month.split('-').map(Number);
   const days = new Date(y, m, 0).getDate();
@@ -889,6 +947,7 @@ function repView(){
     <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
   </div>`;
 }
+
 function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
 function setMonth(v){ ST.month=v; loadReport(); }
 function loadReport(){
