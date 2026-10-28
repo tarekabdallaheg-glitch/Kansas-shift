@@ -75,6 +75,18 @@ body{background:var(--bg) !important}
 .placeholder{background:#1f2730}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
+
+/* fit the content to the phone width (fixes content cut on the side) */
+html,body{max-width:100%;overflow-x:hidden}
+#app{width:100%;max-width:520px;box-sizing:border-box;overflow-x:hidden}
+.top{flex-wrap:wrap}
+.top>div{min-width:0;flex:1 1 auto}
+.tabs{flex-wrap:wrap}
+.tab{min-width:0;flex:1 1 30%}
+.card,.task,.score-card,.notify-banner{max-width:100%;min-width:0;overflow-wrap:anywhere}
+.btns{flex-wrap:wrap}
+table{display:block;overflow-x:auto;max-width:100%}
+img{max-width:100%}
 </style>
 </head>
 <body>
@@ -109,49 +121,60 @@ async function gemini(){
   return GEM;
 }
 
+function withTimeout(p, ms){
+  return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى وقت الانتظار')), ms))]);
+}
+function isHygieneTask(t){
+  const n = t.name || '';
+  const z = t.zone || '';
+  return n.includes('حرارة') || n.includes('الثلاجات') || n.includes('الفريزر') || n.includes('المنتجات')
+    || n.includes('الهايجين') || n.includes('غسل') || n.includes('الزي') || n.includes('صابون')
+    || z.includes('الهايجين') || z.includes('سلامة');
+}
 async function aiCleanCheck(t, photo){
   const model = await gemini();
-  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (Gemini) غير متاح حالياً.' };
-  if(!photo) return { ok: false, reason: 'خطأ: لم يتم التقاط صورة أو الصورة فارغة.' };
-  
+  if(!model) return { verdict:'unsure', reason:'Gemini غير متاح حالياً' };
+  if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
+  const strict = isHygieneTask(t);
+  const rule = strict
+    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). قول unsure لو مش متأكد.'
+    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. قول unsure لو مش متأكد.';
   try{
-    const r = await model.generateContent([
-      { text: `أنت بوت ومفتش سلامة وصحة غذاء وهايجين صارم جداً لمطعم "كنساس فرايد تشيكن". المهمة هي: "${t.name}" في منطقة "${t.zone}". 
-      قم بتحليل الصورة المرفقة بدقة تامة. 
-      - إذا كانت الصورة مظلمة تماماً، سوداء، غير واضحة، فيها إهمال أو اتساخ، أو لا تعبر عن إتمام المهمة المطلوبة: ضع ok: false واكتب بوضوح تام "سبب الرفض بالتفصيل" باللغة العربية (مثلاً: الصورة مظلمة ولا توضح النظافة، أو يوجد اتساخ في المكان).
-      - إذا كانت الصورة سليمة ومطابقة للمعايير: ضع ok: true.
-      يجب أن يكون ردك عبارة عن كود JSON صحيح فقط بدون أي ماركدوان إضافي هكذا:
-      {"ok": true} أو {"ok": false, "reason": "اكتب السبب هنا بوضوح"}` },
-      { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
-    ]);
-    
-    const txt = (r.response.text() || '').trim();
-    const clean = txt.replace(/```json/g,'').replace(/```/g,'').trim();
-    const firstBrace = clean.indexOf('{');
-    const lastBrace = clean.lastIndexOf('}');
-    if(firstBrace !== -1 && lastBrace !== -1){
-      const jsonStr = clean.substring(firstBrace, lastBrace + 1);
-      const obj = JSON.parse(jsonStr);
-      return { ok: !!obj.ok, reason: obj.reason || 'المهمة لم تتطابق مع معايير الهايجين والنظافة المطلوبة.' };
-    } else {
-      throw new Error('استجابة غير صالحة من النموذج');
-    }
-  }catch(e){ 
-    return { ok: false, reason: 'خطأ في التحليل: ' + (e.message || 'تعذر معالجة الصورة بواسطة جيمي') }; 
+    const r = await withTimeout(model.generateContent([
+      { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
+      { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
+    ]), 25000);
+    const txt = (r.response.text() || '').replace(/```json/g,'').replace(/```/g,'');
+    const x = txt.indexOf('{'), y = txt.lastIndexOf('}');
+    const obj = JSON.parse(txt.substring(x, y+1));
+    const v = ['pass','fail','unsure'].includes(obj.verdict) ? obj.verdict : 'unsure';
+    return { verdict: v, reason: obj.reason || '' };
+  }catch(e){
+    return { verdict:'unsure', reason:'Gemini ما ردش' };
   }
 }
-
+function tempCheck(t, tempVal){
+  if(tempVal === null || tempVal === undefined || isNaN(tempVal)) return null;
+  const n = t.name || '';
+  const isFridge = n.includes('فحص الثلاجات') || n.includes('الثلاجة');
+  const isCold = n.includes('الباردة');
+  const isHot = n.includes('الساخنة') || n.includes('الهولدنج');
+  if(n.includes('الفريزر') && tempVal > 0) return 'درجة الفريزر (' + tempVal + '°F) أعلى من 0°F.';
+  if(isFridge && tempVal >= 39) return 'درجة الثلاجة (' + tempVal + '°F) أعلى من الحد (أقل من 39°F).';
+  if(isCold && isHot && tempVal >= 39 && tempVal <= 140) return 'الحرارة (' + tempVal + '°F) في منطقة الخطر (الباردة أقل من 39°F، والساخنة أعلى من 140°F).';
+  if(isCold && !isHot && tempVal >= 39) return 'المنتج البارد (' + tempVal + '°F) أعلى من 39°F.';
+  if(isHot && !isCold && tempVal < 140) return 'المنتج الساخن (' + tempVal + '°F) أقل من 140°F.';
+  return null;
+}
 async function botCheckHygiene(t, photo, tempVal){
-  if(tempVal !== null && !isNaN(tempVal)){
-    if(t.name.includes('الثلاجات') && tempVal >= 39){
-      return { ok: false, reason: 'درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F) ولا تطابق الحد المسموح (< 39°F).' };
-    }
-    if(t.name.includes('الفريزر') && tempVal > 0){
-      return { ok: false, reason: 'درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F).' };
-    }
-  }
-  const check = await aiCleanCheck(t, photo);
-  return check;
+  const hygiene = isHygieneTask(t);
+  const tRes = tempCheck(t, tempVal);
+  if(tRes) return { status:'rejected', violation:true, reason:'البوت: ' + tRes };
+  const ai = await aiCleanCheck(t, photo);
+  if(ai.verdict === 'fail' && hygiene) return { status:'rejected', violation:true, reason:'جيمي: ' + (ai.reason || 'الهايجين أو سلامة الغذاء غير مطابقة') };
+  if(ai.verdict === 'fail') return { status:'pending', violation:false, reason:'جيمي شاف احتمال اتساخ، المدير يراجع: ' + (ai.reason || '') };
+  if(ai.verdict === 'unsure') return { status:'pending', violation:false, reason:'جيمي مش متأكد، المدير يراجع: ' + (ai.reason || '') };
+  return { status:'done', violation:false, reason:'البوت وجيمي اتفقوا إن المهمة مطابقة' };
 }
 
 const DEFAULT_TASKS = [
@@ -355,7 +378,7 @@ function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
 const okS = s => s==='approved'||s==='done';
 const subS = s => s==='pending' || s==='done' || s==='approved';
-function stLabel(s){return ({done:'Done 👍🏻',pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'Not Done 👎🏻'})[s]||'لسه';}
+function stLabel(s){ return ({done:'معتمدة تلقائياً 👍',approved:'معتمدة من المدير ✅',pending:'بانتظار المدير ⏳',rejected:'مرفوضة ❌'})[s]||'لسه'; }
 function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
@@ -477,7 +500,8 @@ function logout(){ stopCam(); signOut(auth); }
 function empView(){
   const list = taskList(ST.shift);
   const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
-  const resPct = list.length ? Math.round(apprN/list.length*100) : 0;
+  const vioN = list.filter(t=>recOf(t.id,ST.shift)?.violation).length;
+  const resPct = list.length ? Math.max(0, Math.round(apprN/list.length*100) - vioN*5) : 0;
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
@@ -512,7 +536,7 @@ function openTask(id){
 }
 function taskView(){
   const t = findTask(ST.cur);
-  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
+  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>إنجاز مهمة: ${esc(t.name)}</h2>
@@ -561,7 +585,7 @@ function closeTask(){ stopCam(); ST.cur=null; ST.busy=false; render(); }
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
   const t = findTask(ST.cur);
-  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
+  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
   let tempVal = null;
   if(isTempTask){
     const tempInput = document.getElementById('tempVal');
@@ -577,13 +601,13 @@ async function submitPhoto(){
   const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
 
-  if(!check.ok){
+  if(check.status === 'rejected'){
     const rejectedRec = {
       date: ST.date, ym: ST.date.slice(0,7),
       year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
       shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
       time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal,
+      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal, violation: !!check.violation,
       aiNote: 'تم رفض المهمة أوتوماتيكياً بواسطة البوت والجيمي'
     };
     try{
@@ -603,7 +627,7 @@ async function submitPhoto(){
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'done', tempVal: tempVal, aiNote: 'تم اجتياز الفحص الإلزامي للبوت والجيمي بنجاح'
+    photo: ST.photo, status: check.status, tempVal: tempVal, violation: !!check.violation, aiNote: check.reason
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
@@ -751,7 +775,8 @@ function repView(){
   const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
     const total = taskList(g.shift).length;
     const ok = g.list.filter(r=>okS(r.status)).length;
-    const p = total ? Math.round(ok/total*100) : 0;
+    const vio = g.list.filter(r=>r.violation).length;
+    const p = total ? Math.max(0, Math.round(ok/total*100) - vio*5) : 0;
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
         <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
         ${r.status==='rejected' ? `<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>` : ''}
