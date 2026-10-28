@@ -180,11 +180,24 @@ async function aiCleanCheck(t, photo){
       { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
       { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
     ]);
-    const txt = (r.response.text() || '').replace(/```json/g,'').replace(/```/g,'');
+    const txt = (r.response.text() || '').replace(/```json/gi,'').replace(/```/g,'');
     const x = txt.indexOf('{'), y = txt.lastIndexOf('}');
-    const obj = JSON.parse(txt.substring(x, y+1));
-    const v = ['pass','fail','unsure'].includes(obj.verdict) ? obj.verdict : 'unsure';
-    return { verdict: v, reason: obj.reason || '' };
+    let v = 'unsure', reason = '';
+    try{
+      const obj = JSON.parse(txt.substring(x, y+1));
+      const raw = String(obj.verdict || '').toLowerCase();
+      reason = obj.reason || '';
+      if(raw.includes('unsure') || raw.includes('غير متأكد')) v = 'unsure';
+      else if(raw.includes('fail') || raw.includes('مرفوض') || raw.includes('غير مطابق')) v = 'fail';
+      else if(raw.includes('pass') || raw.includes('مطابق')) v = 'pass';
+    }catch(e){
+      const low = txt.toLowerCase();
+      if(low.includes('"unsure"')) v = 'unsure';
+      else if(low.includes('"fail"') || low.includes('مرفوض')) v = 'fail';
+      else if(low.includes('"pass"')) v = 'pass';
+      reason = 'رد غير مفهوم من جيمي: ' + txt.slice(0, 80);
+    }
+    return { verdict: v, reason: reason };
   }catch(e){
     return { verdict:'unsure', reason:'Gemini ما ردش: ' + ((e && e.message) || 'خطأ') };
   }
