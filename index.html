@@ -166,7 +166,7 @@ const DEFAULT_TASKS = [
  ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
  ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
  ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
- ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأردية'],
+ ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
  ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
 ];
@@ -190,7 +190,7 @@ const TIPS = {
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
  'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
- 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، وااختبر فاتورة تجريبية.',
+ 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
  'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
@@ -271,7 +271,7 @@ async function askBot(){
   if(model){
     try{
       const r = await model.generateContent([
-        { text: `أنت مساعد ومفتش سلامة وصحة غذاء وهايجين ذكي جداً لمطعم "كنساس فرايد تشيكن". أجب على سؤال الموظف بدقة وااختصار شديد باللغة العربية بناءً على معايير سلامة الغذاء ودرجات الحرارة والهايجين في المطعم. سؤال الموظف هو: "${q}"` }
+        { text: `أنت مساعد ومفتش سلامة وصحة غذاء وهايجين ذكي جداً لمطعم "كنساس فرايد تشيكن". أجب على سؤال الموظف بدقة واختصار شديد باللغة العربية بناءً على معايير سلامة الغذاء ودرجات الحرارة والهايجين في المطعم. سؤال الموظف هو: "${q}"` }
       ]);
       ans = (r.response.text() || '').trim();
     }catch(e){
@@ -369,7 +369,23 @@ function subTasks(){
   unsubTasks = onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
 }
 
-function refreshAll(){ if(!ST.user) return; subTasks(); subDone(); if(ST.role==='mgr') loadReport(); render(); }
+// تعديل زر التحديث ليعيد تدوير الحالة بالكامل وكأن المستخدم سجل دخول للتو
+function refreshAll(){
+  if(!ST.user) return;
+  // إعادة تعيين الشاشات الفرعية والحالة المعلقة لضمان ظهور الأيقونات والقوائم كاملة
+  ST.cur = null;
+  ST.photo = null;
+  ST.taken = false;
+  ST.busy = false;
+  ST.showRef = false;
+  ST.showChat = false;
+  stopCam();
+  subTasks();
+  subDone();
+  if(ST.role==='mgr') loadReport();
+  render();
+}
+
 function subDone(){
   if(unsubDone) unsubDone();
   unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
@@ -507,7 +523,7 @@ function taskView(){
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
-    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت وجيمي بشكل إلزامي.</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت والجيمي بشكل إلزامي.</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
@@ -542,7 +558,7 @@ function capture(){
   document.getElementById('sendBtn').style.display='block';
 }
 function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
-function closeTask(){ stopCam(); ST.cur=null; render(); }
+function closeTask(){ stopCam(); ST.cur=null; ST.busy=false; render(); }
 
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
@@ -557,8 +573,7 @@ async function submitPhoto(){
 
   ST.busy = true;
   const sendBtn = document.getElementById('sendBtn');
-  sendBtn.disabled = true;
-  sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...';
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...'; }
   
   const check = await botCheckHygiene(t, ST.photo, tempVal);
   const now = new Date();
@@ -596,7 +611,8 @@ async function submitPhoto(){
     await setDoc(doc(fdb,'done',id), rec);
     ST.busy = false; closeTask();
   }catch(e){
-    ST.busy = false; sendBtn.disabled = false; sendBtn.innerText = 'Done 👍🏻';
+    ST.busy = false; 
+    if(sendBtn){ sendBtn.disabled = false; sendBtn.innerText = 'Done 👍🏻'; }
     const q = getQ(); q.push({id, rec}); setQ(q);
     closeTask();
     alert('النت مش شغال. المهمة اتحفظت على الموبايل وهتتبعت أوتوماتيك لما النت يرجع.');
@@ -701,7 +717,7 @@ function editTip(id){
   updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
 }
 function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
-function delTask(id){ if(confirm('تحذف المهمة من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
+function delTask(id){ if(confirm('تحذف المهام من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
 function importDefaults(){
   Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
     .catch(e=>fail('الاستيراد', e));
