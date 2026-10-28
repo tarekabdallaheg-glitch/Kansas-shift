@@ -108,7 +108,6 @@ const firebaseConfig = {
 };
 const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
 
-// إعدادات بوت تيليجرام الخاص بطارق
 const TELEGRAM_TOKEN = '9162027978:AAG0zg0tGy19Gmjh07c19ge71TtGtFEHYs';
 const TELEGRAM_CHAT_ID = '5260245517';
 
@@ -286,7 +285,7 @@ const TIPS = {
  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
- 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون المناديل والمعقّم.',
  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
@@ -307,7 +306,7 @@ const REFERENCE = [
      '2. الفحص والتحقق قبل التشغيل: مراجعة درجات حرارة الثلاجات والمقالي وفلاتر الهود والتأكد من جاهزية الأجهزة وجودة الزيت قبل استقبال أول اوردر.',
      '3. متابعة سرعة وجودة الخدمة: مراقبة زمن التجهيز والتسليم، وتفقد جودة التغليف وشكل وجبات كنساس المطابقة للمواصفات.',
      '4. إدارة المظهر والهايجين: التفتيش المستمر على الزي الرسمي للموظفين وغسل الأيدي والالتزام التام بالتعليمات المحددة.',
-     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste)، والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
+     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste), والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
      '6. إقفال وتأمين الشيفت: الإشراف على خطوات الإغلاق، قفل الكاشيرات والجرد، التأكد من إيقاف المعدات وتأمين الفرع بالكامل.'
    ]
  },
@@ -616,8 +615,10 @@ function logout(){ stopCam(); signOut(auth); }
 function empView(){
   const list = taskList(ST.shift);
   const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
-  const vioN = list.filter(t=>recOf(t.id,ST.shift)?.violation).length;
+  // التعديل المضاف هنا: احتساب مؤشر الهايجين ومخالفات البوت في النقاط والنسبة
+  const vioN = list.filter(t=>recOf(t.id,ST.shift)?.violation || recOf(t.id,ST.shift)?.status==='rejected').length;
   const resPct = list.length ? Math.max(0, Math.round(apprN/list.length*100) - vioN*5) : 0;
+  
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
@@ -637,10 +638,10 @@ function empView(){
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="ST.showRef=true;render()">المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">المساعد</button><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
   <div class="card">
-    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
+    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة <span style="color:var(--bad);font-size:12px">${vioN>0 ? '(مخالفات هايجين: -'+(vioN*5)+'%)':''}</span></div>
     <div class="bar"><div style="width:${resPct}%"></div></div>
-    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
-    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالدخول عليها وتصحيح التنفيذ والتصوير مجدداً.</div>
+    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة (مع تحليل الهايجين): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
+    <div class="muted">المهام المرفوضة أو مخالفات الهايجين (Not Done 👎🏻) تؤثر على نسبة النجاح والرسوب وتتيح لك إعادة المحاولة.</div>
   </div>
   ${rows}
   <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
@@ -746,7 +747,6 @@ async function submitPhoto(){
       const q = getQ(); q.push({id, rec: rejectedRec}); setQ(q);
     }
 
-    // إرسال تنبيه فوري عبر تيليجرام لطارق عند رفض أي مهمة
     await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name} (${t.zone})\n⏰ الشيفت: ${ST.shift}\n❌ السبب: ${check.reason}`);
 
     ST.busy = false;
@@ -846,7 +846,7 @@ function tasksView(){
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
         <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
         <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
-        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
+        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active!==false?'تفعيل':'إيقاف'}</button>
         <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
       </div>`).join('');
     return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
