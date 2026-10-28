@@ -880,13 +880,13 @@ function repView(){
   </div>
   <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
-    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>{rows}</table></div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
   <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>{empRows}</table></div>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
-    <div class="card"><b>لم تُنفّذ في اليوم ده</b>{missHtml}</div>
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
   </div>`;
 }
 function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
