@@ -6,66 +6,70 @@
 <meta name="theme-color" content="#F5B800">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>KANSAS CHICKEN - نظام إدارة الشيفتات</title>
+<title>KANSAS CHICKEN - النظام المتكامل للإدارة</title>
 <style>
-:root{--bg:#f8f9fa;--card:#ffffff;--text:#1a202c;--muted:#718096;--main:#F5B800;--onmain:#1a202c;--ok:#2f855a;--warn:#d69e2e;--bad:#e53e3e;--line:#e2e8f0;--brand:#C53030;--shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06)}
+:root{--bg:#f4f6f8;--card:#ffffff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F;--shadow:0 8px 20px rgba(29,38,48,0.08)}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:70px}
-#app{width:100%;max-width:480px;margin:0 auto;padding:16px;overflow-x:hidden}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+#app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
 
-/* App Header */
-.app-header{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:12px 16px;border-radius:16px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--line)}
-.app-logo-sm{width:40px;height:40px;border-radius:12px;background:var(--main);color:var(--brand);font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center}
+/* App Header & Branding */
+.app-header{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:14px 18px;border-radius:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--line)}
+.app-logo-sm{width:44px;height:44px;border-radius:14px;background:var(--main);color:var(--brand);font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(245,184,0,0.3)}
 
-/* Bottom Nav */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0;z-index:100;box-shadow:0 -4px 6px -1px rgba(0,0,0,0.05)}
-.nav-item{background:none;border:none;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 12px;margin:0;width:auto}
-.nav-item.active{color:var(--brand);font-weight:bold}
+/* Bottom Nav Bar */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 0;z-index:100;box-shadow:0 -6px 20px rgba(0,0,0,0.06)}
+.nav-item{background:none;border:none;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 10px;margin:0;width:auto;font-weight:600}
+.nav-item.active{color:var(--brand)}
 
-/* Cards & UI */
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
-h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 8px}
+/* Cards & UI Elements */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 10px}
 .muted{color:var(--muted);font-size:13px}
-label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:600}
-input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;outline:none;transition:border-color 0.2s}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:bold}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;outline:none}
 input:focus,select:focus{border-color:var(--main)}
-button{width:100%;padding:14px;border:0;border-radius:12px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;box-shadow:var(--shadow);transition:opacity 0.2s}
-button:active{opacity:0.9}
+button{width:100%;padding:14px;border:0;border-radius:14px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 12px rgba(245,184,0,0.25)}
+button:active{transform:scale(0.98)}
 button.sec{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
-button.danger{background:#fff5f5;color:var(--bad);border:1px solid #feb2b2;box-shadow:none}
+button.danger{background:#ffebee;color:var(--bad);border:1px solid #ffcdd2;box-shadow:none}
 button.small{width:auto;padding:6px 12px;margin:0;font-size:12px}
 
 /* Tabs & Tasks */
-.tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;cursor:pointer}
-.tab.on{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:bold}
-.task{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow);transition:transform 0.1s}
-.task:active{transform:scale(0.98)}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.tab{flex:1;margin:0;padding:10px 12px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;cursor:pointer;white-space:nowrap;font-weight:600}
+.tab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.task{display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow)}
 .task .t{flex:1}
-.dot{width:10px;height:10px;border-radius:50%;flex:0 0 10px;background:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
 .dot.done{background:var(--ok)}.dot.review{background:var(--warn)}.dot.bad{background:var(--bad)}
-.tag{font-size:11px;padding:4px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap;font-weight:600}
-.tag.done{background:#def7ec;color:var(--ok)}.tag.review{background:#fef08a;color:#713f12}.tag.bad{background:#fde8e8;color:var(--bad)}
+.tag{font-size:12px;padding:4px 10px;border-radius:10px;background:var(--line);color:var(--muted);white-space:nowrap;font-weight:bold}
+.tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}.tag.bad{background:#ffebee;color:var(--bad)}
 
-/* Camera & Media */
-#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:14px;object-fit:cover;display:none}
-#shot{width:100%;border-radius:14px;display:none}
-.placeholder{width:100%;aspect-ratio:3/4;background:#1a202c;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#e2e8f0;font-size:14px;text-align:center;padding:16px}
+/* Media & Camera */
+#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:16px;object-fit:cover;display:none}
+#shot{width:100%;border-radius:16px;display:none}
+.placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
 .meta{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:bold}
+.badbox{background:#ffebee;color:var(--bad);border:1px solid #ffcdd2;border-radius:14px;padding:14px;font-size:13px;margin-bottom:14px}
+.rec{page-break-inside:avoid;border-bottom:1px solid var(--line);padding:12px 0}.rec img{width:100%;max-width:280px;display:block;margin-top:8px;border-radius:12px}
 
-/* Login & Splash */
+/* Login & Splash Screen */
 .login-wrap{padding-top:40px}
-.logo{width:80px;height:80px;margin:0 auto;border-radius:24px;background:var(--main);color:var(--brand);font-size:48px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(245,184,0,0.4)}
-.brand-title{font-size:26px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:16px}
+.logo{width:88px;height:88px;margin:0 auto;border-radius:26px;background:var(--main);color:var(--brand);font-size:52px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 25px rgba(245,184,0,0.35)}
+.brand-title{font-size:28px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:16px}
 .splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:999}
-.sp-bar{width:140px;height:4px;border-radius:4px;background:var(--line);margin-top:20px;overflow:hidden}
+.sp-bar{width:160px;height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden}
 .sp-bar>div{height:100%;width:0;background:var(--brand);animation:fill 1.5s ease-in-out forwards}
 @keyframes fill{to{width:100%}}
 
-/* Dark Mode */
+#printArea{display:none}
+@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:16px}}
+
 @media (prefers-color-scheme: dark){
-:root{--bg:#0f172a;--card:#1e293b;--text:#f8fafc;--muted:#94a3b8;--line:#334155;--brand:#f87171}
-.bottom-nav{background:#1e293b;border-top-color:#334155}
+:root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643;--brand:#ff6b6b}
+.bottom-nav{background:#1b2530;border-top-color:#2a3643}
 }
 </style>
 </head>
@@ -178,36 +182,42 @@ const DEFAULT_TASKS = [
 ];
 
 const SHIFTS = ['صباحي','مسائي'];
-const ST = { user:null, role:null, name:'', shift:'صباحي', tab:'rev', date:todayStr(), cur:null, photo:null, taken:false, busy:false, authErr:'', view:'tasks' };
-let TASKS=[], DONE=[], unsubDone=null, camStream=null;
+const SK = {'صباحي':'am','مسائي':'pm'};
+const REFERENCE = [
+ { t:'تعليمات مهام مدير الوردية العامة', i:['1. توزيع وتوجيه الشيفت ومتابعة المهام.', '2. فحص درجات الحرارة والجهزية قبل التشغيل.', '3. متابعة سرعة وجودة الخدمة وسلامة الغذاء.'] },
+ { t:'الهايجين الشخصي ونظافة الأغذية', i:['غسل اليدين بانتظام بالماء الساخن والصابون.', 'ارتداء الزي الرسمي وغطاء الرأس ونظافة المظهر.'] }
+];
+
+const ST = { user:null, role:null, name:'', shift:'صباحي', tab:'rev', date:todayStr(), month:todayStr().slice(0,7), revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', view:'tasks', showChat:false, chatMsgs:[] };
+let TASKS=[], DONE=[], QS=[], unsubDone=null, camStream=null;
 
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
+function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const okS = s => s==='approved'||s==='done';
 const subS = s => s==='pending' || s==='done' || s==='approved';
 function stLabel(s){ return ({done:'معتمدة 👍',approved:'معتمدة ✅',pending:'قيد المراجعة ⏳',rejected:'مرفوضة ❌'})[s]||'لسه'; }
 function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
-function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh);}
+function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
 function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
+function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
 
 onAuthStateChanged(auth, u=>{
   ST.authReady = true; ST.user = u;
   if(u){
     ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
     ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
-    subDone(); subTasks();
+    subDone(); subTasks(); if(ST.role==='mgr') { loadReport(); loadQuestions(); }
   } else { ST.role=null; ST.cur=null; DONE=[]; TASKS=[]; }
   render();
 });
 
-function subTasks(){
-  onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); render(); });
-}
-function subDone(){
-  onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)), s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); render(); });
-}
+function subTasks(){ onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); render(); }); }
+function subDone(){ onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)), s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); render(); }); }
+function loadReport(){ getDocs(query(collection(fdb,'done'), where('ym','==',ST.month))).then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); }); }
+function loadQuestions(){ getDocs(collection(fdb,'questions')).then(s=>{ QS = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.created-a.created); render(); }); }
 
 function render(){
   const app = document.getElementById('app');
@@ -224,16 +234,18 @@ function render(){
   if(ST.role==='mgr'){
     if(ST.tab==='rev') content = mgrRevView();
     else if(ST.tab==='links') content = customerLinksView();
-    else content = `<div class="card"><h3>تقرير الأداء والمهام</h3></div>`;
+    else if(ST.tab==='tasks') content = mgrTasksView();
+    else if(ST.tab==='qs') content = mgrQuestionsView();
+    else content = mgrRepView();
   } else {
     if(ST.view==='tasks') content = empTasksView();
-    else if(ST.view==='ref') content = `<div class="card"><h3>مرجع سلامة الغذاء</h3><p class="muted">الالتزام بقواعد الهايجين ودرجات الحرارة أساس العمل.</p></div>`;
-    else content = `<div class="card"><h3>المساعد الذكي</h3><p class="muted">اسأل عن أي استفسار يخص الهايجين والتشغيل.</p></div>`;
+    else if(ST.view==='ref') content = refView();
+    else content = chatView();
   }
 
   app.innerHTML = `
     <div class="app-header">
-      <div style="display:flex;align-items:center;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
         <div class="app-logo-sm">K</div>
         <div><h1>كنساس فرايد تشيكن</h1><div class="muted">${esc(ST.name)} · ${fmtDate(ST.date)}</div></div>
       </div>
@@ -244,6 +256,9 @@ function render(){
       ${ST.role==='mgr' ? `
         <button class="nav-item ${ST.tab==='rev'?'active':''}" onclick="ST.tab='rev';render()">📋 المراجعة</button>
         <button class="nav-item ${ST.tab==='links'?'active':''}" onclick="ST.tab='links';render()">⭐ التقييمات</button>
+        <button class="nav-item ${ST.tab==='tasks'?'active':''}" onclick="ST.tab='tasks';render()">⚙️ المهام</button>
+        <button class="nav-item ${ST.tab==='qs'?'active':''}" onclick="ST.tab='qs';loadQuestions();render()">❓ الأسئلة</button>
+        <button class="nav-item ${ST.tab==='rep'?'active':''}" onclick="ST.tab='rep';loadReport();render()">📊 التقارير</button>
       ` : `
         <button class="nav-item ${ST.view==='tasks'?'active':''}" onclick="ST.view='tasks';render()">📋 المهام</button>
         <button class="nav-item ${ST.view==='ref'?'active':''}" onclick="ST.view='ref';render()">📖 المرجع</button>
@@ -280,7 +295,7 @@ function customerLinksView(){
     <div class="card" style="background:linear-gradient(135deg,#fffbf0,#fff)">
       <h3 style="margin-top:0">⭐ تقييمات العملاء بمنصات الإنترنت</h3>
       <p class="muted">متابعة آراء العملاء لرفع جودة الخدمة والتشغيل:</p>
-      <div style="display:flex;gap:8px;margin-top:12px">
+      <div style="display:flex;gap:10px;margin-top:14px">
         <a href="https://maps.google.com" target="_blank" style="flex:1;text-decoration:none"><button class="sec" style="margin-top:0;color:#4285F4;border-color:#4285F4">📍 جوجل خرائط</button></a>
         <a href="https://www.talabat.com" target="_blank" style="flex:1;text-decoration:none"><button class="sec" style="margin-top:0;color:#FF5A00;border-color:#FF5A00">🛵 تطبيق طلبات</button></a>
       </div>
@@ -289,12 +304,128 @@ function customerLinksView(){
       <h3>📊 تسجيل مؤشر رضا العملاء</h3>
       <label>تقييم جوجل (من 5):</label><input type="number" step="0.1" placeholder="4.7">
       <label>تقييم طلبات (من 5):</label><input type="number" step="0.1" placeholder="4.9">
-      <button onclick="alert('تم حفظ مؤشرات رضا العملاء بنجاح!')" style="margin-top:12px">حفظ بالسجل</button>
+      <button onclick="alert('تم حفظ مؤشرات رضا العملاء بنجاح!')" style="margin-top:14px">حفظ بالسجل</button>
     </div>`;
 }
 
 function mgrRevView(){
-  return `<div class="card"><h3>مراجعة مهام الشيفتات اليومية</h3><p class="muted">متابعة الصور واعتماد أو رفض المهام لحظياً.</p></div>`;
+  const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
+  const rejectedRecs = recs.filter(r=>r.status==='rejected');
+  const alertHtml = rejectedRecs.length ? `<div class="badbox"><b>⚠️ ${rejectedRecs.length} مهام مرفوضة أوتوماتيكياً تتطلب المتابعة.</b></div>` : '';
+  const cards = recs.map(r=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)}</div>
+      ${r.photo?`<img class="rec" src="${r.photo}" alt="">`:''}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button onclick="setStatus('${r.id}','approved')" style="margin-top:0">اعتماد</button>
+        <button class="danger" onclick="rejectRec('${r.id}')" style="margin-top:0">رفض</button>
+        <button class="danger" onclick="removeRec('${r.id}')" style="margin-top:0">حذف</button>
+      </div>
+    </div>`).join('') || '<div class="card muted">لا توجد تسجيلات اليوم.</div>';
+
+  return `
+    ${alertHtml}
+    <div class="card">
+      <label>التاريخ</label><input type="date" value="${ST.date}" onchange="ST.date=this.value;subDone();render()">
+      <label>الشيفت</label>
+      <select onchange="ST.revShift=this.value;render()">
+        <option value="all">الكل</option>
+        <option>صباحي</option><option>مسائي</option>
+      </select>
+    </div>
+    ${cards}`;
+}
+
+function mgrTasksView(){
+  if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
+  const lists = SHIFTS.map(sh=>{
+    const items = TASKS.filter(t=>t.shift===sh).map(t=>`
+      <div class="task" style="cursor:default">
+        <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+        <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
+      </div>`).join('');
+    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
+  }).join('');
+  return `
+    <div class="card"><h2>إضافة مهمة جديدة</h2>
+      <label>اسم المهمة</label><input id="nt_name">
+      <label>المنطقة</label><input id="nt_zone" placeholder="مطبخ، صالة...">
+      <label>الشيفت</label><select id="nt_shift"><option>صباحي</option><option>مسائي</option></select>
+      <button onclick="addTask()">إضافة المهمة</button>
+    </div>
+    ${lists}`;
+}
+
+function addTask(){
+  const name = document.getElementById('nt_name').value.trim();
+  const zone = document.getElementById('nt_zone').value.trim() || 'عام';
+  const shift = document.getElementById('nt_shift').value;
+  if(!name){ alert('اكتب اسم المهمة'); return; }
+  addDoc(collection(fdb,'tasks'), {name, zone, shift, order:Date.now(), active:true}).then(()=>render());
+}
+function delTask(id){ if(confirm('متأكد من الحذف؟')) deleteDoc(doc(fdb,'tasks',id)).then(()=>render()); }
+function importDefaults(){
+  Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true}))).then(()=>render());
+}
+
+function mgrQuestionsView(){
+  const cards = QS.map(q=>`
+    <div class="card">
+      <b>${esc(q.text)}</b>
+      <div class="muted">${esc(q.employee)} · ${esc(q.shift)}</div>
+      ${q.answered?`<div style="color:var(--ok);margin-top:6px">الرد: ${esc(q.answer)}</div>`:
+      `<input id="ans_${q.id}" placeholder="اكتب الرد هنا"><button onclick="answerQ('${q.id}')">إرسال الرد</button>`}
+    </div>`).join('') || '<div class="card muted">لا توجد أسئلة جديدة.</div>';
+  return `<div class="card"><h3>أسئلة الموظفين</h3></div>${cards}`;
+}
+
+function answerQ(id){
+  const v = (document.getElementById('ans_'+id).value||'').trim();
+  if(!v) return;
+  updateDoc(doc(fdb,'questions',id), {answer:v, answered:true}).then(()=>loadQuestions());
+}
+
+function mgrRepView(){
+  const [y,m] = ST.month.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  let rows = '';
+  for(let d=1; d<=days; d++){
+    const date = ST.month+'-'+String(d).padStart(2,'0');
+    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
+    rows += `<tr><td>${d}</td><td>${cnt('صباحي')}</td><td>${cnt('مسائي')}</td></tr>`;
+  }
+  return `
+    <div class="card">
+      <label>الشهر</label><input type="month" value="${ST.month}" onchange="ST.month=this.value;loadReport();">
+      <button onclick="window.print()" style="margin-top:10px">طباعة التقرير (PDF)</button>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th></tr>${rows}</table>
+    </div>`;
+}
+
+function refView(){
+  return REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
+}
+
+function chatView(){
+  const msgs = ST.chatMsgs.map(m=>`<div class="card" style="${m.who==='me'?'background:var(--bg)':''}"><b>${m.who==='me'?'أنت':'البوت'}</b><div>${esc(m.text)}</div></div>`).join('') || '<div class="muted">اسألني عن معايير الهايجين وسلامة الغذاء.</div>';
+  return `
+    ${msgs}
+    <div class="card">
+      <input id="botQ" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')askBot()">
+      <button onclick="askBot()">إرسال</button>
+    </div>`;
+}
+
+async function askBot(){
+  const el = document.getElementById('botQ'); const q = (el.value||'').trim(); if(!q) return;
+  ST.chatMsgs.push({who:'me', text:q}); el.value='';
+  let ans = 'يرجى الالتزام التام بمعايير النظافة والهايجين بمطعم كنساس.';
+  const m = await gemini();
+  if(m){ try{ const r = await m.generateContent([{text:q}]); ans = r.response.text(); }catch(e){} }
+  ST.chatMsgs.push({who:'bot', text:ans}); render();
 }
 
 function taskView(){
@@ -335,10 +466,17 @@ async function submitPhoto(){
   const t = findTask(ST.cur);
   const check = await botCheckHygiene(t, ST.photo, null);
   const id = ST.date+'_'+ST.shift+'_'+t.id;
-  await setDoc(doc(fdb,'done',id), { date:ST.date, shift:ST.shift, taskId:t.id, taskName:t.name, zone:t.zone, employee:ST.name, photo:ST.photo, status:check.status });
+  await setDoc(doc(fdb,'done',id), { date:ST.date, ym:ST.date.slice(0,7), shift:ST.shift, taskId:t.id, taskName:t.name, zone:t.zone, employee:ST.name, photo:ST.photo, status:check.status, rejectReason:check.reason });
   if(check.status==='rejected') await sendTelegramAlert(`🚨 مخالفة في كنساس!\nالمهمة: ${t.name}\nالسبب: ${check.reason}`);
   ST.cur=null; render();
 }
+
+function setStatus(id, status){ updateDoc(doc(fdb,'done',id), {status}); }
+function rejectRec(id){
+  const why = prompt('سبب الرفض:', 'مخالفة معايير النظافة');
+  if(why) updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason:why});
+}
+function removeRec(id){ if(confirm('حذف التسجيل؟')) deleteDoc(doc(fdb,'done',id)); }
 
 async function login(){
   try{ await signInWithEmailAndPassword(auth, document.getElementById('lemail').value.trim(), document.getElementById('lpass').value); }
@@ -347,7 +485,7 @@ async function login(){
 function logout(){ signOut(auth); }
 
 setTimeout(()=>{ ST.splashDone=true; render(); }, 1200);
-Object.assign(window, { ST, render, login, logout, startCam, capture, submitPhoto });
+Object.assign(window, { ST, render, login, logout, startCam, capture, submitPhoto, setStatus, rejectRec, removeRec, addTask, delTask, importDefaults, answerQ, loadQuestions, askBot });
 </script>
 </body>
 </html>
