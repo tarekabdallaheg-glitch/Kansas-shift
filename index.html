@@ -8,62 +8,52 @@
 <link rel="icon" href="icon-192.png">
 <title>KANSAS CHICKEN - الشيفتات</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F;--shadow:0 8px 20px rgba(29,38,48,0.06)}
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
 *{box-sizing:border-box;min-width:0}
 img,video,canvas,svg,input,select,textarea,table{max-width:100%}
 button{white-space:normal;max-width:100%}
 #app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
-body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
-
-/* App Header & Navigation */
-.app-header{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:14px 18px;border-radius:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--line)}
-.app-logo-sm{width:42px;height:42px;border-radius:14px;background:var(--main);color:var(--brand);font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 0;z-index:100;box-shadow:0 -6px 20px rgba(0,0,0,0.06)}
-.nav-item{background:none;border:none;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 10px;margin:0;width:auto;font-weight:bold}
-.nav-item.active{color:var(--brand)}
-
-h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 8px}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
 .muted{color:var(--muted);font-size:13px}
 .brand{font-size:30px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:30px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
-label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:bold}
-input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;outline:none}
-input:focus,select:focus{border-color:var(--main)}
-button{width:100%;padding:14px;border:0;border-radius:14px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(245,184,0,0.2)}
-button.sec{background:transparent;color:var(--text);border:1px solid var(--main);box-shadow:none}
-button.danger{color:var(--bad);border-color:var(--bad);background:#ffebee;box-shadow:none}
-button.small{width:auto;padding:6px 12px;margin:0;font-size:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px}
+button{width:100%;padding:13px;border:0;border-radius:12px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--main)}
+button.danger{color:var(--bad);border-color:var(--bad)}
+button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
 button:disabled{opacity:.45}
-
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
-.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
-.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;font-weight:bold;cursor:pointer;white-space:nowrap}
-.tab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line)}
+.tab.on{background:var(--main);color:var(--onmain);border-color:var(--main)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.btns button{flex:1;margin:0;padding:9px;font-size:13px}
 .bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
 .bar>div{height:100%;background:var(--main)}
-.task{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow)}
+.task{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;cursor:pointer}
 .task .t{flex:1}
 .dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
 .dot.done{background:var(--ok)}.dot.review{background:var(--warn)}.dot.bad{background:var(--bad)}
-.tag{font-size:12px;padding:4px 10px;border-radius:10px;background:var(--line);color:var(--muted);white-space:nowrap;font-weight:bold}
+.tag{font-size:12px;padding:3px 8px;border-radius:8px;background:var(--line);color:var(--muted);white-space:nowrap}
 .tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}.tag.bad{background:#ffebee;color:var(--bad)}
-
-#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:16px;object-fit:cover;display:none}
-#shot{width:100%;border-radius:16px;display:none}
-.shot{width:100%;border-radius:12px;margin-top:8px}
-.placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
+#cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;object-fit:cover;display:none}
+#shot{width:100%;border-radius:12px;display:none}
+.shot{width:100%;border-radius:10px;margin-top:8px}
+.placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
 .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:bold}
-.warnbox{background:#fff4e0;color:#8a5a00;border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px}
-.badbox{background:#ffebee;color:#c62828;border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px}
-.logo{width:80px;height:80px;margin:0 auto;border-radius:24px;background:var(--main);color:var(--brand);font-size:48px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(245,184,0,0.35)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
+.warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+.badbox{background:#ffebee;color:#c62828;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
+.logo{width:76px;height:76px;margin:0 auto;border-radius:22px;background:var(--main);color:var(--brand);font-size:44px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(245,184,0,.35)}
 body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixed}
 .login-wrap{padding-top:36px}
 .greet{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:15px}
-.login-card{padding:20px;border-radius:20px;box-shadow:var(--shadow);border:0}
-.login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4)}
+.login-card{padding:20px;border-radius:20px;box-shadow:0 12px 30px rgba(29,38,48,.12);border:0}
+.login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4);transition:transform .15s}
+.login-btn:active{transform:scale(.97)}
 .splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9}
 .sp-logo{animation:spIn .5s ease-out both}
 @keyframes spIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
@@ -85,16 +75,19 @@ body{background:var(--bg) !important}
 .badbox{background:#3a1d1d;color:#ff8a8a}
 .tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}.tag.bad{background:#3a1d1d}
 .placeholder{background:#1f2730}
-.bottom-nav{background:#1b2530;border-top-color:#2a3643}
-.app-header{background:#1b2530;border-color:#2a3643}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
+
 html,body{max-width:100%;overflow-x:hidden}
 #app{width:100%;max-width:520px;box-sizing:border-box;overflow-x:hidden}
-.top{flex-wrap:wrap}.top>div{min-width:0;flex:1 1 auto}
-.tabs{flex-wrap:wrap}.tab{min-width:0;flex:1 1 22%}
+.top{flex-wrap:wrap}
+.top>div{min-width:0;flex:1 1 auto}
+.tabs{flex-wrap:wrap}
+.tab{min-width:0;flex:1 1 30%}
 .card,.task,.score-card,.notify-banner{max-width:100%;min-width:0;overflow-wrap:anywhere}
-.btns{flex-wrap:wrap}table{display:block;overflow-x:auto;max-width:100%}img{max-width:100%}
+.btns{flex-wrap:wrap}
+table{display:block;overflow-x:auto;max-width:100%}
+img{max-width:100%}
 </style>
 </head>
 <body>
@@ -426,9 +419,10 @@ async function askBot(){
 }
 
 function chatView(){
-  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت والجيمي'}</b><div><div>${esc(m.text)}</div></div></div>`).join('')
+  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت والجيمي'}</b><div>${esc(m.text)}</div></div>`).join('')
     || '<div class="muted">اسألني عن صحة وسلامة الغذاء، درجات الحرارة، الهايجين، النظافة والمهام.</div>';
   return `
+  <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
   ${msgs}
   <div class="card">
     <input id="botQ" placeholder="اكتب سؤالك هنا (حرارة،هايجين،سلامة غذاء)" onkeydown="if(event.key==='Enter')askBot()">
@@ -485,11 +479,22 @@ async function flushQ(){
 }
 window.addEventListener('online', flushQ);
 
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
 const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
   revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
+function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
+const okS = s => s==='approved'||s==='done';
+const subS = s => s==='pending' || s==='done' || s==='approved';
+function stLabel(s){ return ({done:'معتمدة تلقائياً 👍',approved:'معتمدة من المدير ✅',pending:'بانتظار المدير ⏳',rejected:'مرفوضة ❌'})[s]||'لسه'; }
+function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
+function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
+function findTask(id){return TASKS.find(t=>t.id===id);}
+function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
 function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); }
 function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
 
@@ -565,8 +570,10 @@ function render(){
   if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
   if(!ST.user && !ST.coverDone){ app.innerHTML = coverView(); return; }
   if(!ST.user) app.innerHTML = loginView();
-  else if(ST.cur) app.innerHTML = taskView();
   else if(ST.role==='mgr') app.innerHTML = mgrView();
+  else if(ST.showChat) app.innerHTML = chatView();
+  else if(ST.showRef) app.innerHTML = refView();
+  else if(ST.cur) app.innerHTML = taskView();
   else app.innerHTML = empView();
 }
 
@@ -607,24 +614,18 @@ async function login(){
 function logout(){ stopCam(); signOut(auth); }
 
 function empView(){
-  if(ST.showRef) return refView();
-  if(ST.showChat) return `
-    <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
-    ${chatView()}`;
-
-  const list = taskList(ST.shift || 'صباحي');
-  const apprN = list.filter(t=>okS(recOf(t.id,ST.shift||'صباحي')?.status)).length;
-  const vioN = list.filter(t=>recOf(t.id,ST.shift||'صباحي')?.violation).length;
+  const list = taskList(ST.shift);
+  const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
+  const vioN = list.filter(t=>recOf(t.id,ST.shift)?.violation).length;
   const resPct = list.length ? Math.max(0, Math.round(apprN/list.length*100) - vioN*5) : 0;
-  
   const rows = list.map(t=>{
-    const r = recOf(t.id, ST.shift || 'صباحي');
+    const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
-    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift||'صباحي') ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
+    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift) ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
     return `<div class="task" onclick="openTask('${t.id}')">
       <span class="dot ${stCls(st)}"></span>
       <div class="t">
-        <div><b>${esc(t.name)}</b></div>
+        <div>${esc(t.name)}</div>
         <div class="muted">${esc(t.zone)}</div>
         ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
         ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'مخالفة هايجين')})</span></div>`:''}
@@ -632,39 +633,21 @@ function empView(){
       ${tag}
     </div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
-
   return `
-  <div class="app-header">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="app-logo-sm">K</div>
-      <div><h1>شيفت ${esc(ST.shift||'صباحي')}</h1><div class="muted">${esc(ST.name)} · ${fmtDate(ST.date)}</div></div>
-    </div>
-    <button class="sec small" onclick="logout()">خروج</button>
-  </div>
-  
-  <div class="card">
-    <label>اختر الشيفت</label>
-    <select onchange="ST.shift=this.value;render()"><option ${ST.shift==='صباحي'?'selected':''}>صباحي</option><option ${ST.shift==='مسائي'?'selected':''}>مسائي</option></select>
-  </div>
-
+  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
+    <div style="display:flex;gap:6px"><button class="sec small" onclick="ST.showRef=true;render()">المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">المساعد</button><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
   <div class="card">
     <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
     <div class="bar"><div style="width:${resPct}%"></div></div>
     <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
-    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالتصحيح والتصوير مجدداً.</div>
+    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالدخول عليها وتصحيح التنفيذ والتصوير مجدداً.</div>
   </div>
   ${rows}
-
-  <div class="bottom-nav">
-    <button class="nav-item active" onclick="ST.showRef=false;ST.showChat=false;render()">📋 المهام</button>
-    <button class="nav-item" onclick="ST.showRef=true;render()">📖 المرجع</button>
-    <button class="nav-item" onclick="ST.showChat=true;render()">🤖 المساعد</button>
-    <button class="nav-item" onclick="refreshAll()">🔄 تحديث</button>
-  </div>`;
+  <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
 }
 
 function openTask(id){
-  const r = recOf(id, ST.shift||'صباحي');
+  const r = recOf(id, ST.shift);
   if(r && subS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
@@ -673,22 +656,19 @@ function taskView(){
   const t = findTask(ST.cur);
   const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
   return `
-  <div class="app-header">
-    <button class="sec small" onclick="closeTask()">رجوع</button>
-    <span class="muted">${esc(t.zone)}</span>
-  </div>
+  <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>إنجاز مهمة: ${esc(t.name)}</h2>
   <div class="card">
     ${isTempTask ? `<label>درجة الحرارة المسجلة (°F):</label><input id="tempVal" type="number" step="0.1" placeholder="مثال: 36 أو -5" style="margin-bottom:10px">` : ''}
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
-    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت والجيمي.</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت والجيمي بشكل إلزامي.</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
-  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي)</button>`;
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي الإلزامي)</button>`;
 }
 
 async function startCam(){
@@ -698,7 +678,7 @@ async function startCam(){
     if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
   }catch(e){
     const ph = document.getElementById('ph');
-    if(ph) ph.innerHTML = 'الكاميرا ما فتحتش. اسمح بالكاميرا من إعدادات المتصفح.';
+    if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
   }
 }
 
@@ -706,7 +686,7 @@ function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); c
 
 function capture(){
   const v = document.getElementById('cam');
-  if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة.'); return; }
+  if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
   const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
   const c = document.createElement('canvas'); c.width=w; c.height=h;
   const cx = c.getContext('2d');
@@ -715,7 +695,7 @@ function capture(){
   let sum = 0, n = 0;
   for(let i=0; i<px.length; i+=16){ sum += (px[i]+px[i+1]+px[i+2])/3; n++; }
   if((n ? sum/n : 0) < 45){
-    alert('الصورة معتمة جداً. وضّح الإضاءة وصوّر تاني.');
+    alert('الصورة معتمة جداً. وضّح الإضاءة، وقرّب الكاميرا من المكان، وصوّر تاني.');
     return;
   }
   ST.photo = c.toDataURL('image/jpeg',0.5); ST.taken = true;
@@ -739,39 +719,46 @@ async function submitPhoto(){
   let tempVal = null;
   if(isTempTask){
     const tempInput = document.getElementById('tempVal');
-    tempInput ? tempVal = parseFloat(tempInput.value) : null;
-    if(isNaN(tempVal)){ alert('يرجى إدخال قيمة درجة الحرارة.'); return; }
+    tempVal = tempInput ? parseFloat(tempInput.value) : NaN;
+    if(isNaN(tempVal)){ alert('يرجى إدخال قيمة رقمية صحيحة لدرجة الحرارة قبل الإرسال.'); return; }
   }
 
   ST.busy = true;
   const sendBtn = document.getElementById('sendBtn');
-  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 جاري الفحص بالذكاء الاصطناعي...'; }
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...'; }
   
   const check = await botCheckHygiene(t, ST.photo, tempVal);
   const now = new Date();
-  const id = ST.date+'_'+SK[ST.shift||'صباحي']+'_'+t.id+'_'+ST.user.uid.slice(0,6);
+  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
 
   if(check.status === 'rejected'){
     const rejectedRec = {
       date: ST.date, ym: ST.date.slice(0,7),
       year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
-      shift: ST.shift||'صباحي', taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
+      shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
       time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
       photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal, violation: !!check.violation,
-      aiNote: 'مرفوض أوتوماتيكياً'
+      aiNote: 'تم رفض المهمة أوتوماتيكياً بواسطة البوت والجيمي'
     };
-    try{ await setDoc(doc(fdb,'done',id), rejectedRec); }catch(e){}
-    await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name}\n❌ السبب: ${check.reason}`);
+    try{
+      await setDoc(doc(fdb,'done',id), rejectedRec);
+    }catch(e){
+      const q = getQ(); q.push({id, rec: rejectedRec}); setQ(q);
+    }
+
+    // إرسال تنبيه فوري عبر تيليجرام لطارق عند رفض أي مهمة
+    await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name} (${t.zone})\n⏰ الشيفت: ${ST.shift}\n❌ السبب: ${check.reason}`);
+
     ST.busy = false;
     closeTask();
-    alert('⚠️ Not Done 👎🏻\nسبب الرفض: ' + check.reason + '\nتم تسجيلها كمخالفة.');
+    alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً وسجلها النظام كـ Not Done:\nسبب الرفض: ' + check.reason + '\n\nتم إخراجك للقائمة، وبإمكانك المحاولة مرة أخرى بالدخول على نفس المهمة وتصويرها بالشكل الصحيح.');
     return;
   }
 
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
-    shift: ST.shift||'صباحي', taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
+    shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
     photo: ST.photo, status: check.status, tempVal: tempVal, violation: !!check.violation, aiNote: check.reason
   };
@@ -780,38 +767,21 @@ async function submitPhoto(){
     ST.busy = false; closeTask();
   }catch(e){
     ST.busy = false; 
+    if(sendBtn){ sendBtn.disabled = false; sendBtn.innerText = 'Done 👍🏻'; }
+    const q = getQ(); q.push({id, rec}); setQ(q);
     closeTask();
+    alert('النت مش شغال. المهمة اتحفظت على الموبايل وهتتبعت أوتوماتيك لما النت يرجع.');
   }
 }
 
 function mgrView(){
-  const tabs = [['rev','المراجعة'],['links','التقييمات'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقارير']]
+  const tabs = [['rev','المراجعة'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
-  
-  let body = '';
-  if(ST.tab==='rev') body = revView();
-  else if(ST.tab==='links') body = customerLinksView();
-  else if(ST.tab==='tasks') body = tasksView();
-  else if(ST.tab==='qs') body = questionsView();
-  else body = repView();
-
+  const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='qs' ? questionsView() : repView();
   return `
-  <div class="app-header">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="app-logo-sm">K</div>
-      <div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
-    </div>
-    <button class="sec small" onclick="logout()">خروج</button>
-  </div>
-  <div class="tabs">${tabs}</div>
-  ${body}
-  <div class="bottom-nav">
-    <button class="nav-item ${ST.tab==='rev'?'active':''}" onclick="setTab('rev')">📋 المراجعة</button>
-    <button class="nav-item ${ST.tab==='links'?'active':''}" onclick="setTab('links')">⭐ التقييمات</button>
-    <button class="nav-item ${ST.tab==='tasks'?'active':''}" onclick="setTab('tasks')">⚙️ المهام</button>
-    <button class="nav-item ${ST.tab==='qs'?'active':''}" onclick="setTab('qs')">❓ الأسئلة</button>
-    <button class="nav-item ${ST.tab==='rep'?'active':''}" onclick="setTab('rep')">📊 التقارير</button>
-  </div>`;
+  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
+    <button class="sec small" onclick="logout()">خروج</button></div>
+  <div class="tabs">${tabs}</div>${body}`;
 }
 
 function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
@@ -824,9 +794,9 @@ function revView(){
   
   const alertHtml = rejectedRecs.length ? `
     <div class="badbox">
-      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة):</b>
+      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة أوتوماتيكياً):</b>
       <ul style="margin:4px 0 0;padding-right:16px">
-        ${rejectedRecs.map(r=>`<li style="font-size:13px">${esc(r.employee)} - ${esc(r.taskName)} (${esc(r.shift)}): ${esc(r.rejectReason||'')}</li>`).join('')}
+        ${rejectedRecs.map(r=>`<li style="font-size:13px">${esc(r.employee)} - ${esc(r.taskName)} (${esc(r.shift)}): ${esc(r.rejectReason||'مخالفة هايجين')}</li>`).join('')}
       </ul>
     </div>` : '';
 
@@ -838,14 +808,157 @@ function revView(){
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
-        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض يدوياً</button>
+        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض يدوياً (Not Done 👎🏻)</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
-  
   const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})${isLate(x.sh)?' · <b style="color:#c62828">متأخرة</b>':''}</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
-
   return `
   ${alertHtml}
   <div class="card">
-    <label>التاريخ</label><input type
+    <label>التاريخ</label><input type="date" value="${ST.date}" onchange="setDate(this.value)">
+    <label>الشيفت</label>
+    <select onchange="ST.revShift=this.value;render()">
+      <option value="all" ${ST.revShift==='all'?'selected':''}>الاتنين</option>
+      ${SHIFTS.map(s=>`<option ${ST.revShift===s?'selected':''}>${s}</option>`).join('')}
+    </select>
+    <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
+  </div>
+  <div class="card"><b>لم تُنفّذ</b>${miss}</div>
+  ${cards}`;
+}
+
+function setDate(v){ ST.date=v; subDone(); render(); }
+function setStatus(id,status){
+  updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
+}
+function rejectRec(id){
+  const why = prompt('اكتب سبب الرفض (Not Done 👎🏻):', 'مخالفة معايير الهايجين والنظافة، يرجى إعادة المحاولة.');
+  if(!why) return;
+  updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
+}
+function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
+
+function tasksView(){
+  if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
+  const lists = SHIFTS.map(sh=>{
+    const items = TASKS.filter(t=>t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0)).map(t=>`
+      <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
+        <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
+        <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
+        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
+        <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
+      </div>`).join('');
+    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
+  }).join('');
+  return `
+  <div class="card"><h2>إضافة مهمة</h2>
+    <label>اسم المهمة</label><input id="nt_name">
+    <label>المنطقة</label><input id="nt_zone">
+    <label>الشيفت</label><select id="nt_shift"><option>صباحي</option><option>مسائي</option></select>
+    <button onclick="addTask()">إضافة</button></div>
+  ${lists}`;
+}
+
+function addTask(){
+  const name = document.getElementById('nt_name').value.trim();
+  const zone = document.getElementById('nt_zone').value.trim() || 'عام';
+  const shift = document.getElementById('nt_shift').value;
+  if(!name){ alert('اكتب اسم المهمة'); return; }
+  addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
+}
+
+function editTip(id){
+  const t = findTask(id);
+  const cur = t.tip || TIPS[t.name] || '';
+  const v = prompt('اكتب النصيحة للمهمة (هتظهر للموظف):', cur);
+  if(v === null) return;
+  updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
+}
+
+function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
+function delTask(id){ if(confirm('تحذف المهام من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
+
+function importDefaults(){
+  Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
+    .catch(e=>fail('الاستيراد', e));
+}
+
+function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
+
+function repView(){
+  const [y,m] = ST.month.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  const tot = {'صباحي': taskList('صباحي').length, 'مسائي': taskList('مسائي').length};
+  const all = tot['صباحي'] + tot['مسائي'];
+  let rows = '', passDays = 0, workDays = 0, sumPct = 0;
+  for(let d=1; d<=days; d++){
+    const date = ST.month+'-'+String(d).padStart(2,'0');
+    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
+    const a = cnt('صباحي'), b = cnt('مسائي');
+    const pct = all ? Math.round((a+b)/all*100) : 0;
+    const any = ST.report.some(r=>r.date===date);
+    if(any){ workDays++; sumPct += pct; if(pct>=85) passDays++; }
+    rows += `<tr><td>${d}</td><td>${a}/${tot['صباحي']}</td><td>${b}/${tot['مسائي']}</td><td>${any?pct+'%':'-'}</td><td>${any?grade(pct):'-'}</td></tr>`;
+  }
+  const avg = workDays ? Math.round(sumPct/workDays) : 0;
+  const emps = {};
+  ST.report.forEach(r=>{ const k=r.employee||'?'; emps[k]=emps[k]||{sub:0,ok:0,rej:0}; emps[k].sub++; if(okS(r.status)) emps[k].ok++; if(r.status==='rejected') emps[k].rej++; });
+  const empRows = Object.keys(emps).sort().map(k=>{
+    const e = emps[k]; const p = e.sub ? Math.round(e.ok/e.sub*100) : 0;
+    return `<tr><td>${esc(k)}</td><td>${e.sub}</td><td>${e.ok}</td><td>${e.rej}</td><td>${p}%</td><td>${grade(p)}</td></tr>`;
+  }).join('') || '<tr><td colspan="6">ما فيش تسجيلات</td></tr>';
+
+  const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
+  const groups = {};
+  dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
+  const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
+    const total = taskList(g.shift).length;
+    const ok = g.list.filter(r=>okS(r.status)).length;
+    const vio = g.list.filter(r=>r.violation).length;
+    const p = total ? Math.max(0, Math.round(ok/total*100) - vio*5) : 0;
+    const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
+        <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
+        ${r.status==='rejected' ? `<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>` : ''}
+        ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
+      </div>`).join('');
+    return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
+      النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
+      ${items}</div>`;
+  }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
+  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
+  const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+
+  return `
+  <div class="card">
+    <label>الشهر</label><input type="month" value="${ST.month}" onchange="setMonth(this.value)">
+    <label>اليوم (للتقرير اليومي)</label><input type="date" value="${ST.reportDay}" onchange="setReportDay(this.value)">
+    <button onclick="window.print()">تحميل PDF (تقرير اليوم)</button>
+    <div class="muted" style="margin-top:6px">في نافذة الطباعة اختار <b>Save as PDF</b>.</div>
+  </div>
+  <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
+    <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+  <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
+  <div id="printArea">
+    <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
+    ${groupHtml}
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
+  </div>`;
+}
+
+function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
+function setMonth(v){ ST.month=v; loadReport(); }
+function loadReport(){
+  getDocs(query(collection(fdb,'done'), where('ym','==',ST.month)))
+    .then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); })
+    .catch(e=>console.warn(e));
+}
+
+setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
+Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay, askBot, answerQ, loadQuestions });
+</script>
+</body>
+</html>
