@@ -109,7 +109,7 @@ async function gemini(){
   return GEM;
 }
 
-// فحص الصور الإلزامي عبر جيمي وبوت الفحص الصارم
+// فحص الصورة بصرامة عبر جيمي
 async function aiCleanCheck(t, photo){
   const model = await gemini();
   if(!model || !photo) return { ok: false, reason: 'تعذر الاتصال بنظام الفحص والذكاء الاصطناعي.' };
@@ -132,17 +132,15 @@ async function aiCleanCheck(t, photo){
   }
 }
 
-// دالة الفحص المشترك الإلزامي (البوت + جيمي)
 async function botCheckHygiene(t, photo, tempVal){
   if(tempVal !== null && !isNaN(tempVal)){
     if(t.name.includes('الثلاجات') && tempVal >= 39){
-      return { ok: false, reason: 'بواسطة البوت: درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F) ولا تطابق الحد المسموح (< 39°F).' };
+      return { ok: false, reason: 'درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F) ولا تطابق الحد المسموح (< 39°F).' };
     }
     if(t.name.includes('الفريزر') && tempVal > 0){
-      return { ok: false, reason: 'بواسطة البوت: درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F).' };
+      return { ok: false, reason: 'درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F).' };
     }
   }
-  // انتظار الفحص الفعلي الصارم لجيمي والبوت
   const check = await aiCleanCheck(t, photo);
   return check;
 }
@@ -227,7 +225,7 @@ const REFERENCE = [
  {
    t:'حالات الطوارئ والتبليغ الفوري للمدير',
    i:[
-     'أي قراءة حرارة غير مطابقة للمواصفات في الثلاجات أو المنتجات.',
+     'أي قراءة حرارة غير مطابقة المواصفات في الثلاجات أو المنتجات.',
      'حدوث أي تسريب مياه أو غاز أو ماس كهربائي.',
      'ظهور أي حشرات، قوارض، أو علامات نشاط آفات.',
      'كسر زجاج أو سقوط مواد غريبة داخل الأغذية.',
@@ -241,7 +239,6 @@ function refView(){
   return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي أساسيات سلامة الغذاء، والمدير يراجعها بصفة دورية.</p>`;
 }
 
-// دالة ردود البوت الذكية والموثقة بجيمي
 async function askBot(){
   const el = document.getElementById('botQ');
   const q = (el.value || '').trim();
@@ -388,9 +385,9 @@ function coverView(){
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
+    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -457,7 +454,7 @@ function empView(){
         <div>${esc(t.name)}</div>
         <div class="muted">${esc(t.zone)}</div>
         ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
-        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'خطأ في الهايجين أو النظافة - يرجى إعادة المهمة')})</span></div>`:''}
+        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'مخالفة هايجين')})</span></div>`:''}
       </div>
       ${tag}
     </div>`;
@@ -469,13 +466,14 @@ function empView(){
     <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
     <div class="bar"><div style="width:${resPct}%"></div></div>
     <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
-    <div class="muted">المهام المرفوضة (Not Done 👎🏻) بسبب الهايجين تخصم من رصيد النقاط وتتطلب إعادة إنجاز المهمة.</div>
+    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالدخول عليها وتصحيح التنفيذ والتصوير مجدداً.</div>
   </div>
   ${rows}
   <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
 }
 function openTask(id){
   const r = recOf(id, ST.shift);
+  // السماح بالدخول للمهمة لو لسة جديدة، أو لو مرفوضة (rejected) عشان يقدر يحاول تاني
   if(r && subS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
@@ -490,7 +488,7 @@ function taskView(){
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
-    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت وجيمي بشكل إلزامي قبل الاعتماد.</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت وجيمي بشكل إلزامي.</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
@@ -526,6 +524,7 @@ function capture(){
 }
 function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
 function closeTask(){ stopCam(); ST.cur=null; render(); }
+
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
   const t = findTask(ST.cur);
@@ -542,26 +541,40 @@ async function submitPhoto(){
   sendBtn.disabled = true;
   sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...';
   
-  // الفحص الإلزامي الفعلي
+  // الفحص الإلزامي
   const check = await botCheckHygiene(t, ST.photo, tempVal);
-  
+  const now = new Date();
+  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
+
   if(!check.ok){
+    // لو فشلت الفحوصات: يتم تسجيلها أوتوماتيك كـ rejected مع ذكر السبب وإخراج الموظف
+    const rejectedRec = {
+      date: ST.date, ym: ST.date.slice(0,7),
+      year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
+      shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
+      time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
+      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal,
+      aiNote: 'تم رفض المهمة أوتوماتيكياً بواسطة البوت والجيمي'
+    };
+    try{
+      await setDoc(doc(fdb,'done',id), rejectedRec);
+    }catch(e){
+      const q = getQ(); q.push({id, rec: rejectedRec}); setQ(q);
+    }
+
     ST.busy = false;
-    sendBtn.disabled = false;
-    sendBtn.innerText = 'تم 👍 (فحص البوت والجيمي الإلزامي)';
-    alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً بواسطة البوت وجيمي بسبب مخالفة معايير الهايجين أو سلامة الغذاء:\n' + check.reason + '\n\nيرجى تصحيح الخطأ وإعادة التصوير من جديد.');
-    retake();
+    closeTask(); // الخروج التلقائي من صفحة المهمة وإعادتها للقائمة الرئيسية
+    alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً وسجلها النظام كـ Not Done:\nسبب الرفض: ' + check.reason + '\n\nتم إخراجك للقائمة، وبإمكانك المحاولة مرة أخرى بالدخول على نفس المهمة وتصويرها بالشكل الصحيح.');
     return;
   }
 
-  const now = new Date();
-  const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
+  // لو نجحت الفحوصات تماماً
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'done', tempVal: tempVal, aiNote: 'تم اجتياز الفحص الإلزامي للبوت وجيمي بنجاح وتأكيد المطابقة'
+    photo: ST.photo, status: 'done', tempVal: tempVal, aiNote: 'تم اجتياز الفحص الإلزامي للبوت والجيمي بنجاح'
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
@@ -593,7 +606,7 @@ function revView(){
   
   const alertHtml = rejectedRecs.length ? `
     <div class="badbox">
-      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة):</b>
+      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة أوتوماتيكياً):</b>
       <ul style="margin:4px 0 0;padding-right:16px">
         ${rejectedRecs.map(r=>`<li style="font-size:13px">${esc(r.employee)} - ${esc(r.taskName)} (${esc(r.shift)}): ${esc(r.rejectReason||'مخالفة هايجين')}</li>`).join('')}
       </ul>
@@ -607,7 +620,7 @@ function revView(){
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
-        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض (Not Done 👎🏻)</button>
+        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض يدوياً (Not Done 👎🏻)</button>
         <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
       </div>
     </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
@@ -619,7 +632,7 @@ function revView(){
     <label>الشيفت</label>
     <select onchange="ST.revShift=this.value;render()">
       <option value="all" ${ST.revShift==='all'?'selected':''}>الاتنين</option>
-      ${SHIFTS.map(s=>`<option ${ST.revShift===s?'selected':''}>${s}</option>`).join('')}
+      ${SHIFTS.map(s=>`<option ${ST.revShift==s?'selected':''}>${s}</option>`).join('')}
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
@@ -631,7 +644,7 @@ function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
 }
 function rejectRec(id){
-  const why = prompt('اكتب سبب الرفض (Not Done 👎🏻 - مخالفة هايجين أو نظافة):', 'مخالفة معايير الهايجين والنظافة، يرجى إعادة المهمة.');
+  const why = prompt('اكتب سبب الرفض (Not Done 👎🏻):', 'مخالفة معايير الهايجين والنظافة، يرجى إعادة المحاولة.');
   if(!why) return;
   updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
 }
@@ -718,7 +731,7 @@ function repView(){
       النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
       ${items}</div>`;
   }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
-  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
+  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t}))) ;
   const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
 
   return `
