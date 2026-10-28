@@ -152,26 +152,41 @@ function isHygieneTask(t){
     || n.includes('الهايجين') || n.includes('غسل') || n.includes('الزي') || n.includes('صابون')
     || z.includes('الهايجين') || z.includes('سلامة');
 }
+let AIMOD = null;
+async function geminiGen(parts){
+  if(!AIMOD){
+    try{
+      const m = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js');
+      AIMOD = { m, ai: m.getAI(app, { backend: new m.GoogleAIBackend() }) };
+    }catch(e){ throw new Error('AI Logic غير مفعّل: ' + (e.message || e)); }
+  }
+  let lastErr = null;
+  for(const name of ['gemini-2.5-flash-lite','gemini-2.5-flash','gemini-2.0-flash']){
+    try{
+      const model = AIMOD.m.getGenerativeModel(AIMOD.ai, { model: name });
+      return await withTimeout(model.generateContent(parts), 25000);
+    }catch(e){ lastErr = e; }
+  }
+  throw new Error(lastErr ? (lastErr.message || String(lastErr)) : 'فشل غير معروف');
+}
 async function aiCleanCheck(t, photo){
-  const model = await gemini();
-  if(!model) return { verdict:'unsure', reason:'Gemini غير متاح حالياً' };
   if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
   const strict = isHygieneTask(t);
   const rule = strict
     ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.'
     : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.';
   try{
-    const r = await withTimeout(model.generateContent([
+    const r = await geminiGen([
       { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
       { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
-    ]), 25000);
+    ]);
     const txt = (r.response.text() || '').replace(/```json/g,'').replace(/```/g,'');
     const x = txt.indexOf('{'), y = txt.lastIndexOf('}');
     const obj = JSON.parse(txt.substring(x, y+1));
     const v = ['pass','fail','unsure'].includes(obj.verdict) ? obj.verdict : 'unsure';
     return { verdict: v, reason: obj.reason || '' };
   }catch(e){
-    return { verdict:'unsure', reason:'Gemini ما ردش' };
+    return { verdict:'unsure', reason:'Gemini ما ردش: ' + ((e && e.message) || 'خطأ') };
   }
 }
 function tempCheck(t, tempVal){
