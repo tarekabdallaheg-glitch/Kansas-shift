@@ -162,7 +162,7 @@ async function aiCleanCheck(t, photo){
     : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure، ولو مش متأكد قول unsure.';
   try{
     const r = await withTimeout(model.generateContent([
-      { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
+      { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
       { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
     ]), 25000);
     const txt = (r.response.text() || '').replace(/```json/g,'').replace(/```/g,'');
@@ -191,6 +191,12 @@ async function botCheckHygiene(t, photo, tempVal){
   const hygiene = isHygieneTask(t);
   const tRes = tempCheck(t, tempVal);
   if(tRes) return { status:'rejected', violation:true, reason:'البوت: ' + tRes };
+  const isTempOnly = /الثلاجة|فحص الثلاجات|الفريزر|الباردة|الساخنة|الهولدنج/.test(t.name || '');
+  if(isTempOnly && tempVal !== null && tempVal !== undefined && !isNaN(tempVal)){
+    const bright0 = await imageBrightness(photo);
+    if(bright0 < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة، المدير يراجعها' };
+    return { status:'done', violation:false, reason:'البوت: الحرارة (' + tempVal + '°F) مطابقة للحد' };
+  }
   const bright = await imageBrightness(photo);
   if(bright < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة (سطوع ' + Math.round(bright) + ' من 255)، المدير يراجعها' };
   const ai = await aiCleanCheck(t, photo);
@@ -305,6 +311,23 @@ function refView(){
   return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي أساسيات سلامة الغذاء، والمدير يراجعها بصفة دورية.</p>`;
 }
 
+function localAnswer(q){
+  const x = (q||'').toLowerCase();
+  const has = arr => arr.some(w => x.includes(w));
+  if(has(['فريزر','تجميد'])) return 'الفريزر لازم يكون 0°F أو أقل.';
+  if(has(['ثلاج','تبريد','حرار','هولدنج','ساخن','بارد'])) return 'الثلاجة لازم تكون أقل من 39°F، والهولدنج الساخن أعلى من 140°F. لو الرقم مخالف، المهمة بتترفض وتتسجل مخالفة، وبلّغ المدير.';
+  if(has(['دجاج','فراخ'])) return 'الدجاج لازم يوصل داخلياً لـ 165°F على الأقل.';
+  if(has(['زيت','مقلاة'])) return 'صفّي الزيت يومياً بعد ما يبرد، وافحص لونه وريحته، ولو داكن أو ريحته وحشة بلّغ المدير.';
+  if(has(['حشر','فار','قوارض'])) return 'بلّغ المدير فوراً، ومتحاولش تتعامل معاها لوحدك.';
+  if(has(['إيد','ايد','غسل','هايجين','زي','شعر'])) return 'اغسل إيدك قبل البدء، وبعد الحمام، وبعد لمس الموبايل. الزي النظيف وغطاء الشعر إلزاميين.';
+  if(has(['تنظيف','تعقيم','معقم','نضاف'])) return 'نضّف الأول، بعدين اشطف، بعدين عقّم بمعقم معتمد للأغذية، وسيبه الوقت المكتوب على العبوة.';
+  if(has(['شيفت','مهام','متبقي','ناقص','باقي'])){
+    const sh = ST.shift;
+    const left = taskList(sh).filter(t=>!subS(recOf(t.id,sh)?.status));
+    return left.length ? 'باقي عليك ' + left.length + ' مهام في شيفت ' + sh + ': ' + left.slice(0,5).map(t=>t.name).join('، ') : 'كل مهام شيفت ' + sh + ' اتنفذت ✓';
+  }
+  return '';
+}
 async function askBot(){
   const el = document.getElementById('botQ');
   const q = (el.value || '').trim();
@@ -312,8 +335,8 @@ async function askBot(){
   ST.chatMsgs.push({ who:'me', text:q });
   el.value = '';
   
-  let ans = '';
-  const model = await gemini();
+  let ans = localAnswer(q);
+  const model = ans ? null : await gemini();
   if(model){
     try{
       const r = await model.generateContent([
@@ -323,7 +346,7 @@ async function askBot(){
     }catch(e){
       ans = 'عذراً، حدث خطأ في الاتصال بالبوت. يرجى مراجعة المرجع الرئيسي.';
     }
-  } else {
+  } else if(!ans) {
     ans = 'تنبيه صارم: أي تهاون في الهايجين أو سلامة الغذاء مرفوض تماماً.';
   }
 
