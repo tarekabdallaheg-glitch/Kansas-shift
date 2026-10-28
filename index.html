@@ -6,71 +6,95 @@
 <meta name="theme-color" content="#F5B800">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<title>KANSAS CHICKEN - النظام المتكامل للإدارة</title>
+<title>KANSAS CHICKEN - الشيفتات</title>
 <style>
-:root{--bg:#f4f6f8;--card:#ffffff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F;--shadow:0 8px 20px rgba(29,38,48,0.08)}
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F;--shadow:0 8px 20px rgba(29,38,48,0.06)}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
+img,video,canvas,svg,input,select,textarea,table{max-width:100%}
+button{white-space:normal;max-width:100%}
 #app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
 
-/* App Header & Branding */
+/* App Header & Navigation */
 .app-header{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:14px 18px;border-radius:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--line)}
-.app-logo-sm{width:44px;height:44px;border-radius:14px;background:var(--main);color:var(--brand);font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(245,184,0,0.3)}
-
-/* Bottom Nav Bar */
+.app-logo-sm{width:42px;height:42px;border-radius:14px;background:var(--main);color:var(--brand);font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 0;z-index:100;box-shadow:0 -6px 20px rgba(0,0,0,0.06)}
-.nav-item{background:none;border:none;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 10px;margin:0;width:auto;font-weight:600}
+.nav-item{background:none;border:none;color:var(--muted);font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 10px;margin:0;width:auto;font-weight:bold}
 .nav-item.active{color:var(--brand)}
 
-/* Cards & UI Elements */
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
-h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 10px}
+h1{font-size:18px;margin:0}h2{font-size:16px;margin:0 0 8px}
 .muted{color:var(--muted);font-size:13px}
+.brand{font-size:30px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
 label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:bold}
-input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;outline:none}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px;outline:none}
 input:focus,select:focus{border-color:var(--main)}
-button{width:100%;padding:14px;border:0;border-radius:14px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px;box-shadow:0 4px 12px rgba(245,184,0,0.25)}
-button:active{transform:scale(0.98)}
-button.sec{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
-button.danger{background:#ffebee;color:var(--bad);border:1px solid #ffcdd2;box-shadow:none}
+button{width:100%;padding:14px;border:0;border-radius:14px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px;box-shadow:0 4px 12px rgba(245,184,0,0.2)}
+button.sec{background:transparent;color:var(--text);border:1px solid var(--main);box-shadow:none}
+button.danger{color:var(--bad);border-color:var(--bad);background:#ffebee;box-shadow:none}
 button.small{width:auto;padding:6px 12px;margin:0;font-size:12px}
+button:disabled{opacity:.45}
 
-/* Tabs & Tasks */
-.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
-.tab{flex:1;margin:0;padding:10px 12px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;cursor:pointer;white-space:nowrap;font-weight:600}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
+.tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;font-weight:bold;cursor:pointer;white-space:nowrap}
 .tab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
-.task{display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.btns button{flex:1;margin:0;padding:9px;font-size:13px}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
+.bar>div{height:100%;background:var(--main)}
+.task{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow)}
 .task .t{flex:1}
 .dot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;background:var(--muted)}
 .dot.done{background:var(--ok)}.dot.review{background:var(--warn)}.dot.bad{background:var(--bad)}
 .tag{font-size:12px;padding:4px 10px;border-radius:10px;background:var(--line);color:var(--muted);white-space:nowrap;font-weight:bold}
 .tag.done{background:#e8f5e9;color:var(--ok)}.tag.review{background:#fff4e0;color:var(--warn)}.tag.bad{background:#ffebee;color:var(--bad)}
 
-/* Media & Camera */
 #cam{width:100%;aspect-ratio:3/4;background:#000;border-radius:16px;object-fit:cover;display:none}
 #shot{width:100%;border-radius:16px;display:none}
+.shot{width:100%;border-radius:12px;margin-top:8px}
 .placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
-.meta{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.6}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:bold}
-.badbox{background:#ffebee;color:var(--bad);border:1px solid #ffcdd2;border-radius:14px;padding:14px;font-size:13px;margin-bottom:14px}
-.rec{page-break-inside:avoid;border-bottom:1px solid var(--line);padding:12px 0}.rec img{width:100%;max-width:280px;display:block;margin-top:8px;border-radius:12px}
-
-/* Login & Splash Screen */
-.login-wrap{padding-top:40px}
-.logo{width:88px;height:88px;margin:0 auto;border-radius:26px;background:var(--main);color:var(--brand);font-size:52px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 25px rgba(245,184,0,0.35)}
-.brand-title{font-size:28px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:16px}
-.splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:999}
-.sp-bar{width:160px;height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden}
-.sp-bar>div{height:100%;width:0;background:var(--brand);animation:fill 1.5s ease-in-out forwards}
+.meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:bold}
+.warnbox{background:#fff4e0;color:#8a5a00;border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px}
+.badbox{background:#ffebee;color:#c62828;border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px}
+.logo{width:80px;height:80px;margin:0 auto;border-radius:24px;background:var(--main);color:var(--brand);font-size:48px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(245,184,0,0.35)}
+body{background:linear-gradient(160deg,#fff7d6 0%,#f4f6f8 45%,#ffe3e0 100%) fixed}
+.login-wrap{padding-top:36px}
+.greet{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:15px}
+.login-card{padding:20px;border-radius:20px;box-shadow:var(--shadow);border:0}
+.login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4)}
+.splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9}
+.sp-logo{animation:spIn .5s ease-out both}
+@keyframes spIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.sp-name{font-size:24px;font-weight:900;margin-top:18px;letter-spacing:2px;direction:ltr}
+.sl{display:inline-block;opacity:.25;color:var(--muted);animation:glow .3s ease-out forwards}
+@keyframes glow{to{opacity:1;color:var(--brand);text-shadow:0 0 14px rgba(245,184,0,.95)}}
+.sp-bar{width:140px;height:4px;border-radius:4px;background:var(--line);margin-top:22px;overflow:hidden}
+.sp-bar>div{height:100%;width:0;background:var(--main);animation:fill 1.6s ease-in-out .1s forwards}
 @keyframes fill{to{width:100%}}
-
+.cover{max-width:380px;margin:0 auto;padding-top:24px;text-align:center}
+.cover svg{width:100%;height:auto;display:block}
 #printArea{display:none}
-@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:16px}}
-
+@media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}.emp-block{page-break-inside:avoid}}
 @media (prefers-color-scheme: dark){
-:root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643;--brand:#ff6b6b}
+:root{--bg:#111820;--card:#1b2530;--text:#e8edf2;--muted:#9aa6b2;--line:#2a3643}
+body{background:var(--bg) !important}
+.brand{color:#ff6b6b}
+.warnbox{background:#3a2e14;color:#ffd58a}
+.badbox{background:#3a1d1d;color:#ff8a8a}
+.tag{background:#2a3643}.tag.done{background:#1d3a22}.tag.review{background:#3d2f12}.tag.bad{background:#3a1d1d}
+.placeholder{background:#1f2730}
 .bottom-nav{background:#1b2530;border-top-color:#2a3643}
+.app-header{background:#1b2530;border-color:#2a3643}
 }
+.rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
+html,body{max-width:100%;overflow-x:hidden}
+#app{width:100%;max-width:520px;box-sizing:border-box;overflow-x:hidden}
+.top{flex-wrap:wrap}.top>div{min-width:0;flex:1 1 auto}
+.tabs{flex-wrap:wrap}.tab{min-width:0;flex:1 1 22%}
+.card,.task,.score-card,.notify-banner{max-width:100%;min-width:0;overflow-wrap:anywhere}
+.btns{flex-wrap:wrap}table{display:block;overflow-x:auto;max-width:100%}img{max-width:100%}
 </style>
 </head>
 <body>
@@ -90,13 +114,18 @@ const firebaseConfig = {
   appId: "1:781063241169:web:205b4051b262de257e34f0"
 };
 const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
+
+// إعدادات بوت تيليجرام الخاص بطارق
 const TELEGRAM_TOKEN = '9162027978:AAG0zg0tGy19Gmjh07c19ge71TtGtFEHYs';
 const TELEGRAM_CHAT_ID = '5260245517';
 
 async function sendTelegramAlert(text) {
   try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(text)}`);
-  } catch(e) { console.warn(e); }
+    const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(text)}`;
+    await fetch(url);
+  } catch(e) {
+    console.warn('تعذر إرسال تنبيه تيليجرام:', e);
+  }
 }
 
 const app = initializeApp(firebaseConfig);
@@ -113,7 +142,9 @@ async function gemini(){
   return GEM;
 }
 
-function withTimeout(p, ms){ return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى الوقت')), ms))]); }
+function withTimeout(p, ms){
+  return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى وقت الانتظار')), ms))]);
+}
 
 function imageBrightness(photo){
   return new Promise(res=>{
@@ -122,7 +153,8 @@ function imageBrightness(photo){
     img.onload = ()=>{
       const c = document.createElement('canvas');
       c.width = 64; c.height = Math.max(1, Math.round(64*img.height/img.width));
-      const x = c.getContext('2d'); x.drawImage(img, 0, 0, c.width, c.height);
+      const x = c.getContext('2d');
+      x.drawImage(img, 0, 0, c.width, c.height);
       const d = x.getImageData(0, 0, c.width, c.height).data;
       let sum = 0, n = 0;
       for(let i=0; i<d.length; i+=4){ sum += (d[i]+d[i+1]+d[i+2])/3; n++; }
@@ -134,8 +166,11 @@ function imageBrightness(photo){
 }
 
 function isHygieneTask(t){
-  const n = t.name || ''; const z = t.zone || '';
-  return n.includes('حرارة') || n.includes('الثلاجات') || n.includes('الفريزر') || n.includes('الهايجين') || n.includes('غسل');
+  const n = t.name || '';
+  const z = t.zone || '';
+  return n.includes('حرارة') || n.includes('الثلاجات') || n.includes('الفريزر') || n.includes('المنتجات')
+    || n.includes('الهايجين') || n.includes('غسل') || n.includes('الزي') || n.includes('صابون')
+    || z.includes('الهايجين') || z.includes('سلامة');
 }
 
 let AIMOD = null;
@@ -144,302 +179,516 @@ async function geminiGen(parts){
     try{
       const m = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js');
       AIMOD = { m, ai: m.getAI(app, { backend: new m.GoogleAIBackend() }) };
-    }catch(e){ throw new Error('AI غير مفعّل'); }
+    }catch(e){ throw new Error('AI Logic غير مفعّل: ' + (e.message || e)); }
   }
-  for(const name of ['gemini-2.5-flash-lite','gemini-2.5-flash']){
+  let lastErr = null;
+  for(const name of ['gemini-2.5-flash-lite','gemini-2.5-flash','gemini-2.0-flash']){
     try{
       const model = AIMOD.m.getGenerativeModel(AIMOD.ai, { model: name });
       return await withTimeout(model.generateContent(parts), 25000);
-    }catch(e){}
+    }catch(e){ lastErr = e; }
   }
-  throw new Error('فشل الفحص الذكي');
+  throw new Error(lastErr ? (lastErr.message || String(lastErr)) : 'فشل غير معروف');
 }
 
 async function aiCleanCheck(t, photo){
   if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
+  const strict = isHygieneTask(t);
+  const rule = strict
+    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.'
+    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.';
   try{
     const r = await geminiGen([
-      { text: 'المهمة: "' + t.name + '". هل الصورة مطابقة؟ رد بـ JSON فقط بالشكل: {"verdict":"pass" أو "fail","reason":"سبب قصير"}' },
+      { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
       { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
     ]);
     const txt = (r.response.text() || '').replace(/```json/gi,'').replace(/```/g,'');
-    const obj = JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}')+1));
-    return { verdict: String(obj.verdict||'').toLowerCase(), reason: obj.reason || '' };
-  }catch(e){ return { verdict:'pass', reason:'مقبولة' }; }
+    const x = txt.indexOf('{'), y = txt.lastIndexOf('}');
+    let v = 'unsure', reason = '';
+    try{
+      const obj = JSON.parse(txt.substring(x, y+1));
+      const raw = String(obj.verdict || '').toLowerCase();
+      reason = obj.reason || '';
+      if(raw.includes('unsure') || raw.includes('غير متأكد')) v = 'unsure';
+      else if(raw.includes('fail') || raw.includes('مرفوض') || raw.includes('غير مطابق')) v = 'fail';
+      else if(raw.includes('pass') || raw.includes('مطابق')) v = 'pass';
+    }catch(e){
+      const low = txt.toLowerCase();
+      if(low.includes('"unsure"')) v = 'unsure';
+      else if(low.includes('"fail"') || low.includes('مرفوض')) v = 'fail';
+      else if(low.includes('"pass"')) v = 'pass';
+      reason = 'رد غير مفهوم من جيمي: ' + txt.slice(0, 80);
+    }
+    return { verdict: v, reason: reason };
+  }catch(e){
+    return { verdict:'unsure', reason:'Gemini ما ردش: ' + ((e && e.message) || 'خطأ') };
+  }
+}
+
+function tempCheck(t, tempVal){
+  if(tempVal === null || tempVal === undefined || isNaN(tempVal)) return null;
+  const n = t.name || '';
+  const isFridge = n.includes('فحص الثلاجات') || n.includes('الثلاجة');
+  const isCold = n.includes('الباردة');
+  const isHot = n.includes('الساخنة') || n.includes('الهولدنج');
+  if(n.includes('الفريزر') && tempVal > 0) return 'درجة الفريزر (' + tempVal + '°F) أعلى من 0°F.';
+  if(isFridge && tempVal >= 39) return 'درجة الثلاجة (' + tempVal + '°F) أعلى من الحد (أقل من 39°F).';
+  if(isCold && isHot && tempVal >= 39 && tempVal <= 140) return 'الحرارة (' + tempVal + '°F) في منطقة الخطر (الباردة أقل من 39°F، والساخنة أعلى من 140°F).';
+  if(isCold && !isHot && tempVal >= 39) return 'المنتج البارد (' + tempVal + '°F) أعلى من 39°F.';
+  if(isHot && !isCold && tempVal < 140) return 'المنتج الساخن (' + tempVal + '°F) أقل من 140°F.';
+  return null;
 }
 
 async function botCheckHygiene(t, photo, tempVal){
+  const hygiene = isHygieneTask(t);
+  const tRes = tempCheck(t, tempVal);
+  if(tRes) return { status:'rejected', violation:true, reason:'البوت: ' + tRes };
+  const isTempOnly = /الثلاجة|فحص الثلاجات|الفريزر|الباردة|الساخنة|الهولدنج/.test(t.name || '');
+  if(isTempOnly && tempVal !== null && tempVal !== undefined && !isNaN(tempVal)){
+    const bright0 = await imageBrightness(photo);
+    if(bright0 < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة، المدير يراجعها' };
+    return { status:'done', violation:false, reason:'البوت: الحرارة (' + tempVal + '°F) مطابقة للحد' };
+  }
   const bright = await imageBrightness(photo);
-  if(bright < 40) return { status:'pending', violation:false, reason:'الصورة معتمة، المدير يراجعها' };
+  if(bright < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة (سطوع ' + Math.round(bright) + ' من 255)، المدير يراجعها' };
   const ai = await aiCleanCheck(t, photo);
-  if(ai.verdict === 'fail') return { status:'rejected', violation:true, reason:'جيمي: ' + ai.reason };
-  return { status:'done', violation:false, reason:'مقبولة' };
+  if(ai.verdict === 'fail' && hygiene) return { status:'rejected', violation:true, reason:'جيمي: ' + (ai.reason || 'الهايجين أو سلامة الغذاء غير مطابقة') };
+  if(ai.verdict === 'fail') return { status:'pending', violation:false, reason:'جيمي شاف احتمال اتساخ، المدير يراجع: ' + (ai.reason || '') };
+  if(ai.verdict === 'unsure') return { status:'pending', violation:false, reason:'جيمي مش متأكد، المدير يراجع: ' + (ai.reason || '') };
+  return { status:'done', violation:false, reason:'البوت وجيمي اتفقوا إن المهمة مطابقة' };
 }
 
 const DEFAULT_TASKS = [
- ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],
- ['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي']
+ ['صباحي','الواجهة','عتب الأبواب'],['صباحي','الواجهة','الزجاج'],['صباحي','الدرايف ثرو','نظافة الدرايف ثرو'],
+ ['صباحي','المطبخ','فحص الثلاجات وتسجيل درجة الحرارة'],['صباحي','المطبخ','تشغيل الزيت في المقلاة وفحص نظافته'],
+ ['صباحي','المطبخ','تشغيل الفرن والمعدات وفحص الحرارة'],['صباحي','المطبخ','نظافة الهوايات'],
+ ['صباحي','المطبخ','تجهيز التتبيلة وتسجيل وقت التجهيز'],['صباحي','المطبخ','تنظيف الكاونتر وأماكن التحضير'],
+ ['صباحي','المخزن','فحص تواريخ صلاحية الخامات'],['صباحي','المخزن','استلام المنتجات بدرجات حرارة'],
+ ['صباحي','المخزن','قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)'],
+ ['صباحي','الصالة','تنظيف الصالة وترتيب الكراسي والترابيزات'],['صباحي','الصالة','نظافة الأرضية'],
+ ['صباحي','الصالة','نظافة ستارة التهوية'],['صباحي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
+ ['صباحي','الكاشير','تشغيل الكاشير والشاشات والتأكد من الإنترنت'],
+ ['مسائي','المطبخ','تصفية زيت المقلاة وتنظيفها'],['مسائي','المطبخ','تنظيف المقلاة والمعدات وفصل الكهرباء'],
+ ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],['مسائي','المطبخ','تنظيف الثلاجات من الداخل والتأكد من قفلها'],
+ ['مسائي','الخارج','التخلص من المخلفات وتنظيف منطقة الزبالة'],['مسائي','الصالة','تنظيف الصالة والأرضيات'],
+ ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
+ ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],['مسائي','الواجهة','إطفاء الأنوار وتأمين الأبواب']
 ];
 
-const SHIFTS = ['صباحي','مسائي'];
 const SK = {'صباحي':'am','مسائي':'pm'};
+const SHIFTS = ['صباحي','مسائي'];
+const TIPS = {
+ 'عتب الأبواب': 'امسح العتب من التراب والدهون بمنظف مناسب والجفّفه، واتأكد من عدم وجود بقع.',
+ 'الزجاج': 'امسح الزجاج من الداخل والخارج بقطعة مايكروفايبر ومنظف زجاج، بحركة دائرية خفيفة.',
+ 'نظافة الدرايف ثرو': 'امسح منطقة الشباك والكاونتر، ونضّف الصينية، واتأكد إن مفيش زيت على الأرض.',
+ 'فحص الثلاجات وتسجيل درجة الحرارة': 'اقرا درجة الحرارة على الشاشة وسجّلها، ولازم تكون أقل من 39°F.',
+ 'تشغيل الزيت في المقلاة وفحص نظافته': 'اتأكد إن الزيت نظيف وصافي ومفيش بقايا محروقة، واملا المقلاة للمستوى المطلوب.',
+ 'تشغيل الفرن والمعدات وفحص الحرارة': 'شغّل الفرن واتركه يسخن للمدة المطلوبة، واتأكد من الحرارة على الشاشة قبل أي تحضير.',
+ 'نظافة الهوايات': 'نظّف فلاتر الهود بالماء والصابون، واتأكد إنها جافة قبل ما ترجع مكانها.',
+ 'تجهيز التتبيلة وتسجيل وقت التجهيز': 'جهّز التتبيلة بالكميات المحددة، وسجّل وقت التجهيز، ومتستخدمهاش بعد الوقت المحدد.',
+ 'تنظيف الكاونتر وأماكن التحضير': 'نظّف الأسطح بمنظف معتمد للأغذية واشطفها وجففها، وخلي أدوات اللحم بعيدة عن الجاهز.',
+ 'فحص تواريخ صلاحية الخامات': 'راجع تاريخ الصلاحية على كل صنف، وارمي أي حاجة منتهية، وخلي القديم قدام الجديد.',
+ 'استلام المنتجات بدرجات حرارة': 'قيّس حرارة الشحنة عند الاستلام، وارفض أي منتج مش مطابق للحد المسموح.',
+ 'قياس درجة حرارة المنتجات (الباردة أقل من 39°F، الساخنة أعلى من 140°F)': 'قيس حرارة المنتج بترمومتر نظيف، والباردة أقل من 39°F، والساخنة أعلى من 140°F، وسجّل القراءة.',
+ 'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
+ 'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
+ 'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
+ 'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
+ 'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
+ 'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
+ 'تنظيف الفرن والشواية والمنطقة حوالين الكاونتر': 'نظّف الفرن والشواية بمنظف مخصص بعد ما يبرد، ونظّف المنطقة حواليهم من الدهون.',
+ 'تنظيف الثلاجات من الداخل والتأكد من قفلها': 'نظّف رفوف الثلاجة من الداخل، واتأكد إن الباب بيقفل كويس.',
+ 'التخلص من المخلفات وتنظيف منطقة الزبالة': 'اقفل أكياس الزبالة كويس، وحطها في المكان المخصص، ونظّف المنطقة حواليها.',
+ 'تنظيف الصالة والأرضيات': 'امسح الأرضيات وانضف الترابيزات والكراسي، واتأكد إن مفيش أي بقع.',
+ 'تأمين المخزن وتسجيل الجرد اليومي': 'اقفل المخزن، وسجّل الجرد اليومي، واتأكد إن الخامات مرتبة ومغطاة.',
+ 'قفل الكاشير وتسجيل الإيراد': 'اقفل الكاشير، واطبع تقرير اليوم، وسجّل الإيراد في شيت الإيراد.',
+ 'إطفاء الأنوار وتأمين الأبواب': 'اطفي الأنوار اللي مش محتاجها، واتأكد من قفل كل الأبواب والشبابيك.'
+};
+
 const REFERENCE = [
- { t:'تعليمات مهام مدير الوردية العامة', i:['1. توزيع وتوجيه الشيفت ومتابعة المهام.', '2. فحص درجات الحرارة والجهزية قبل التشغيل.', '3. متابعة سرعة وجودة الخدمة وسلامة الغذاء.'] },
- { t:'الهايجين الشخصي ونظافة الأغذية', i:['غسل اليدين بانتظام بالماء الساخن والصابون.', 'ارتداء الزي الرسمي وغطاء الرأس ونظافة المظهر.'] }
+ {
+   t:'تعليمات مهام مدير الوردية العامة',
+   i:[
+     '1. توزيع وتوجيه الشيفت: متابعة وتوزيع المهام اليومية لكل موظف والتأكد من الالتزام الكامل بالخطة وتواجد كل موظف في محطته.',
+     '2. الفحص والتحقق قبل التشغيل: مراجعة درجات حرارة الثلاجات والمقالي وفلاتر الهود والتأكد من جاهزية الأجهزة وجودة الزيت قبل استقبال أول اوردر.',
+     '3. متابعة سرعة وجودة الخدمة: مراقبة زمن التجهيز والتسليم، وتفقد جودة التغليف وشكل وجبات كنساس المطابقة للمواصفات.',
+     '4. إدارة المظهر والهايجين: التفتيش المستمر على الزي الرسمي للموظفين وغسل الأيدي والالتزام التام بالتعليمات المحددة.',
+     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste)، والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
+     '6. إقفال وتأمين الشيفت: الإشراف على خطوات الإغلاق، قفل الكاشيرات والجرد، التأكد من إيقاف المعدات وتأمين الفرع بالكامل.'
+   ]
+ },
+ {
+   t:'الهايجين الشخصي والنظافة العامة',
+   i:[
+     'غسل اليدين: بالماء الساخن والصابون لمدة لا تقل عن 20 ثانية (قبل البدء، بعد استخدام الحمام، بعد لمس الوجه أو الشعر أو الهواتف أو النقود).',
+     'الزي الرسمي: ارتداء زي نظيف بالكامل، غطاء الرأس (Hairnet)، وقناع الوجه عند الحاجة، وضرورة تقليم الأظافر وعدم ارتداء الساعات أو الخواتم.',
+     'حالة الموظف الصحية: يمنع تماماً عمل أي موظف يعاني من أعراض مرضية (إسهال، قيء، حرارة مرتفعة، التهاب جروح مكشوفة) ويجب إبلاغ المدير فوراً.',
+     'خطوات التعقيم الصحيحة: التنظيف بالمنظف أولاً لإزالة الدهون، ثم الشطف بالماء، ثم استخدام المطهر المعتمد للأغذية مع ترك المطهر يجف بالهواء للوقت المحدد.'
+   ]
+ },
+ {
+   t:'درجات الحرارة وسلامة الغذاء (Critical Control Points)',
+   i:[
+     'الثلاجات والمبردات: يجب أن تكون درجة الحرارة أقل من 39°F (4°C) لضمان سلامة المنتجات الطازجة.',
+     'الفريزر (التجميد): يجب أن يكون على درجة حرارة 0°F (-18°C) أو أقل.',
+     'الهولدنج الساخن (Hot Holding): الأغذية الساخنة المعروضة يجب أن تظل عند درجة حرارة أعلى من 140°F (60°C).',
+     'درجة طهي الدجاج: يجب أن تصل حرارة الدجاج الداخلية أثناء القلي أو الشوي إلى 165°F (74°C) على الأقل.',
+     'منع التلوث المتبادل: فصل ألواح التقطيع والأدوات (ألواح حمراء للحوم النيئة، خضراء للخضروات، بيضاء للأغذية الجاهزة) واستخدام القفازات وتغييرها باستمرار.',
+     'قاعدة FIFO: صرف المخزون الأقدم أولاً (First In, First Out) والتخلص الفوري من أي خامات منتهية الصلاحية.'
+   ]
+ },
+ {
+   t:'الزيت والمقالي والتشغيل الآمن',
+   i:[
+     'فحص الزيت: فحص لون وريحة الزيت بانتظام قبل التشغيل؛ وفي حال وجود رائحة كريهة أو لون داكن محترق، يتم إيقاف المقلاة وإبلاغ المدير.',
+     'التصفية والتنظيف: تصفية الزيت يومياً بعد أن يبرد تماماً وإزالة الرواسب المحروقة.',
+     'الأمان الكهربائي: فصل التيار الكهربائي قبل إجراء أي غسيل أو صيانة للمعدات والفرن.'
+   ]
+ },
+ {
+   t:'حالات الطوارئ والتبليغ الفوري للمدير',
+   i:[
+     'أي قراءة حرارة غير مطابقة المواصفات في الثلاجات أو المنتجات.',
+     'حدوث أي تسريب مياه أو غاز أو ماس كهربائي.',
+     'ظهور أي حشرات، قوارض، أو علامات نشاط آفات.',
+     'كسر زجاج أو سقوط مواد غريبة داخل الأغذية.',
+     'حدوث إصابة لأي موظف أثناء الشيفت.'
+   ]
+ }
 ];
-
-const ST = { user:null, role:null, name:'', shift:'صباحي', tab:'rev', date:todayStr(), month:todayStr().slice(0,7), revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', view:'tasks', showChat:false, chatMsgs:[] };
-let TASKS=[], DONE=[], QS=[], unsubDone=null, camStream=null;
-
-const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
-function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
-function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-const okS = s => s==='approved'||s==='done';
-const subS = s => s==='pending' || s==='done' || s==='approved';
-function stLabel(s){ return ({done:'معتمدة 👍',approved:'معتمدة ✅',pending:'قيد المراجعة ⏳',rejected:'مرفوضة ❌'})[s]||'لسه'; }
-function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
-function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
-function findTask(id){return TASKS.find(t=>t.id===id);}
-function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
-function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
-
-onAuthStateChanged(auth, u=>{
-  ST.authReady = true; ST.user = u;
-  if(u){
-    ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
-    ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
-    subDone(); subTasks(); if(ST.role==='mgr') { loadReport(); loadQuestions(); }
-  } else { ST.role=null; ST.cur=null; DONE=[]; TASKS=[]; }
-  render();
-});
-
-function subTasks(){ onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); render(); }); }
-function subDone(){ onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)), s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); render(); }); }
-function loadReport(){ getDocs(query(collection(fdb,'done'), where('ym','==',ST.month))).then(s=>{ ST.report = s.docs.map(d=>d.data()); render(); }); }
-function loadQuestions(){ getDocs(collection(fdb,'questions')).then(s=>{ QS = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.created-a.created); render(); }); }
-
-function render(){
-  const app = document.getElementById('app');
-  if(!ST.splashDone || !ST.authReady){ app.innerHTML = `<div class="splash"><div class="logo">K</div><div class="sp-bar"><div></div></div></div>`; return; }
-  if(!ST.user){
-    app.innerHTML = `<div class="login-wrap"><div class="logo">K</div><div class="brand-title">KANSAS CHICKEN</div>
-    <div class="card" style="margin-top:24px"><label>الإيميل</label><input id="lemail" type="email"><label>الباسورد</label><input id="lpass" type="password">
-    <button onclick="login()">دخول للنظام</button>${ST.authErr?`<div style="color:var(--bad);margin-top:8px">${esc(ST.authErr)}</div>`:''}</div></div>`;
-    return;
-  }
-  if(ST.cur){ app.innerHTML = taskView(); return; }
-
-  let content = '';
-  if(ST.role==='mgr'){
-    if(ST.tab==='rev') content = mgrRevView();
-    else if(ST.tab==='links') content = customerLinksView();
-    else if(ST.tab==='tasks') content = mgrTasksView();
-    else if(ST.tab==='qs') content = mgrQuestionsView();
-    else content = mgrRepView();
-  } else {
-    if(ST.view==='tasks') content = empTasksView();
-    else if(ST.view==='ref') content = refView();
-    else content = chatView();
-  }
-
-  app.innerHTML = `
-    <div class="app-header">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="app-logo-sm">K</div>
-        <div><h1>كنساس فرايد تشيكن</h1><div class="muted">${esc(ST.name)} · ${fmtDate(ST.date)}</div></div>
-      </div>
-      <button class="sec small" onclick="logout()">خروج</button>
-    </div>
-    ${content}
-    <div class="bottom-nav">
-      ${ST.role==='mgr' ? `
-        <button class="nav-item ${ST.tab==='rev'?'active':''}" onclick="ST.tab='rev';render()">📋 المراجعة</button>
-        <button class="nav-item ${ST.tab==='links'?'active':''}" onclick="ST.tab='links';render()">⭐ التقييمات</button>
-        <button class="nav-item ${ST.tab==='tasks'?'active':''}" onclick="ST.tab='tasks';render()">⚙️ المهام</button>
-        <button class="nav-item ${ST.tab==='qs'?'active':''}" onclick="ST.tab='qs';loadQuestions();render()">❓ الأسئلة</button>
-        <button class="nav-item ${ST.tab==='rep'?'active':''}" onclick="ST.tab='rep';loadReport();render()">📊 التقارير</button>
-      ` : `
-        <button class="nav-item ${ST.view==='tasks'?'active':''}" onclick="ST.view='tasks';render()">📋 المهام</button>
-        <button class="nav-item ${ST.view==='ref'?'active':''}" onclick="ST.view='ref';render()">📖 المرجع</button>
-        <button class="nav-item ${ST.view==='chat'?'active':''}" onclick="ST.view='chat';render()">🤖 المساعد</button>
-      `}
-    </div>`;
-}
-
-function empTasksView(){
-  const list = taskList(ST.shift);
-  const rows = list.map(t=>{
-    const r = recOf(t.id, ST.shift);
-    const st = r ? r.status : 'todo';
-    return `<div class="task" onclick="ST.cur='${t.id}';render();startCam()">
-      <span class="dot ${stCls(st)}"></span>
-      <div class="t"><div><b>${esc(t.name)}</b></div><div class="muted">${esc(t.zone)}</div></div>
-      <span class="tag ${stCls(st)}">${stLabel(st)}</span>
-    </div>`;
-  }).join('') || '<div class="card muted">لا توجد مهام حالياً.</div>';
-
-  return `
-    <div class="card">
-      <label>اختر الشيفت الحالي</label>
-      <select onchange="ST.shift=this.value;render()">
-        <option ${ST.shift==='صباحي'?'selected':''}>صباحي</option>
-        <option ${ST.shift==='مسائي'?'selected':''}>مسائي</option>
-      </select>
-    </div>
-    ${rows}`;
-}
-
-function customerLinksView(){
-  return `
-    <div class="card" style="background:linear-gradient(135deg,#fffbf0,#fff)">
-      <h3 style="margin-top:0">⭐ تقييمات العملاء بمنصات الإنترنت</h3>
-      <p class="muted">متابعة آراء العملاء لرفع جودة الخدمة والتشغيل:</p>
-      <div style="display:flex;gap:10px;margin-top:14px">
-        <a href="https://maps.google.com" target="_blank" style="flex:1;text-decoration:none"><button class="sec" style="margin-top:0;color:#4285F4;border-color:#4285F4">📍 جوجل خرائط</button></a>
-        <a href="https://www.talabat.com" target="_blank" style="flex:1;text-decoration:none"><button class="sec" style="margin-top:0;color:#FF5A00;border-color:#FF5A00">🛵 تطبيق طلبات</button></a>
-      </div>
-    </div>
-    <div class="card">
-      <h3>📊 تسجيل مؤشر رضا العملاء</h3>
-      <label>تقييم جوجل (من 5):</label><input type="number" step="0.1" placeholder="4.7">
-      <label>تقييم طلبات (من 5):</label><input type="number" step="0.1" placeholder="4.9">
-      <button onclick="alert('تم حفظ مؤشرات رضا العملاء بنجاح!')" style="margin-top:14px">حفظ بالسجل</button>
-    </div>`;
-}
-
-function mgrRevView(){
-  const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
-  const rejectedRecs = recs.filter(r=>r.status==='rejected');
-  const alertHtml = rejectedRecs.length ? `<div class="badbox"><b>⚠️ ${rejectedRecs.length} مهام مرفوضة أوتوماتيكياً تتطلب المتابعة.</b></div>` : '';
-  const cards = recs.map(r=>`
-    <div class="card">
-      <div style="display:flex;justify-content:space-between"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
-      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)}</div>
-      ${r.photo?`<img class="rec" src="${r.photo}" alt="">`:''}
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button onclick="setStatus('${r.id}','approved')" style="margin-top:0">اعتماد</button>
-        <button class="danger" onclick="rejectRec('${r.id}')" style="margin-top:0">رفض</button>
-        <button class="danger" onclick="removeRec('${r.id}')" style="margin-top:0">حذف</button>
-      </div>
-    </div>`).join('') || '<div class="card muted">لا توجد تسجيلات اليوم.</div>';
-
-  return `
-    ${alertHtml}
-    <div class="card">
-      <label>التاريخ</label><input type="date" value="${ST.date}" onchange="ST.date=this.value;subDone();render()">
-      <label>الشيفت</label>
-      <select onchange="ST.revShift=this.value;render()">
-        <option value="all">الكل</option>
-        <option>صباحي</option><option>مسائي</option>
-      </select>
-    </div>
-    ${cards}`;
-}
-
-function mgrTasksView(){
-  if(!TASKS.length) return `<div class="card"><p class="muted">مفيش مهام لسه.</p><button onclick="importDefaults()">استيراد المهام الافتراضية</button></div>`;
-  const lists = SHIFTS.map(sh=>{
-    const items = TASKS.filter(t=>t.shift===sh).map(t=>`
-      <div class="task" style="cursor:default">
-        <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
-        <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
-      </div>`).join('');
-    return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
-  }).join('');
-  return `
-    <div class="card"><h2>إضافة مهمة جديدة</h2>
-      <label>اسم المهمة</label><input id="nt_name">
-      <label>المنطقة</label><input id="nt_zone" placeholder="مطبخ، صالة...">
-      <label>الشيفت</label><select id="nt_shift"><option>صباحي</option><option>مسائي</option></select>
-      <button onclick="addTask()">إضافة المهمة</button>
-    </div>
-    ${lists}`;
-}
-
-function addTask(){
-  const name = document.getElementById('nt_name').value.trim();
-  const zone = document.getElementById('nt_zone').value.trim() || 'عام';
-  const shift = document.getElementById('nt_shift').value;
-  if(!name){ alert('اكتب اسم المهمة'); return; }
-  addDoc(collection(fdb,'tasks'), {name, zone, shift, order:Date.now(), active:true}).then(()=>render());
-}
-function delTask(id){ if(confirm('متأكد من الحذف؟')) deleteDoc(doc(fdb,'tasks',id)).then(()=>render()); }
-function importDefaults(){
-  Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true}))).then(()=>render());
-}
-
-function mgrQuestionsView(){
-  const cards = QS.map(q=>`
-    <div class="card">
-      <b>${esc(q.text)}</b>
-      <div class="muted">${esc(q.employee)} · ${esc(q.shift)}</div>
-      ${q.answered?`<div style="color:var(--ok);margin-top:6px">الرد: ${esc(q.answer)}</div>`:
-      `<input id="ans_${q.id}" placeholder="اكتب الرد هنا"><button onclick="answerQ('${q.id}')">إرسال الرد</button>`}
-    </div>`).join('') || '<div class="card muted">لا توجد أسئلة جديدة.</div>';
-  return `<div class="card"><h3>أسئلة الموظفين</h3></div>${cards}`;
-}
-
-function answerQ(id){
-  const v = (document.getElementById('ans_'+id).value||'').trim();
-  if(!v) return;
-  updateDoc(doc(fdb,'questions',id), {answer:v, answered:true}).then(()=>loadQuestions());
-}
-
-function mgrRepView(){
-  const [y,m] = ST.month.split('-').map(Number);
-  const days = new Date(y, m, 0).getDate();
-  let rows = '';
-  for(let d=1; d<=days; d++){
-    const date = ST.month+'-'+String(d).padStart(2,'0');
-    const cnt = sh => ST.report.filter(r=>r.date===date && r.shift===sh && okS(r.status)).length;
-    rows += `<tr><td>${d}</td><td>${cnt('صباحي')}</td><td>${cnt('مسائي')}</td></tr>`;
-  }
-  return `
-    <div class="card">
-      <label>الشهر</label><input type="month" value="${ST.month}" onchange="ST.month=this.value;loadReport();">
-      <button onclick="window.print()" style="margin-top:10px">طباعة التقرير (PDF)</button>
-    </div>
-    <div class="card" style="overflow-x:auto">
-      <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th></tr>${rows}</table>
-    </div>`;
-}
 
 function refView(){
-  return REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
+  const secs = REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="margin:6px 0;font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
+  return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي أساسيات سلامة الغذاء، والمدير يراجعها بصفة دورية.</p>`;
 }
 
-function chatView(){
-  const msgs = ST.chatMsgs.map(m=>`<div class="card" style="${m.who==='me'?'background:var(--bg)':''}"><b>${m.who==='me'?'أنت':'البوت'}</b><div>${esc(m.text)}</div></div>`).join('') || '<div class="muted">اسألني عن معايير الهايجين وسلامة الغذاء.</div>';
-  return `
-    ${msgs}
-    <div class="card">
-      <input id="botQ" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')askBot()">
-      <button onclick="askBot()">إرسال</button>
-    </div>`;
+function localAnswer(q){
+  const x = (q||'').toLowerCase();
+  const has = arr => arr.some(w => x.includes(w));
+  if(has(['فريزر','تجميد'])) return 'الفريزر لازم يكون 0°F أو أقل.';
+  if(has(['ثلاج','تبريد','حرار','هولدنج','ساخن','بارد'])) return 'الثلاجة لازم تكون أقل من 39°F، والهولدنج الساخن أعلى من 140°F. لو الرقم مخالف، المهمة بتترفض وتتسجل مخالفة، وبلّغ المدير.';
+  if(has(['دجاج','فراخ'])) return 'الدجاج لازم يوصل داخلياً لـ 165°F على الأقل.';
+  if(has(['زيت','مقلاة'])) return 'صفّي الزيت يومياً بعد ما يبرد، وافحص لونه وريحته، ولو داكن أو ريحته وحشة بلّغ المدير.';
+  if(has(['حشر','فار','قوارض'])) return 'بلّغ المدير فوراً، ومتحاولش تتعامل معاها لوحدك.';
+  if(has(['إيد','ايد','غسل','هايجين','زي','شعر'])) return 'اغسل إيدك قبل البدء، وبعد الحمام، وبعد لمس الموبايل. الزي النظيف وغطاء الشعر إلزاميين.';
+  if(has(['تنظيف','تعقيم','معقم','نضاف'])) return 'نضّف الأول، بعدين اشطف، بعدين عقّم بمعقم معتمد للأغذية، وسيبه الوقت المكتوب على العبوة.';
+  if(has(['شيفت','مهام','متبقي','ناقص','باقي'])){
+    const sh = ST.shift;
+    const left = taskList(sh).filter(t=>!subS(recOf(t.id,sh)?.status));
+    return left.length ? 'باقي عليك ' + left.length + ' مهام في شيفت ' + sh + ': ' + left.slice(0,5).map(t=>t.name).join('، ') : 'كل مهام شيفت ' + sh + ' اتنفذت ✓';
+  }
+  return '';
 }
 
 async function askBot(){
-  const el = document.getElementById('botQ'); const q = (el.value||'').trim(); if(!q) return;
-  ST.chatMsgs.push({who:'me', text:q}); el.value='';
-  let ans = 'يرجى الالتزام التام بمعايير النظافة والهايجين بمطعم كنساس.';
-  const m = await gemini();
-  if(m){ try{ const r = await m.generateContent([{text:q}]); ans = r.response.text(); }catch(e){} }
-  ST.chatMsgs.push({who:'bot', text:ans}); render();
+  const el = document.getElementById('botQ');
+  const q = (el.value || '').trim();
+  if(!q) return;
+  ST.chatMsgs.push({ who:'me', text:q });
+  el.value = '';
+  
+  let ans = localAnswer(q);
+  const model = ans ? null : await gemini();
+  if(model){
+    try{
+      const r = await model.generateContent([
+        { text: `أنت مساعد ومفتش سلامة وصحة غذاء وهايجين ذكي جداً لمطعم "كنساس فرايد تشيكن". أجب على سؤال الموظف بدقة واختصار شديد باللغة العربية بناءً على معايير سلامة الغذاء ودرجات الحرارة والهايجين في المطعم. سؤال الموظف هو: "${q}"` }
+      ]);
+      ans = (r.response.text() || '').trim();
+    }catch(e){
+      ans = 'عذراً، حدث خطأ في الاتصال بالبوت. يرجى مراجعة المرجع الرئيسي.';
+    }
+  } else if(!ans) {
+    ans = 'تنبيه صارم: أي تهاون في الهايجين أو سلامة الغذاء مرفوض تماماً.';
+  }
+
+  if(!ans){
+    ans = 'يرجى الالتزام التام بمعايير النظافة والهايجين وسلامة الغذاء بمطعم كنساس.';
+  }
+
+  ST.chatMsgs.push({ who:'bot', text:ans });
+  render();
+
+  try {
+    await addDoc(collection(fdb, 'questions'), {
+      text: q,
+      employee: ST.name || 'موظف',
+      shift: ST.shift || 'عام',
+      date: ST.date || todayStr(),
+      created: Date.now(),
+      answered: false,
+      answer: ''
+    });
+  } catch(err) {
+    console.warn('تعذر حفظ السؤال:', err);
+  }
+}
+
+function chatView(){
+  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت والجيمي'}</b><div><div>${esc(m.text)}</div></div></div>`).join('')
+    || '<div class="muted">اسألني عن صحة وسلامة الغذاء، درجات الحرارة، الهايجين، النظافة والمهام.</div>';
+  return `
+  ${msgs}
+  <div class="card">
+    <input id="botQ" placeholder="اكتب سؤالك هنا (حرارة،هايجين،سلامة غذاء)" onkeydown="if(event.key==='Enter')askBot()">
+    <button onclick="askBot()">إرسال</button>
+  </div>
+  <p class="muted" style="text-align:center">البوت والجيمي يعملان معاً لضمان الجودة والسلامة.</p>`;
+}
+
+let QS = [];
+function loadQuestions(){
+  getDocs(collection(fdb,'questions'))
+    .then(s=>{ QS = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.created-a.created); render(); })
+    .catch(e=>console.warn(e));
+}
+
+function questionsView(){
+  const cards = QS.map(q => `
+    <div class="card">
+      <b>${esc(q.text)}</b>
+      <div class="muted">${esc(q.employee)} · ${esc(q.shift)} · ${esc(q.date)}</div>
+      ${q.answered ? `<div style="color:#2e7d32;margin-top:6px">ردّك: ${esc(q.answer)}</div>` : `
+        <input id="ans_${q.id}" placeholder="اكتب الرد">
+        <button onclick="answerQ('${q.id}')">حفظ الرد</button>`}
+    </div>`).join('') || '<div class="card muted">ما فيش أسئلة لسه.</div>';
+  return `<div class="card"><button class="sec small" onclick="loadQuestions()">تحديث الأسئلة</button></div>${cards}`;
+}
+
+function answerQ(id){
+  const v = (document.getElementById('ans_'+id).value || '').trim();
+  if(!v){ alert('اكتب الرد'); return; }
+  updateDoc(doc(fdb,'questions',id), { answer:v, answered:true, answeredAt:Date.now() })
+    .then(()=>loadQuestions())
+    .catch(e=>fail('حفظ الرد', e));
+}
+
+function isLate(sh){
+  const end = new Date(ST.date+'T00:00:00');
+  if(sh==='صباحي'){ end.setHours(15,0,0,0); }
+  else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
+  return Date.now() > end.getTime();
+}
+
+function getQ(){ try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } }
+function setQ(q){ try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} }
+
+async function flushQ(){
+  const q = getQ();
+  if(!q.length || !navigator.onLine || !ST.user) return;
+  const keep = [];
+  for(const it of q){
+    try{ await setDoc(doc(fdb,'done',it.id), it.rec); }catch(e){ keep.push(it); }
+  }
+  setQ(keep);
+}
+window.addEventListener('online', flushQ);
+
+const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
+  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
+let TASKS=[], DONE=[], unsubDone=null, camStream=null;
+
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); }
+function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
+
+let unsubTasks = null;
+function subTasks(){
+  if(unsubTasks) unsubTasks();
+  unsubTasks = onSnapshot(collection(fdb,'tasks'), s=>{ TASKS = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+}
+
+function refreshAll(){
+  if(!ST.user) return;
+  ST.cur = null;
+  ST.photo = null;
+  ST.taken = false;
+  ST.busy = false;
+  ST.showRef = false;
+  ST.showChat = false;
+  stopCam();
+  subTasks();
+  subDone();
+  if(ST.role==='mgr') loadReport();
+  render();
+}
+
+function subDone(){
+  if(unsubDone) unsubDone();
+  unsubDone = onSnapshot(query(collection(fdb,'done'), where('date','==',ST.date)),
+    s=>{ DONE = s.docs.map(d=>({id:d.id,...d.data()})); refresh(); }, e=>console.warn(e));
+}
+
+onAuthStateChanged(auth, u=>{
+  ST.authReady = true;
+  ST.user = u;
+  if(u){
+    ST.role = (u.email||'').toLowerCase() === MANAGER_EMAIL ? 'mgr' : 'emp';
+    ST.name = ST.role==='mgr' ? 'المدير' : (u.email||'').split('@')[0];
+    ST.date = todayStr(); subDone(); subTasks();
+    if(ST.role==='mgr') loadReport();
+    flushQ();
+  }else{
+    ST.role=null; ST.cur=null; if(unsubDone) unsubDone(); if(unsubTasks) unsubTasks(); DONE=[]; TASKS=[];
+  }
+  render();
+});
+
+function splashView(){
+  const word = 'KANSAS CHICKEN'.split('').map((c,i)=>`<span class="sl" style="animation-delay:${(0.15+i*0.07).toFixed(2)}s">${c===' ' ? '&nbsp;' : c}</span>`).join('');
+  return `<div class="splash"><div class="logo sp-logo">K</div><div class="sp-name">${word}</div><div class="sp-bar"><div></div></div></div>`;
+}
+
+function coverView(){
+  return `<div class="cover">
+    <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار K، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
+    <rect x="0" y="0" width="380" height="460" rx="16" fill="#F5B800"/>
+    <circle cx="190" cy="92" r="46" fill="#ffffff"/>
+    <text x="190" y="110" text-anchor="middle" font-size="46" font-weight="500" fill="#D32F2F">K</text>
+    <text x="190" y="176" text-anchor="middle" font-size="22" font-weight="500" fill="#1d2630">KANSAS CHICKEN</text>
+    <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
+    <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
+    <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
+    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
+    <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
+    <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
+    <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
+    </svg>
+    <button onclick="ST.coverDone=true;render()">ابدأ</button>
+  </div>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
+  if(!ST.user && !ST.coverDone){ app.innerHTML = coverView(); return; }
+  if(!ST.user) app.innerHTML = loginView();
+  else if(ST.cur) app.innerHTML = taskView();
+  else if(ST.role==='mgr') app.innerHTML = mgrView();
+  else app.innerHTML = empView();
+}
+
+function loginView(){
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
+  const defShift = h < 16 ? 'صباحي' : 'مسائي';
+  return `
+  <div class="login-wrap">
+    <div class="logo">K</div>
+    <div class="brand" style="margin-top:14px">KANSAS CHICKEN</div>
+    <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
+    <div class="card login-card">
+      <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
+      <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
+      <label>الشيفت</label><select id="lshift"><option ${defShift==='صباحي'?'selected':''}>صباحي</option><option ${defShift==='مسائي'?'selected':''}>مسائي</option></select>
+      <button class="login-btn" onclick="login()">دخول</button>
+      ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+async function login(){
+  const email = document.getElementById('lemail').value.trim();
+  const pass = document.getElementById('lpass').value;
+  const shift = document.getElementById('lshift').value;
+  if(!email || !pass){ ST.authErr='اكتب الإيميل والباسورد'; render(); return; }
+  try{
+    ST.shift = shift;
+    await signInWithEmailAndPassword(auth, email, pass);
+    ST.authErr = '';
+  }catch(e){
+    ST.authErr = 'الإيميل أو الباسورد غلط، أو الحساب مش موجود. كلم المدير.';
+    render();
+  }
+}
+
+function logout(){ stopCam(); signOut(auth); }
+
+function empView(){
+  if(ST.showRef) return refView();
+  if(ST.showChat) return `
+    <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
+    ${chatView()}`;
+
+  const list = taskList(ST.shift || 'صباحي');
+  const apprN = list.filter(t=>okS(recOf(t.id,ST.shift||'صباحي')?.status)).length;
+  const vioN = list.filter(t=>recOf(t.id,ST.shift||'صباحي')?.violation).length;
+  const resPct = list.length ? Math.max(0, Math.round(apprN/list.length*100) - vioN*5) : 0;
+  
+  const rows = list.map(t=>{
+    const r = recOf(t.id, ST.shift || 'صباحي');
+    const st = r ? r.status : 'todo';
+    const tag = r ? `<span class="tag ${stCls(st)}">${stLabel(st)}</span>` : (isLate(ST.shift||'صباحي') ? '<span class="tag review">متأخرة</span>' : '<span class="tag">لسه</span>');
+    return `<div class="task" onclick="openTask('${t.id}')">
+      <span class="dot ${stCls(st)}"></span>
+      <div class="t">
+        <div><b>${esc(t.name)}</b></div>
+        <div class="muted">${esc(t.zone)}</div>
+        ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
+        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'مخالفة هايجين')})</span></div>`:''}
+      </div>
+      ${tag}
+    </div>`;
+  }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
+
+  return `
+  <div class="app-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="app-logo-sm">K</div>
+      <div><h1>شيفت ${esc(ST.shift||'صباحي')}</h1><div class="muted">${esc(ST.name)} · ${fmtDate(ST.date)}</div></div>
+    </div>
+    <button class="sec small" onclick="logout()">خروج</button>
+  </div>
+  
+  <div class="card">
+    <label>اختر الشيفت</label>
+    <select onchange="ST.shift=this.value;render()"><option ${ST.shift==='صباحي'?'selected':''}>صباحي</option><option ${ST.shift==='مسائي'?'selected':''}>مسائي</option></select>
+  </div>
+
+  <div class="card">
+    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
+    <div class="bar"><div style="width:${resPct}%"></div></div>
+    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
+    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالتصحيح والتصوير مجدداً.</div>
+  </div>
+  ${rows}
+
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="ST.showRef=false;ST.showChat=false;render()">📋 المهام</button>
+    <button class="nav-item" onclick="ST.showRef=true;render()">📖 المرجع</button>
+    <button class="nav-item" onclick="ST.showChat=true;render()">🤖 المساعد</button>
+    <button class="nav-item" onclick="refreshAll()">🔄 تحديث</button>
+  </div>`;
+}
+
+function openTask(id){
+  const r = recOf(id, ST.shift||'صباحي');
+  if(r && subS(r.status) && r.status!=='rejected') return;
+  ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
 
 function taskView(){
   const t = findTask(ST.cur);
+  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
   return `
-    <div class="app-header"><button class="sec small" onclick="ST.cur=null;stopCam();render()">رجوع</button><span>${esc(t.zone)}</span></div>
-    <h2>إنجاز المهمة: ${esc(t.name)}</h2>
-    <div class="card">
-      <video id="cam" autoplay playsinline muted></video>
-      <img id="shot" alt="">
-      <div id="ph" class="placeholder">جاري تشغيل الكاميرا...</div>
-    </div>
-    <button id="capBtn" onclick="capture()">التقاط صورة</button>
-    <button id="sendBtn" style="display:none" onclick="submitPhoto()">إرسال وفحص بالذكاء الاصطناعي</button>`;
+  <div class="app-header">
+    <button class="sec small" onclick="closeTask()">رجوع</button>
+    <span class="muted">${esc(t.zone)}</span>
+  </div>
+  <h2>إنجاز مهمة: ${esc(t.name)}</h2>
+  <div class="card">
+    ${isTempTask ? `<label>درجة الحرارة المسجلة (°F):</label><input id="tempVal" type="number" step="0.1" placeholder="مثال: 36 أو -5" style="margin-bottom:10px">` : ''}
+    <video id="cam" autoplay playsinline muted></video>
+    <img id="shot" alt="">
+    <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت والجيمي.</div>
+  </div>
+  <button id="capBtn" onclick="capture()">التقاط صورة</button>
+  <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
+  <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي)</button>`;
 }
 
 async function startCam(){
@@ -447,45 +696,156 @@ async function startCam(){
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
     const v = document.getElementById('cam');
     if(v){ v.srcObject = camStream; v.style.display='block'; document.getElementById('ph').style.display='none'; }
-  }catch(e){ alert('تعذر تشغيل الكاميرا'); }
+  }catch(e){
+    const ph = document.getElementById('ph');
+    if(ph) ph.innerHTML = 'الكاميرا ما فتحتش. اسمح بالكاميرا من إعدادات المتصفح.';
+  }
 }
+
 function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } }
 
 function capture(){
   const v = document.getElementById('cam');
-  const c = document.createElement('canvas'); c.width=640; c.height=Math.round(640*v.videoHeight/v.videoWidth);
-  c.getContext('2d').drawImage(v,0,0,c.width,c.height);
-  ST.photo = c.toDataURL('image/jpeg',0.6); ST.taken = true;
-  stopCam(); v.style.display='none';
-  document.getElementById('shot').src = ST.photo; document.getElementById('shot').style.display='block';
+  if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة.'); return; }
+  const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
+  const c = document.createElement('canvas'); c.width=w; c.height=h;
+  const cx = c.getContext('2d');
+  cx.drawImage(v,0,0,w,h);
+  const px = cx.getImageData(0,0,w,h).data;
+  let sum = 0, n = 0;
+  for(let i=0; i<px.length; i+=16){ sum += (px[i]+px[i+1]+px[i+2])/3; n++; }
+  if((n ? sum/n : 0) < 45){
+    alert('الصورة معتمة جداً. وضّح الإضاءة وصوّر تاني.');
+    return;
+  }
+  ST.photo = c.toDataURL('image/jpeg',0.5); ST.taken = true;
+  stopCam();
+  v.style.display='none';
+  const img = document.getElementById('shot'); img.src = ST.photo; img.style.display='block';
+  document.getElementById('ph').style.display='none';
   document.getElementById('capBtn').style.display='none';
+  document.getElementById('startBtn').style.display='none';
+  document.getElementById('retakeBtn').style.display='block';
   document.getElementById('sendBtn').style.display='block';
 }
 
+function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
+function closeTask(){ stopCam(); ST.cur=null; ST.busy=false; render(); }
+
 async function submitPhoto(){
+  if(ST.busy || !ST.taken) return;
   const t = findTask(ST.cur);
-  const check = await botCheckHygiene(t, ST.photo, null);
-  const id = ST.date+'_'+ST.shift+'_'+t.id;
-  await setDoc(doc(fdb,'done',id), { date:ST.date, ym:ST.date.slice(0,7), shift:ST.shift, taskId:t.id, taskName:t.name, zone:t.zone, employee:ST.name, photo:ST.photo, status:check.status, rejectReason:check.reason });
-  if(check.status==='rejected') await sendTelegramAlert(`🚨 مخالفة في كنساس!\nالمهمة: ${t.name}\nالسبب: ${check.reason}`);
-  ST.cur=null; render();
+  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
+  let tempVal = null;
+  if(isTempTask){
+    const tempInput = document.getElementById('tempVal');
+    tempInput ? tempVal = parseFloat(tempInput.value) : null;
+    if(isNaN(tempVal)){ alert('يرجى إدخال قيمة درجة الحرارة.'); return; }
+  }
+
+  ST.busy = true;
+  const sendBtn = document.getElementById('sendBtn');
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 جاري الفحص بالذكاء الاصطناعي...'; }
+  
+  const check = await botCheckHygiene(t, ST.photo, tempVal);
+  const now = new Date();
+  const id = ST.date+'_'+SK[ST.shift||'صباحي']+'_'+t.id+'_'+ST.user.uid.slice(0,6);
+
+  if(check.status === 'rejected'){
+    const rejectedRec = {
+      date: ST.date, ym: ST.date.slice(0,7),
+      year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
+      shift: ST.shift||'صباحي', taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
+      time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
+      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal, violation: !!check.violation,
+      aiNote: 'مرفوض أوتوماتيكياً'
+    };
+    try{ await setDoc(doc(fdb,'done',id), rejectedRec); }catch(e){}
+    await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name}\n❌ السبب: ${check.reason}`);
+    ST.busy = false;
+    closeTask();
+    alert('⚠️ Not Done 👎🏻\nسبب الرفض: ' + check.reason + '\nتم تسجيلها كمخالفة.');
+    return;
+  }
+
+  const rec = {
+    date: ST.date, ym: ST.date.slice(0,7),
+    year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
+    shift: ST.shift||'صباحي', taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
+    time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
+    photo: ST.photo, status: check.status, tempVal: tempVal, violation: !!check.violation, aiNote: check.reason
+  };
+  try{
+    await setDoc(doc(fdb,'done',id), rec);
+    ST.busy = false; closeTask();
+  }catch(e){
+    ST.busy = false; 
+    closeTask();
+  }
 }
 
-function setStatus(id, status){ updateDoc(doc(fdb,'done',id), {status}); }
-function rejectRec(id){
-  const why = prompt('سبب الرفض:', 'مخالفة معايير النظافة');
-  if(why) updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason:why});
-}
-function removeRec(id){ if(confirm('حذف التسجيل؟')) deleteDoc(doc(fdb,'done',id)); }
+function mgrView(){
+  const tabs = [['rev','المراجعة'],['links','التقييمات'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقارير']]
+    .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
+  
+  let body = '';
+  if(ST.tab==='rev') body = revView();
+  else if(ST.tab==='links') body = customerLinksView();
+  else if(ST.tab==='tasks') body = tasksView();
+  else if(ST.tab==='qs') body = questionsView();
+  else body = repView();
 
-async function login(){
-  try{ await signInWithEmailAndPassword(auth, document.getElementById('lemail').value.trim(), document.getElementById('lpass').value); }
-  catch(e){ ST.authErr = 'خطأ في بيانات الدخول'; render(); }
+  return `
+  <div class="app-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="app-logo-sm">K</div>
+      <div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
+    </div>
+    <button class="sec small" onclick="logout()">خروج</button>
+  </div>
+  <div class="tabs">${tabs}</div>
+  ${body}
+  <div class="bottom-nav">
+    <button class="nav-item ${ST.tab==='rev'?'active':''}" onclick="setTab('rev')">📋 المراجعة</button>
+    <button class="nav-item ${ST.tab==='links'?'active':''}" onclick="setTab('links')">⭐ التقييمات</button>
+    <button class="nav-item ${ST.tab==='tasks'?'active':''}" onclick="setTab('tasks')">⚙️ المهام</button>
+    <button class="nav-item ${ST.tab==='qs'?'active':''}" onclick="setTab('qs')">❓ الأسئلة</button>
+    <button class="nav-item ${ST.tab==='rep'?'active':''}" onclick="setTab('rep')">📊 التقارير</button>
+  </div>`;
 }
-function logout(){ signOut(auth); }
 
-setTimeout(()=>{ ST.splashDone=true; render(); }, 1200);
-Object.assign(window, { ST, render, login, logout, startCam, capture, submitPhoto, setStatus, rejectRec, removeRec, addTask, delTask, importDefaults, answerQ, loadQuestions, askBot });
-</script>
-</body>
-</html>
+function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
+
+function revView(){
+  const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
+  const rejectedRecs = recs.filter(r=>r.status==='rejected');
+  const shifts = ST.revShift==='all' ? SHIFTS : [ST.revShift];
+  const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
+  
+  const alertHtml = rejectedRecs.length ? `
+    <div class="badbox">
+      <b>⚠️ تنبيه خطأ تشغيلي (${rejectedRecs.length} مهام مرفوضة):</b>
+      <ul style="margin:4px 0 0;padding-right:16px">
+        ${rejectedRecs.map(r=>`<li style="font-size:13px">${esc(r.employee)} - ${esc(r.taskName)} (${esc(r.shift)}): ${esc(r.rejectReason||'')}</li>`).join('')}
+      </ul>
+    </div>` : '';
+
+  const cards = recs.map(r=>`
+    <div class="card" style="${r.status==='rejected'?'border-color:var(--bad)':''}">
+      <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
+      <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
+      ${r.status==='rejected'?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>`:''}
+      ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
+      <div class="btns">
+        <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
+        <button class="sec danger" onclick="rejectRec('${r.id}')">رفض يدوياً</button>
+        <button class="sec danger" onclick="removeRec('${r.id}')">حذف</button>
+      </div>
+    </div>`).join('') || '<div class="card muted">ما فيش تنفيذ مسجل في التاريخ ده.</div>';
+  
+  const miss = missing.map(x=>`<div class="muted" style="padding:4px 0">• ${esc(x.t.name)} (${esc(x.sh)})${isLate(x.sh)?' · <b style="color:#c62828">متأخرة</b>':''}</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
+
+  return `
+  ${alertHtml}
+  <div class="card">
+    <label>التاريخ</label><input type
