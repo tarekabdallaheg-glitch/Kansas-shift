@@ -109,26 +109,38 @@ async function gemini(){
   return GEM;
 }
 
-// فحص الصورة بصرامة عبر جيمي
+// تعديل دالة الفحص لالتقاط سبب الخطأ الحقيقي وإرجاعه بوضوح تام
 async function aiCleanCheck(t, photo){
   const model = await gemini();
-  if(!model || !photo) return { ok: false, reason: 'تعذر الاتصال بنظام الفحص والذكاء الاصطناعي.' };
+  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (Gemini) غير متاح حالياً.' };
+  if(!photo) return { ok: false, reason: 'خطأ: لم يتم التقاط صورة أو الصورة فارغة.' };
+  
   try{
     const r = await model.generateContent([
       { text: `أنت بوت ومفتش سلامة وصحة غذاء وهايجين صارم جداً لمطعم "كنساس فرايد تشيكن". المهمة هي: "${t.name}" في منطقة "${t.zone}". 
-      قم بتحليل الصورة بدقة تامة. ارفض الصورة تماماً (وضع ok: false مع كتابة السبب بالعربي) لو وجدنا:
-      - أي إهمال، اتساخ، أو عدم نظافة في المكان أو المعدات.
-      - عدم الالتزام بالزي الرسمي أو الهايجين الشخصي.
-      - صورة مظلمة تماماً أو لا تعبر عن تنفيذ المهمة.
-      أجب حصراً بصيغة JSON مفردة هكذا تماماً دون أي نص إضافي: {"ok": true} أو {"ok": false, "reason": "السبب مختصراً"}.` },
+      قم بتحليل الصورة المرفقة بدقة تامة. 
+      - إذا كانت الصورة مظلمة تماماً، سوداء، غير واضحة، فيها إهمال أو اتساخ، أو لا تعبر عن إتمام المهمة المطلوبة: ضع ok: false واكتب بوضوح تام "سبب الرفض بالتفصيل" باللغة العربية (مثلاً: الصورة مظلمة ولا توضح النظافة، أو يوجد اتساخ في المكان).
+      - إذا كانت الصورة سليمة ومطابقة للمعايير: ضع ok: true.
+      يجب أن يكون ردك عبارة عن كود JSON صحيح فقط بدون أي ماركدوان إضافي هكذا:
+      {"ok": true} أو {"ok": false, "reason": "اكتب السبب هنا بوضوح"}` },
       { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
     ]);
+    
     const txt = (r.response.text() || '').trim();
+    // تنظيف الرد لاستخراج الـ JSON بدقة
     const clean = txt.replace(/```json/g,'').replace(/```/g,'').trim();
-    const obj = JSON.parse(clean);
-    return { ok: !!obj.ok, reason: obj.reason || 'المهمة لم تتطابق مع معايير الهايجين والنظافة المطلوبة.' };
+    const firstBrace = clean.indexOf('{');
+    const lastBrace = clean.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1){
+      const jsonStr = clean.substring(firstBrace, lastBrace + 1);
+      const obj = JSON.parse(jsonStr);
+      return { ok: !!obj.ok, reason: obj.reason || 'المهمة لم تتطابق مع معايير الهايجين والنظافة المطلوبة.' };
+    } else {
+      throw new Error('استجابة غير صالحة من النموذج');
+    }
   }catch(e){ 
-    return { ok: false, reason: 'فشل في تحليل الصورة عبر البوت والجيمي، يرجى إعادة التصوير بوضوح.' }; 
+    // هنا بيظهر سبب الخطأ التقني أو الفشلي الحقيقي بدل الرسالة العامة
+    return { ok: false, reason: 'خطأ في التحليل: ' + (e.message || 'تعذر معالجة الصورة بواسطة جيمي') }; 
   }
 }
 
@@ -473,7 +485,6 @@ function empView(){
 }
 function openTask(id){
   const r = recOf(id, ST.shift);
-  // السماح بالدخول للمهمة لو لسة جديدة، أو لو مرفوضة (rejected) عشان يقدر يحاول تاني
   if(r && subS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
@@ -541,13 +552,11 @@ async function submitPhoto(){
   sendBtn.disabled = true;
   sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...';
   
-  // الفحص الإلزامي
   const check = await botCheckHygiene(t, ST.photo, tempVal);
   const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
 
   if(!check.ok){
-    // لو فشلت الفحوصات: يتم تسجيلها أوتوماتيك كـ rejected مع ذكر السبب وإخراج الموظف
     const rejectedRec = {
       date: ST.date, ym: ST.date.slice(0,7),
       year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
@@ -563,12 +572,11 @@ async function submitPhoto(){
     }
 
     ST.busy = false;
-    closeTask(); // الخروج التلقائي من صفحة المهمة وإعادتها للقائمة الرئيسية
+    closeTask();
     alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً وسجلها النظام كـ Not Done:\nسبب الرفض: ' + check.reason + '\n\nتم إخراجك للقائمة، وبإمكانك المحاولة مرة أخرى بالدخول على نفس المهمة وتصويرها بالشكل الصحيح.');
     return;
   }
 
-  // لو نجحت الفحوصات تماماً
   const rec = {
     date: ST.date, ym: ST.date.slice(0,7),
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
@@ -632,7 +640,7 @@ function revView(){
     <label>الشيفت</label>
     <select onchange="ST.revShift=this.value;render()">
       <option value="all" ${ST.revShift==='all'?'selected':''}>الاتنين</option>
-      ${SHIFTS.map(s=>`<option ${ST.revShift==s?'selected':''}>${s}</option>`).join('')}
+      ${SHIFTS.map(s=>`<option ${ST.revShift===s?'selected':''}>${s}</option>`).join('')}
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
@@ -731,7 +739,7 @@ function repView(){
       النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
       ${items}</div>`;
   }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
-  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t}))) ;
+  const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
   const missHtml = dayMissing.map(x=>`<div class="muted">• ${esc(x.t.name)} (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
 
   return `
