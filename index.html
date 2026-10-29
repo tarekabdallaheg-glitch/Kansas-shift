@@ -302,7 +302,7 @@ const REFERENCE = [
      '2. الفحص والتحقق قبل التشغيل: مراجعة درجات حرارة الثلاجات والمقالي وفلاتر الهود والتأكد من جاهزية الأجهزة وجودة الزيت قبل استقبال أول اوردر.',
      '3. متابعة سرعة وجودة الخدمة: مراقبة زمن التجهيز والتسليم، وتفقد جودة التغليف وشكل وجبات كنساس المطابقة للمواصفات.',
      '4. إدارة المظهر والهايجين: التفتيش المستمر على الزي الرسمي للموظفين وغسل الأيدي والالتزام التام بالتعليمات المحددة.',
-     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste)، والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
+     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste), والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
      '6. إقفال وتأمين الشيفت: الإشراف على خطوات الإغلاق، قفل الكاشيرات والجرد، التأكد من إيقاف المعدات وتأمين الفرع بالكامل.'
    ]
  },
@@ -451,7 +451,7 @@ function stLabel(s){return ({done:'بانتظار مراجعة المدير',pen
 function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
-function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh);}
+function recOf(taskId, sh){return DONE.find(r=>r.taskId===taskId && r.shift===sh && r.date===ST.date);}
 function fail(ctx, e){ alert(ctx+' ما اتمش.\nاتأكد من النت، ولو فضلت المشكلة كلم المدير.\n('+((e&&(e.code||e.message))||'')+')'); }
 function refresh(){ if(ST.role==='emp' && ST.cur) return; render(); }
 
@@ -513,7 +513,7 @@ function coverView(){
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -536,28 +536,54 @@ function render(){
 function loginView(){
   const h = new Date().getHours();
   const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
-  const defShift = h < 16 ? 'صباحي' : 'مسائي';
   return `
   <div class="login-wrap">
     <div class="logo">K</div>
     <div class="brand" style="margin-top:14px">KANSAS CHICKEN</div>
     <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
     <div class="card login-card">
-      <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local">
+      <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local" oninput="checkLoginType(this.value)">
       <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
-      <label>الشيفت</label><select id="lshift"><option ${defShift==='صباحي'?'selected':''}>صباحي</option><option ${defShift==='مسائي'?'selected':''}>مسائي</option></select>
+      <div id="shiftFieldWrap">
+        <label>اختر الشيفت (إجباري)</label>
+        <select id="lshift">
+          <option value="" disabled selected>-- اختر الشيفت --</option>
+          <option>صباحي</option>
+          <option>مسائي</option>
+        </select>
+      </div>
       <button class="login-btn" onclick="login()">دخول</button>
       ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
     </div>
   </div>`;
 }
+
+function checkLoginType(val){
+  const wrap = document.getElementById('shiftFieldWrap');
+  if(!wrap) return;
+  if(val.trim().toLowerCase() === MANAGER_EMAIL.toLowerCase()){
+    wrap.style.display = 'none';
+  } else {
+    wrap.style.display = 'block';
+  }
+}
+
 async function login(){
   const email = document.getElementById('lemail').value.trim();
   const pass = document.getElementById('lpass').value;
-  const shift = document.getElementById('lshift').value;
+  const shiftEl = document.getElementById('lshift');
+  const shift = shiftEl ? shiftEl.value : '';
+  
   if(!email || !pass){ ST.authErr='اكتب الإيميل والباسورد'; render(); return; }
+  
+  if(email.toLowerCase() !== MANAGER_EMAIL.toLowerCase() && !shift){
+    ST.authErr='يجب اختيار الشيفت بشكل إجباري لتسجيل الدخول كمرؤوس/موظف.';
+    render();
+    return;
+  }
+
   try{
-    ST.shift = shift;
+    ST.shift = shift || 'صباحي';
     await signInWithEmailAndPassword(auth, email, pass);
     ST.authErr = '';
   }catch(e){
@@ -950,9 +976,9 @@ function repView(){
   </div>
   <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
-    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>{rows}</table></div>
   <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>{empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
@@ -969,7 +995,7 @@ function loadReport(){
 
 setTimeout(()=>{ ST.splashDone=true; render(); }, 1800);
 Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam, capture, retake, submitPhoto, refreshAll,
-  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay, askBot, answerQ, loadQuestions });
+  setTab, setDate, setStatus, rejectRec, removeRec, addTask, editTip, toggleTask, delTask, importDefaults, setMonth, setReportDay, askBot, answerQ, loadQuestions, checkLoginType });
 </script>
 </body>
 </html>
