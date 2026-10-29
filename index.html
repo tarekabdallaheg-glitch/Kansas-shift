@@ -740,10 +740,17 @@ function mgrView(){
   const tabs = [['rev','المراجعة'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='qs' ? questionsView() : repView();
-  const todayRecords = DONE;
-  const approvedCount = todayRecords.filter(r=>r.status==='approved').length;
-  const rejectedCount = todayRecords.filter(r=>r.status==='rejected').length;
-  const pendingCount = todayRecords.filter(r=>r.status==='pending').length;
+  
+  const currentShiftRecords = DONE.filter(r => ST.revShift === 'all' || r.shift === ST.revShift);
+  const approvedCount = currentShiftRecords.filter(r=>r.status==='approved').length;
+  const rejectedCount = currentShiftRecords.filter(r=>r.status==='rejected').length;
+  const pendingCount = currentShiftRecords.filter(r=>r.status==='pending').length;
+  
+  const shiftsToCheck = ST.revShift === 'all' ? SHIFTS : [ST.revShift];
+  const totalTasksExpected = shiftsToCheck.reduce((acc, sh) => acc + taskList(sh).length, 0);
+  const evalPct = totalTasksExpected ? Math.round((approvedCount / totalTasksExpected) * 100) : 0;
+  const evalGradeText = evalPct ? (evalPct + '% · ' + grade(evalPct)) : '—';
+
   return `
   <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)} · KANSAS CHICKEN</div></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
@@ -752,7 +759,20 @@ function mgrView(){
       <button class="sec small" onclick="refreshAll()">تحديث</button>
       <button class="sec small" onclick="logout()">خروج</button>
     </div></div>
-  <div class="card"><h2>ملخص الشيفت المحدد</h2><div class="ops-kpis"><div><strong>${approvedCount}</strong><span>منفذة / معتمدة</span></div><div><strong>${pendingCount}</strong><span>بانتظار المراجعة</span></div><div><strong>${rejectedCount}</strong><span>مرفوضة</span></div></div></div>
+  <div class="card">
+    <h2>ملخص الشيفت المحدد</h2>
+    <div class="daily-eval" style="margin:10px 0 0">
+      <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييم الشيفت الحالي</div><span class="tag ${rejectedCount?'bad':pendingCount?'review':'done'}">${rejectedCount?'توجد مهام مرفوضة':pendingList?'بانتظار المراجعة':'تقييم المتابعة'}</span></div>
+      <div class="daily-eval-grid">
+        <div class="daily-eval-item"><strong>${approvedCount}</strong><span>مهام معتمدة</span></div>
+        <div class="daily-eval-item"><strong>${pendingCount}</strong><span>بانتظار المدير</span></div>
+        <div class="daily-eval-item"><strong>${rejectedCount}</strong><span>مرفوضة</span></div>
+        <div class="daily-eval-item"><strong>${evalGradeText}</strong><span>نسبة الإنجاز</span></div>
+      </div>
+      <div class="bar"><div style="width:${evalPct}%"></div></div>
+      <div class="muted" style="margin-top:7px">إجمالي المهام المعتمدة للشيفت المحدد: <b>${evalPct}%</b></div>
+    </div>
+  </div>
   <div class="tabs">${tabs}</div>${body}`;
 }
 function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
@@ -903,8 +923,9 @@ function repView(){
       </div>`).join('');
 
     return `<div class="card emp-block">
-      <div class="daily-eval" style="margin-top:0">
-        <div class="daily-eval-head"><div class="daily-eval-title">📊 ملخص شيفت ${esc(g.shift)} · ${esc(g.name)}</div><span class="tag ${rejectedList?'bad':pendingList?'review':'done'}">${rejectedList?'توجد مهام مرفوضة':pendingList?'بانتظار المراجعة':'تقييم اليوم'}</span></div>
+      <b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}
+      <div class="daily-eval" style="margin-top:10px">
+        <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييم الموظف</div><span class="tag ${rejectedList?'bad':pendingList?'review':'done'}">${rejectedList?'توجد مهام مرفوضة':pendingList?'بانتظار المراجعة':'تقييم اليوم'}</span></div>
         <div class="daily-eval-grid">
           <div class="daily-eval-item"><strong>${approvedList.length}</strong><span>مهام معتمدة</span></div>
           <div class="daily-eval-item"><strong>${pendingList}</strong><span>بانتظار المدير</span></div>
@@ -914,7 +935,6 @@ function repView(){
         <div class="bar"><div style="width:${p}%"></div></div>
         <div class="muted" style="margin-top:7px">نسبة إنجاز المهام المعتمدة: <b>${p}%</b> · ${grade(p)}</div>
       </div>
-      <div style="margin-top:12px;font-weight:bold;font-size:14px">تفاصيل مهام الشيفت:</div>
       ${items}</div>`;
   }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
 
