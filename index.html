@@ -130,6 +130,42 @@ table{min-width:540px;border-collapse:separate;border-spacing:0;font-size:13px}t
 @media print{body{background:#fff!important;color:#111}body *{visibility:hidden;box-shadow:none!important}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}.emp-block{page-break-inside:avoid}.card{border:1px solid #ddd!important;border-radius:0!important}.rec img{max-width:220px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+
+/* ===== KANSAS OPERATIONS REDESIGN V2: visible layout changes ===== */
+.ops-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ops-kpis>div{background:#f6f8fb;border:1px solid #e5eaf0;border-radius:15px;padding:14px 10px;text-align:center;min-width:0}.ops-kpis strong{display:block;font-size:clamp(23px,4vw,34px);font-weight:950;color:#202a38;line-height:1.2}.ops-kpis span{display:block;font-size:12px;font-weight:750;color:#657286;margin-top:7px}@media(max-width:480px){.ops-kpis{gap:6px}.ops-kpis>div{padding:11px 5px}.ops-kpis span{font-size:10px}}
+
+:root{--bg:#f1f4f8;--card:#fff;--text:#182230;--muted:#667487;--main:#f6bd16;--onmain:#202630;--ok:#18834a;--warn:#b8750b;--bad:#c72c36;--line:#dfe5ed;--brand:#c92630;--shadow:0 10px 30px rgba(24,34,48,.085);--radius:20px}
+body{background:linear-gradient(180deg,#202a38 0,#202a38 150px,#f1f4f8 150px,#f1f4f8 100%) fixed!important;color:var(--text)}
+#app{max-width:1120px;width:calc(100% - 28px);padding:18px 0 48px}
+.app-release-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px;padding:13px 16px;background:#fff;border:1px solid rgba(255,255,255,.22);border-radius:16px;box-shadow:0 8px 22px rgba(0,0,0,.12);border-right:5px solid var(--main)}
+.app-release-banner .release-title{font-weight:900;font-size:14px;letter-spacing:.2px;color:#202a38}
+.app-release-banner .release-sub{font-size:11px;color:#718095;margin-top:2px}
+.app-release-banner .release-pill{background:#fff4ce;color:#805900;border:1px solid #f1df9f;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
+.top{background:#fff;border:1px solid #e5eaf0;border-radius:18px;padding:16px;margin:0 0 16px;box-shadow:0 5px 18px rgba(24,34,48,.045);align-items:center}
+.top h1{color:#182230;font-size:clamp(21px,3vw,30px)}
+.brand{background:#fff;border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.card{border:1px solid #e2e8f0;border-radius:20px;padding:clamp(16px,2.2vw,24px);box-shadow:var(--shadow);margin-bottom:16px;background:#fff}
+.card h2{padding-bottom:9px;border-bottom:1px solid #edf0f4}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;padding:7px;background:#e2e7ee;border:0;border-radius:16px;max-width:none;margin-bottom:18px}
+.tab{flex:1 1 110px;border:1px solid transparent;border-radius:12px;background:transparent;color:#526071;padding:12px 10px;min-height:46px}
+.tab.on{background:#202a38;color:#fff;border-color:#202a38;box-shadow:0 5px 14px rgba(32,42,56,.18)}
+.task{background:#fff;border:1px solid #e0e6ee;border-radius:17px;padding:16px;box-shadow:0 5px 16px rgba(24,34,48,.045);margin-bottom:11px}
+.task .t>div:first-child{font-size:15px;font-weight:850;color:#1c2735}
+.task .muted{font-size:12px}
+button{border-radius:13px;font-weight:850;min-height:43px}
+button.sec{background:#fff;border:1px solid #d8e0e9;color:#293647}
+button.danger{background:#fff4f4;border-color:#f0c9cb;color:#b51f2a}
+input,select,textarea{border-color:#d7e0e9;border-radius:13px;background:#fbfcfe}
+label{color:#526174;font-weight:800}
+.bar{height:12px;background:#e8edf3;border-radius:999px}
+.bar>div{background:linear-gradient(90deg,#f3b800,#ffdc68);border-radius:999px}
+.score-strip span{padding:8px 11px;background:#f7f9fb;border-radius:12px}
+.warnbox{background:#fff7e5;border-color:#f2dfae;color:#805400}
+.badbox{background:#fff0f0;border-color:#f1c8cb;color:#a31e29}
+#cam,#shot,.placeholder{border-radius:18px}
+@media(min-width:760px){.app-release-banner{margin-bottom:20px}.top{padding:20px}.task{padding:18px}}
+@media(max-width:640px){body{background:linear-gradient(180deg,#202a38 0,#202a38 118px,#f1f4f8 118px,#f1f4f8 100%) fixed!important}#app{width:calc(100% - 18px);padding-top:12px}.app-release-banner{padding:10px 12px;border-radius:13px}.app-release-banner .release-title{font-size:12px}.app-release-banner .release-sub{font-size:10px}.app-release-banner .release-pill{font-size:9px;padding:4px 7px}.top{padding:13px;border-radius:15px}.card{border-radius:16px;padding:14px}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.tab{min-width:0;padding:10px 5px;font-size:12px}.task{padding:12px;border-radius:14px}.btns button{flex:1 1 100%}}
+
 </style>
 </head>
 <body>
@@ -521,6 +557,8 @@ function render(){
   else if(ST.role==='mgr') app.innerHTML = mgrView();
   else if(ST.cur) app.innerHTML = taskView();
   else app.innerHTML = empView();
+  // Visible build marker confirms the redesigned file is the version being displayed.
+  app.insertAdjacentHTML('afterbegin', `<div class="app-release-banner"><div><div class="release-title">KANSAS CHICKEN · OPERATIONS</div><div class="release-sub">واجهة تشغيل مطوّرة · ${new Date().toLocaleDateString('ar-EG')}</div></div><span class="release-pill">REDESIGN V2</span></div>`);
 }
 
 function loginView(){
@@ -710,6 +748,10 @@ function mgrView(){
   const tabs = [['rev','المراجعة'],['tasks','المهام'],['qs','الأسئلة'],['rep','التقرير']]
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='qs' ? questionsView() : repView();
+  const todayRecords = DONE;
+  const approvedCount = todayRecords.filter(r=>r.status==='approved'||r.status==='done').length;
+  const rejectedCount = todayRecords.filter(r=>r.status==='rejected').length;
+  const pendingCount = todayRecords.filter(r=>r.status==='pending').length;
   return `
   <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)} · KANSAS CHICKEN</div></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
@@ -718,6 +760,7 @@ function mgrView(){
       <button class="sec small" onclick="refreshAll()">تحديث</button>
       <button class="sec small" onclick="logout()">خروج</button>
     </div></div>
+  <div class="card"><h2>ملخص الشيفت المحدد</h2><div class="ops-kpis"><div><strong>${approvedCount}</strong><span>منفذة / معتمدة</span></div><div><strong>${pendingCount}</strong><span>بانتظار المراجعة</span></div><div><strong>${rejectedCount}</strong><span>مرفوضة وتحتاج تصحيح</span></div></div></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
 function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
@@ -899,3 +942,4 @@ Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam
 </script>
 </body>
 </html>
+
