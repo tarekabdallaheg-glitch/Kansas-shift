@@ -66,10 +66,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4);transition:transform .15s}
 .login-btn:active{transform:scale(.97)}
 
-/* شاشة التحميل: مربع أسود فخم وسهم أحمر بارز ومناسب */
+/* تعديل مقاسات المربع الأسود والمثلث الأحمر بحيث يكون التنسيق والبروز متناسبين تماماً */
 .splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9;padding:20px;text-align:center}
-.sp-box{width:86px;height:86px;background:#1b2530;border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);animation:spIn .5s ease-out both}
-.sp-logo{font-size:46px;color:var(--brand);line-height:1;text-shadow:0 0 16px rgba(211,47,47,.6)}
+.sp-box{width:76px;height:76px;background:#1b2530;border-radius:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);animation:spIn .5s ease-out both}
+.sp-logo{font-size:38px;color:var(--brand);line-height:1;text-shadow:0 0 14px rgba(211,47,47,.6)}
 @keyframes spIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 .sp-name{font-size:25px;font-weight:950;margin-top:16px;letter-spacing:1px;direction:ltr;color:var(--brand);text-shadow:0 0 18px rgba(211,47,47,.4)}
 .sp-sub{font-size:13px;font-weight:850;color:var(--text);margin-top:6px;letter-spacing:0.5px}
@@ -241,7 +241,7 @@ const DEFAULT_TASKS = [
  ['مسائي','المطبخ','تنظيف الفرن والشواية والمنطقة حوالين الكاونتر'],
  ['مسائي','المطبخ','تنظيف الثلاجات من الداخل وتغطية الخامات بإحكام'],
  ['مسائي','الخارج','التخلص من المخلفات وتطهير صناديق القمامة الرئيسية'],
- ['مسائي','الصالة','تنظيف الصالة والأرضيات وسكب مطهر بالصرف'],
+ ['مسائي','الصالة','تنظيف الصالة الأرضيات وسكب مطهر بالصرف'],
  ['مسائي','الحمامات','تنظيف الحمامات وتعبئة المستلزمات'],
  ['مسائي','المخزن','تأمين المخزن وتسجيل الجرد اليومي'],
  ['مسائي','الكاشير','قفل الكاشير وتسجيل الإيراد'],
@@ -502,8 +502,8 @@ function coverView(){
   return `<div class="cover">
     <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
     <rect x="0" y="0" width="380" height="460" rx="16" fill="#F5B800"/>
-    <rect x="144" y="46" width="92" height="92" rx="24" fill="#1b2530"/>
-    <text x="190" y="106" text-anchor="middle" font-size="44" font-weight="500" fill="#D32F2F">🔻</text>
+    <rect x="150" y="52" width="80" height="80" rx="20" fill="#1b2530"/>
+    <text x="190" y="105" text-anchor="middle" font-size="38" font-weight="500" fill="#D32F2F">🔻</text>
     <text x="190" y="176" text-anchor="middle" font-size="22" font-weight="500" fill="#1d2630">Kansas Operations</text>
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
@@ -534,7 +534,7 @@ function loginView(){
   const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
   return `
   <div class="login-wrap">
-    <div class="logo" style="background:#1b2530;border:1px solid rgba(255,255,255,.08)"><span style="color:var(--brand);font-size:38px;line-height:1">🔻</span></div>
+    <div class="logo" style="background:#1b2530;border:1px solid rgba(255,255,255,.08)"><span style="color:var(--brand);font-size:34px;line-height:1">🔻</span></div>
     <div class="brand" style="margin-top:14px">Kansas Operations</div>
     <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
     <div class="card login-card">
@@ -621,7 +621,7 @@ function empView(){
   const myAvgText = dailyPct ? (dailyPct + '% · ' + (dailyPct >= 85 ? 'ناجح' : 'راسب')) : '—';
 
   return `
-  <!-- الهيدر المنظم: اسم الموظف في أيقونة صفراء، وعلامة الشيفت النشط مع نقطة نشاط بلون مميز -->
+  <!-- الهيدر المنظم: اسم الموظف في أيقونة صفراء، وعلامة الشيفت النشط مع نقطة نشاط بارزة -->
   <div class="header-box">
     <div class="header-actions-grid">
       <button class="sec" onclick="toggleTheme()">${themeIcon}</button>
