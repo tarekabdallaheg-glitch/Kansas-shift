@@ -9,11 +9,9 @@
 <title>KANSAS CHICKEN - الشيفتات</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2630;--muted:#6b7785;--main:#F5B800;--onmain:#1d2630;--ok:#2e7d32;--warn:#e08e00;--bad:#c62828;--line:#e3e8ee;--brand:#D32F2F}
-*{box-sizing:border-box;min-width:0}
-img,video,canvas,svg,input,select,textarea,table{max-width:100%}
-button{white-space:normal;max-width:100%}
-#app{width:100%;max-width:520px;margin:0 auto;padding:16px;overflow-x:hidden}
+*{box-sizing:border-box}
 body{margin:0;font-family:Arial,Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+#app{max-width:520px;margin:0 auto;min-height:100vh;padding:16px}
 h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
 .muted{color:var(--muted);font-size:13px}
 .brand{font-size:30px;font-weight:900;color:var(--brand);text-align:center;letter-spacing:1px;margin-top:30px}
@@ -78,16 +76,60 @@ body{background:var(--bg) !important}
 }
 .rec{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
 
-html,body{max-width:100%;overflow-x:hidden}
-#app{width:100%;max-width:520px;box-sizing:border-box;overflow-x:hidden}
-.top{flex-wrap:wrap}
-.top>div{min-width:0;flex:1 1 auto}
-.tabs{flex-wrap:wrap}
-.tab{min-width:0;flex:1 1 30%}
-.card,.task,.score-card,.notify-banner{max-width:100%;min-width:0;overflow-wrap:anywhere}
-.btns{flex-wrap:wrap}
-table{display:block;overflow-x:auto;max-width:100%}
-img{max-width:100%}
+/* ===== KANSAS PREMIUM UI LAYER ===== */
+:root{--bg:#f3f5f8;--card:#ffffff;--text:#17202b;--muted:#687586;--main:#f5b800;--onmain:#171b21;--ok:#16834a;--warn:#b86b00;--bad:#c62828;--line:#e1e6ed;--brand:#c9252c;--shadow:0 8px 28px rgba(19,31,47,.07);--radius:18px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at top right,rgba(245,184,0,.13),transparent 34%),radial-gradient(ellipse at bottom left,rgba(201,37,44,.06),transparent 32%),var(--bg)!important;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.55}
+#app{width:min(100% - 24px,1120px);max-width:1120px;margin:0 auto;min-height:100vh;padding:22px 0 40px}
+h1{font-size:clamp(20px,2.2vw,28px);font-weight:850;letter-spacing:-.4px;margin:0 0 4px}
+h2{font-size:18px;font-weight:800;margin:0 0 10px}
+.brand{color:var(--brand);font-size:clamp(25px,4vw,34px);letter-spacing:1.4px;font-weight:950}
+.muted{color:var(--muted);line-height:1.65}
+.card{background:var(--card);border:1px solid rgba(225,230,237,.9);border-radius:var(--radius);padding:clamp(14px,2vw,22px);margin-bottom:14px;box-shadow:var(--shadow);overflow-wrap:anywhere}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;padding:2px 2px 12px;border-bottom:1px solid var(--line)}
+.top>div{min-width:0}
+button{width:auto;min-height:42px;padding:11px 16px;border:1px solid transparent;border-radius:12px;background:linear-gradient(135deg,#ffd34b,var(--main));color:var(--onmain);font-size:14px;font-weight:800;letter-spacing:.05px;box-shadow:0 4px 12px rgba(245,184,0,.18);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+button:hover{filter:brightness(1.015);box-shadow:0 7px 16px rgba(22,32,43,.12);transform:translateY(-1px)}
+button:active{transform:translateY(0) scale(.985)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(245,184,0,.45);outline-offset:2px}
+button.sec{background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:none}
+button.danger{color:var(--bad);border-color:#f0c6c8;background:#fffafa}
+button.small{min-height:34px;width:auto;padding:7px 11px;font-size:12px;border-radius:10px;white-space:nowrap}
+button:disabled{opacity:.55;transform:none;box-shadow:none;cursor:not-allowed}
+input,select,textarea{width:100%;min-height:44px;padding:11px 13px;border-radius:12px;border:1px solid #d8dfe8;background:var(--card);color:var(--text);font:inherit;font-size:15px;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:#e4ad00;box-shadow:0 0 0 3px rgba(245,184,0,.13);outline:none}
+label{display:block;font-size:13px;font-weight:750;color:var(--muted);margin:13px 0 6px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:6px;background:#e9edf2;border:1px solid #e0e5ec;border-radius:16px}
+.tab{width:100%;margin:0;min-height:44px;padding:10px 8px;border-radius:11px;background:transparent;color:#566171;border:1px solid transparent;box-shadow:none;font-weight:800}
+.tab.on{background:#fff;color:#1a222d;border-color:#fff;box-shadow:0 3px 10px rgba(19,31,47,.08)}
+.row{gap:12px;align-items:flex-start}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btns button{flex:1 1 130px;margin:0;padding:10px 12px}
+.bar{height:9px;background:#e9edf2;border-radius:999px;overflow:hidden;margin-top:12px}.bar>div{height:100%;background:linear-gradient(90deg,#f5b800,#ffd95b);border-radius:999px;transition:width .3s ease}
+.task{gap:12px;padding:15px;border-radius:15px;background:var(--card);border:1px solid var(--line);margin-bottom:10px;box-shadow:0 3px 12px rgba(19,31,47,.035);transition:border-color .15s,transform .15s,box-shadow .15s}
+.task:not([style*="cursor:default"]):hover{border-color:#efc443;transform:translateY(-1px);box-shadow:0 8px 18px rgba(19,31,47,.07)}
+.task .t{min-width:0;line-height:1.5;font-weight:750}.task .muted{font-weight:400}
+.dot{width:11px;height:11px;flex:0 0 11px;margin-top:5px;box-shadow:0 0 0 4px rgba(104,117,134,.1)}.dot.done{background:var(--ok);box-shadow:0 0 0 4px rgba(22,131,74,.12)}.dot.review{background:var(--warn);box-shadow:0 0 0 4px rgba(184,107,0,.12)}.dot.bad{background:var(--bad);box-shadow:0 0 0 4px rgba(198,40,40,.12)}
+.tag{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;padding:5px 9px;border-radius:999px;background:#edf0f4;color:#596576;white-space:nowrap}
+.tag.done{background:#e3f5e9;color:#147443}.tag.review{background:#fff1d7;color:#945800}.tag.bad{background:#ffe7e8;color:#b91c24}
+.score-strip{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.score-strip span{background:#f4f6f9;border:1px solid var(--line);padding:6px 9px;border-radius:10px;font-size:12px;color:var(--muted)}.score-strip b{color:var(--text)}
+.warnbox,.badbox{border-radius:14px;padding:13px 15px;font-size:13px;margin-bottom:14px;border:1px solid transparent}.warnbox{background:#fff5df;color:#805100;border-color:#f2dfb6}.badbox{background:#fff0f0;color:#a51f26;border-color:#f3caca}
+.logo{width:78px;height:78px;border-radius:24px;background:linear-gradient(145deg,#ffdc58,#f5b800);color:var(--brand);font-size:45px;box-shadow:0 14px 28px rgba(245,184,0,.28);border:1px solid rgba(255,255,255,.8)}
+.login-wrap{max-width:460px;margin:0 auto;padding-top:clamp(20px,7vh,70px)}.login-card{padding:24px;border-radius:22px;box-shadow:0 18px 55px rgba(19,31,47,.12);border:1px solid rgba(225,230,237,.85)}.login-btn{width:100%;padding:15px;font-size:16px;border-radius:14px;margin-top:18px}
+.greet{font-size:14px;margin:8px 0 22px}.cover{max-width:420px;padding-top:24px}.cover button{width:100%;margin-top:14px}
+.splash{background:linear-gradient(145deg,#fff9df,#f3f5f8 65%,#fff0f0)}
+#cam,#shot{border-radius:16px;overflow:hidden}.placeholder{border-radius:16px;min-height:240px;background:linear-gradient(145deg,#252e3a,#111820);color:#e8edf2}
+.meta{font-size:12px;line-height:1.9;background:#f5f7fa;border:1px solid var(--line);padding:10px 12px;border-radius:12px}
+table{min-width:540px;border-collapse:separate;border-spacing:0;font-size:13px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:center}th{background:#f5f7fa;color:#5f6b7b;font-weight:800;white-space:nowrap}tr:last-child td{border-bottom:0}table tr:hover td{background:#fcfcfd}
+.card[style*="overflow-x:auto"]{overflow-x:auto}
+#botQ{margin-bottom:8px}.rec{padding:12px 0;border-color:var(--line)}.rec img{border-radius:12px}
+#printArea{display:none}
+@media(min-width:760px){#app{padding-top:30px}.login-wrap{padding-top:55px}.tabs{max-width:700px}.top .muted{font-size:13px}.card{margin-bottom:16px}}
+@media(max-width:640px){#app{width:calc(100% - 20px);padding-top:12px}.top{align-items:flex-start;flex-wrap:wrap}.top>div:last-child{max-width:100%}.top button{font-size:12px}.tabs{gap:4px;padding:4px}.tab{font-size:12px;padding:9px 4px;min-height:42px}.card{border-radius:15px;padding:14px;margin-bottom:11px}.task{padding:12px;gap:9px}.task .tag{white-space:normal;text-align:center;max-width:118px}.btns button{flex-basis:100%}.row{flex-wrap:wrap}.meta{font-size:11px}}
+@media(max-width:380px){#app{width:calc(100% - 14px)}.top{gap:7px}.top button.small{padding:6px 8px}.brand{font-size:24px}.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.task .tag{max-width:90px}}
+@media print{body{background:#fff!important;color:#111}body *{visibility:hidden;box-shadow:none!important}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}.emp-block{page-break-inside:avoid}.card{border:1px solid #ddd!important;border-radius:0!important}.rec img{max-width:220px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -108,18 +150,6 @@ const firebaseConfig = {
 };
 const MANAGER_EMAIL = 'tarekabdallah.eg@gmail.com';
 
-const TELEGRAM_TOKEN = '9162027978:AAG0zg0tGy19Gmjh07c19ge71TtGtFEHYs';
-const TELEGRAM_CHAT_ID = '5260245517';
-
-async function sendTelegramAlert(text) {
-  try {
-    const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(text)}`;
-    await fetch(url);
-  } catch(e) {
-    console.warn('تعذر إرسال تنبيه تيليجرام:', e);
-  }
-}
-
 const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
@@ -134,120 +164,77 @@ async function gemini(){
   return GEM;
 }
 
-function withTimeout(p, ms){
-  return Promise.race([p, new Promise((_, rej)=>setTimeout(()=>rej(new Error('انتهى وقت الانتظار')), ms))]);
-}
-
-function imageBrightness(photo){
-  return new Promise(res=>{
-    if(!photo) return res(0);
-    const img = new Image();
-    img.onload = ()=>{
-      const c = document.createElement('canvas');
-      c.width = 64; c.height = Math.max(1, Math.round(64*img.height/img.width));
-      const x = c.getContext('2d');
-      x.drawImage(img, 0, 0, c.width, c.height);
-      const d = x.getImageData(0, 0, c.width, c.height).data;
-      let sum = 0, n = 0;
-      for(let i=0; i<d.length; i+=4){ sum += (d[i]+d[i+1]+d[i+2])/3; n++; }
-      res(n ? sum/n : 0);
-    };
-    img.onerror = ()=>res(0);
-    img.src = photo;
-  });
-}
-
-function isHygieneTask(t){
-  const n = t.name || '';
-  const z = t.zone || '';
-  return n.includes('حرارة') || n.includes('الثلاجات') || n.includes('الفريزر') || n.includes('المنتجات')
-    || n.includes('الهايجين') || n.includes('غسل') || n.includes('الزي') || n.includes('صابون')
-    || z.includes('الهايجين') || z.includes('سلامة');
-}
-
-let AIMOD = null;
-async function geminiGen(parts){
-  if(!AIMOD){
-    try{
-      const m = await import('https://www.gstatic.com/firebasejs/13.1.0/firebase-ai.js');
-      AIMOD = { m, ai: m.getAI(app, { backend: new m.GoogleAIBackend() }) };
-    }catch(e){ throw new Error('AI Logic غير مفعّل: ' + (e.message || e)); }
-  }
-  let lastErr = null;
-  for(const name of ['gemini-2.5-flash-lite','gemini-2.5-flash','gemini-2.0-flash']){
-    try{
-      const model = AIMOD.m.getGenerativeModel(AIMOD.ai, { model: name });
-      return await withTimeout(model.generateContent(parts), 25000);
-    }catch(e){ lastErr = e; }
-  }
-  throw new Error(lastErr ? (lastErr.message || String(lastErr)) : 'فشل غير معروف');
-}
-
 async function aiCleanCheck(t, photo){
-  if(!photo) return { verdict:'unsure', reason:'مفيش صورة' };
-  const strict = isHygieneTask(t);
-  const rule = strict
-    ? 'أنت مفتش صارم جداً في الهايجين وسلامة الغذاء. قول fail لو الصورة مش واضحة تثبت المطلوب بالظبط (غسل الإيدين، الزي، غطاء الشعر، نظافة الأدوات والمنتجات). لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.'
-    : 'أنت مفتش نظافة معقول. قول fail بس لو فيه اتساخ واضح أو إهمال ظاهر. التفاصيل الصغيرة والإضاءة العادية ما تترفضش. لو الصورة معتمة أو مش واضحة قول unsure, ولو مش متأكد قول unsure.';
+  const model = await gemini();
+  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (Gemini) غير متاح حالياً.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تشغيل فحص الصورة'] };
+  if(!photo) return { ok: false, reason: 'خطأ: لم يتم التقاط صورة أو الصورة فارغة.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['لا توجد صورة للفحص'] };
+  
   try{
-    const r = await geminiGen([
-      { text: 'المهمة: "' + t.name + '" في منطقة "' + t.zone + '". لو الصورة مش مطابقة للمهمة بوضوح (زي صورة حيطة مكان الزيت، أو مكان تاني خالص) قول fail. ' + rule + ' رد بـ JSON فقط بدون أي كلام تاني، بالشكل: {"verdict":"pass" أو "fail" أو "unsure","reason":"سبب قصير بالعربي"}' },
-      { inlineData: { mimeType:'image/jpeg', data: photo.split(',')[1] } }
+    const r = await model.generateContent([
+      { text: `أنت بوت ومفتش سلامة وصحة غذاء وهايجين صارم جداً لمطعم "كنساس فرايد تشيكن". المهمة هي: "${t.name}" في منطقة "${t.zone}". 
+      قم بتحليل الصورة المرفقة بدقة تامة. 
+      - إذا كانت الصورة مظلمة تماماً، سوداء، غير واضحة، فيها إهمال أو اتساخ، أو لا تعبر عن إتمام المهمة المطلوبة: ضع ok: false واكتب بوضوح تام "سبب الرفض بالتفصيل" باللغة العربية (مثلاً: الصورة مظلمة ولا توضح النظافة، أو يوجد اتساخ في المكان).
+      - إذا كانت الصورة سليمة ومطابقة للمعايير: ضع ok: true.
+      قيّم الصورة بدرجات تقديرية من 0 إلى 100: cleanlinessScore للنظافة الظاهرة، hygieneScore لمؤشرات الهايجين، وtaskMatch لمدى مطابقة الصورة للمهمة. اكتب findings كمصفوفة قصيرة بالملاحظات. لا تدّعِ رؤية شيء غير واضح في الصورة.
+      يجب أن يكون ردك JSON صحيحاً فقط بهذا الشكل: {"ok":true,"reason":"","cleanlinessScore":90,"hygieneScore":90,"taskMatch":true,"findings":[]}. هذه الدرجات تقديرية وليست بديلاً عن مراجعة المدير.` },
+      { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
     ]);
-    const txt = (r.response.text() || '').replace(/```json/gi,'').replace(/```/g,'');
-    const x = txt.indexOf('{'), y = txt.lastIndexOf('}');
-    let v = 'unsure', reason = '';
-    try{
-      const obj = JSON.parse(txt.substring(x, y+1));
-      const raw = String(obj.verdict || '').toLowerCase();
-      reason = obj.reason || '';
-      if(raw.includes('unsure') || raw.includes('غير متأكد')) v = 'unsure';
-      else if(raw.includes('fail') || raw.includes('مرفوض') || raw.includes('غير مطابق')) v = 'fail';
-      else if(raw.includes('pass') || raw.includes('مطابق')) v = 'pass';
-    }catch(e){
-      const low = txt.toLowerCase();
-      if(low.includes('"unsure"')) v = 'unsure';
-      else if(low.includes('"fail"') || low.includes('مرفوض')) v = 'fail';
-      else if(low.includes('"pass"')) v = 'pass';
-      reason = 'رد غير مفهوم من جيمي: ' + txt.slice(0, 80);
+    
+    const txt = (r.response.text() || '').trim();
+    const clean = txt.replace(/```json/g,'').replace(/```/g,'').trim();
+    const firstBrace = clean.indexOf('{');
+    const lastBrace = clean.lastIndexOf('}');
+    if(firstBrace !== -1 && lastBrace !== -1){
+      const jsonStr = clean.substring(firstBrace, lastBrace + 1);
+      const obj = JSON.parse(jsonStr);
+      const score = v => Number.isFinite(Number(v)) ? Math.max(0, Math.min(100, Math.round(Number(v)))) : null;
+      return {
+        ok: !!obj.ok,
+        reason: obj.reason || (obj.ok ? 'الصورة اجتازت الفحص الآلي.' : 'المهمة لم تتطابق مع معايير الهايجين والنظافة المطلوبة.'),
+        cleanlinessScore: score(obj.cleanlinessScore),
+        hygieneScore: score(obj.hygieneScore),
+        taskMatch: obj.taskMatch !== false,
+        findings: Array.isArray(obj.findings) ? obj.findings.map(x => String(x)).slice(0, 8) : []
+      };
+    } else {
+      throw new Error('استجابة غير صالحة من النموذج');
     }
-    return { verdict: v, reason: reason };
-  }catch(e){
-    return { verdict:'unsure', reason:'Gemini ما ردش: ' + ((e && e.message) || 'خطأ') };
+  }catch(e){ 
+    return { ok: false, reason: 'خطأ في التحليل: ' + (e.message || 'تعذر معالجة الصورة بواسطة جيمي'), cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تحليل استجابة فحص الصورة'] }; 
   }
-}
-
-function tempCheck(t, tempVal){
-  if(tempVal === null || tempVal === undefined || isNaN(tempVal)) return null;
-  const n = t.name || '';
-  const isFridge = n.includes('فحص الثلاجات') || n.includes('الثلاجة');
-  const isCold = n.includes('الباردة');
-  const isHot = n.includes('الساخنة') || n.includes('الهولدنج');
-  if(n.includes('الفريزر') && tempVal > 0) return 'درجة الفريزر (' + tempVal + '°F) أعلى من 0°F.';
-  if(isFridge && tempVal >= 39) return 'درجة الثلاجة (' + tempVal + '°F) أعلى من الحد (أقل من 39°F).';
-  if(isCold && isHot && tempVal >= 39 && tempVal <= 140) return 'الحرارة (' + tempVal + '°F) في منطقة الخطر (الباردة أقل من 39°F، والساخنة أعلى من 140°F).';
-  if(isCold && !isHot && tempVal >= 39) return 'المنتج البارد (' + tempVal + '°F) أعلى من 39°F.';
-  if(isHot && !isCold && tempVal < 140) return 'المنتج الساخن (' + tempVal + '°F) أقل من 140°F.';
-  return null;
 }
 
 async function botCheckHygiene(t, photo, tempVal){
-  const hygiene = isHygieneTask(t);
-  const tRes = tempCheck(t, tempVal);
-  if(tRes) return { status:'rejected', violation:true, reason:'البوت: ' + tRes };
-  const isTempOnly = /الثلاجة|فحص الثلاجات|الفريزر|الباردة|الساخنة|الهولدنج/.test(t.name || '');
-  if(isTempOnly && tempVal !== null && tempVal !== undefined && !isNaN(tempVal)){
-    const bright0 = await imageBrightness(photo);
-    if(bright0 < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة، المدير يراجعها' };
-    return { status:'done', violation:false, reason:'البوت: الحرارة (' + tempVal + '°F) مطابقة للحد' };
+  // Run both checks independently: a temperature failure must not skip photo review.
+  const photoCheck = await aiCleanCheck(t, photo);
+  let tempOk = true;
+  let tempReason = '';
+  if(tempVal !== null && tempVal !== undefined && !Number.isNaN(Number(tempVal))){
+    if(t.name.includes('الثلاجات') && Number(tempVal) >= 39){
+      tempOk = false;
+      tempReason = 'درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F)، والمطلوب أقل من 39°F.';
+    }
+    if(t.name.includes('الفريزر') && Number(tempVal) > 0){
+      tempOk = false;
+      tempReason = 'درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F)، والمطلوب 0°F أو أقل.';
+    }
   }
-  const bright = await imageBrightness(photo);
-  if(bright < 45) return { status:'pending', violation:false, reason:'الصورة معتمة أو مش واضحة (سطوع ' + Math.round(bright) + ' من 255)، المدير يراجعها' };
-  const ai = await aiCleanCheck(t, photo);
-  if(ai.verdict === 'fail' && hygiene) return { status:'rejected', violation:true, reason:'جيمي: ' + (ai.reason || 'الهايجين أو سلامة الغذاء غير مطابقة') };
-  if(ai.verdict === 'fail') return { status:'pending', violation:false, reason:'جيمي شاف احتمال اتساخ، المدير يراجع: ' + (ai.reason || '') };
-  if(ai.verdict === 'unsure') return { status:'pending', violation:false, reason:'جيمي مش متأكد، المدير يراجع: ' + (ai.reason || '') };
-  return { status:'done', violation:false, reason:'البوت وجيمي اتفقوا إن المهمة مطابقة' };
+  const reasons = [];
+  if(!photoCheck.ok) reasons.push('فحص الصورة: ' + (photoCheck.reason || 'الصورة غير مطابقة'));
+  if(!tempOk) reasons.push('فحص الحرارة: ' + tempReason);
+  return {
+    ok: !!photoCheck.ok && tempOk,
+    photoOk: !!photoCheck.ok,
+    photoReason: photoCheck.reason || '',
+    cleanlinessScore: photoCheck.cleanlinessScore ?? null,
+    hygieneScore: photoCheck.hygieneScore ?? null,
+    taskMatch: photoCheck.taskMatch !== false,
+    findings: photoCheck.findings || [],
+    totalScore: photoCheck.cleanlinessScore != null && photoCheck.hygieneScore != null ? Math.round((photoCheck.cleanlinessScore + photoCheck.hygieneScore) / 2) : null,
+    tempOk,
+    tempReason,
+    reason: reasons.join(' | ') || 'اجتازت الصورة ودرجة الحرارة الفحصين.'
+  };
 }
 
 const DEFAULT_TASKS = [
@@ -285,7 +272,7 @@ const TIPS = {
  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
- 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون المناديل والمعقّم.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
@@ -306,7 +293,7 @@ const REFERENCE = [
      '2. الفحص والتحقق قبل التشغيل: مراجعة درجات حرارة الثلاجات والمقالي وفلاتر الهود والتأكد من جاهزية الأجهزة وجودة الزيت قبل استقبال أول اوردر.',
      '3. متابعة سرعة وجودة الخدمة: مراقبة زمن التجهيز والتسليم، وتفقد جودة التغليف وشكل وجبات كنساس المطابقة للمواصفات.',
      '4. إدارة المظهر والهايجين: التفتيش المستمر على الزي الرسمي للموظفين وغسل الأيدي والالتزام التام بالتعليمات المحددة.',
-     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste), والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
+     '5. التحكم في الهالك والمخزون: متابعة حركة المخزون اليومي، تقليل نسبة الهالك (Waste)، والتأكد من تطبيق قاعدة FIFO بشكل أوتوماتيكي.',
      '6. إقفال وتأمين الشيفت: الإشراف على خطوات الإغلاق، قفل الكاشيرات والجرد، التأكد من إيقاف المعدات وتأمين الفرع بالكامل.'
    ]
  },
@@ -355,24 +342,6 @@ function refView(){
   return `<div class="top"><h1>المرجع</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">المعلومات دي أساسيات سلامة الغذاء، والمدير يراجعها بصفة دورية.</p>`;
 }
 
-function localAnswer(q){
-  const x = (q||'').toLowerCase();
-  const has = arr => arr.some(w => x.includes(w));
-  if(has(['فريزر','تجميد'])) return 'الفريزر لازم يكون 0°F أو أقل.';
-  if(has(['ثلاج','تبريد','حرار','هولدنج','ساخن','بارد'])) return 'الثلاجة لازم تكون أقل من 39°F، والهولدنج الساخن أعلى من 140°F. لو الرقم مخالف، المهمة بتترفض وتتسجل مخالفة، وبلّغ المدير.';
-  if(has(['دجاج','فراخ'])) return 'الدجاج لازم يوصل داخلياً لـ 165°F على الأقل.';
-  if(has(['زيت','مقلاة'])) return 'صفّي الزيت يومياً بعد ما يبرد، وافحص لونه وريحته، ولو داكن أو ريحته وحشة بلّغ المدير.';
-  if(has(['حشر','فار','قوارض'])) return 'بلّغ المدير فوراً، ومتحاولش تتعامل معاها لوحدك.';
-  if(has(['إيد','ايد','غسل','هايجين','زي','شعر'])) return 'اغسل إيدك قبل البدء، وبعد الحمام، وبعد لمس الموبايل. الزي النظيف وغطاء الشعر إلزاميين.';
-  if(has(['تنظيف','تعقيم','معقم','نضاف'])) return 'نضّف الأول، بعدين اشطف، بعدين عقّم بمعقم معتمد للأغذية، وسيبه الوقت المكتوب على العبوة.';
-  if(has(['شيفت','مهام','متبقي','ناقص','باقي'])){
-    const sh = ST.shift;
-    const left = taskList(sh).filter(t=>!subS(recOf(t.id,sh)?.status));
-    return left.length ? 'باقي عليك ' + left.length + ' مهام في شيفت ' + sh + ': ' + left.slice(0,5).map(t=>t.name).join('، ') : 'كل مهام شيفت ' + sh + ' اتنفذت ✓';
-  }
-  return '';
-}
-
 async function askBot(){
   const el = document.getElementById('botQ');
   const q = (el.value || '').trim();
@@ -380,8 +349,8 @@ async function askBot(){
   ST.chatMsgs.push({ who:'me', text:q });
   el.value = '';
   
-  let ans = localAnswer(q);
-  const model = ans ? null : await gemini();
+  let ans = '';
+  const model = await gemini();
   if(model){
     try{
       const r = await model.generateContent([
@@ -391,7 +360,7 @@ async function askBot(){
     }catch(e){
       ans = 'عذراً، حدث خطأ في الاتصال بالبوت. يرجى مراجعة المرجع الرئيسي.';
     }
-  } else if(!ans) {
+  } else {
     ans = 'تنبيه صارم: أي تهاون في الهايجين أو سلامة الغذاء مرفوض تماماً.';
   }
 
@@ -401,20 +370,6 @@ async function askBot(){
 
   ST.chatMsgs.push({ who:'bot', text:ans });
   render();
-
-  try {
-    await addDoc(collection(fdb, 'questions'), {
-      text: q,
-      employee: ST.name || 'موظف',
-      shift: ST.shift || 'عام',
-      date: ST.date || todayStr(),
-      created: Date.now(),
-      answered: false,
-      answer: ''
-    });
-  } catch(err) {
-    console.warn('تعذر حفظ السؤال:', err);
-  }
 }
 
 function chatView(){
@@ -436,7 +391,6 @@ function loadQuestions(){
     .then(s=>{ QS = s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.created-a.created); render(); })
     .catch(e=>console.warn(e));
 }
-
 function questionsView(){
   const cards = QS.map(q => `
     <div class="card">
@@ -448,7 +402,6 @@ function questionsView(){
     </div>`).join('') || '<div class="card muted">ما فيش أسئلة لسه.</div>';
   return `<div class="card"><button class="sec small" onclick="loadQuestions()">تحديث الأسئلة</button></div>${cards}`;
 }
-
 function answerQ(id){
   const v = (document.getElementById('ans_'+id).value || '').trim();
   if(!v){ alert('اكتب الرد'); return; }
@@ -463,10 +416,8 @@ function isLate(sh){
   else { end.setDate(end.getDate()+1); end.setHours(6,0,0,0); }
   return Date.now() > end.getTime();
 }
-
 function getQ(){ try{ return JSON.parse(localStorage.getItem('kq')||'[]'); }catch(e){ return []; } }
 function setQ(q){ try{ localStorage.setItem('kq', JSON.stringify(q)); }catch(e){} }
-
 async function flushQ(){
   const q = getQ();
   if(!q.length || !navigator.onLine || !ST.user) return;
@@ -477,9 +428,7 @@ async function flushQ(){
   setQ(keep);
 }
 window.addEventListener('online', flushQ);
-
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-
 const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
   revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
@@ -489,7 +438,7 @@ function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
 const okS = s => s==='approved'||s==='done';
 const subS = s => s==='pending' || s==='done' || s==='approved';
-function stLabel(s){ return ({done:'معتمدة تلقائياً 👍',approved:'معتمدة من المدير ✅',pending:'بانتظار المدير ⏳',rejected:'مرفوضة ❌'})[s]||'لسه'; }
+function stLabel(s){return ({done:'Done 👍🏻',pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'Not Done 👎🏻'})[s]||'لسه';}
 function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
@@ -543,7 +492,6 @@ function splashView(){
   const word = 'KANSAS CHICKEN'.split('').map((c,i)=>`<span class="sl" style="animation-delay:${(0.15+i*0.07).toFixed(2)}s">${c===' ' ? '&nbsp;' : c}</span>`).join('');
   return `<div class="splash"><div class="logo sp-logo">K</div><div class="sp-name">${word}</div><div class="sp-bar"><div></div></div></div>`;
 }
-
 function coverView(){
   return `<div class="cover">
     <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار K، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
@@ -563,15 +511,14 @@ function coverView(){
     <button onclick="ST.coverDone=true;render()">ابدأ</button>
   </div>`;
 }
-
 function render(){
   const app = document.getElementById('app');
   if(!ST.splashDone || !ST.authReady){ app.innerHTML = splashView(); return; }
   if(!ST.user && !ST.coverDone){ app.innerHTML = coverView(); return; }
   if(!ST.user) app.innerHTML = loginView();
-  else if(ST.role==='mgr') app.innerHTML = mgrView();
   else if(ST.showChat) app.innerHTML = chatView();
   else if(ST.showRef) app.innerHTML = refView();
+  else if(ST.role==='mgr') app.innerHTML = mgrView();
   else if(ST.cur) app.innerHTML = taskView();
   else app.innerHTML = empView();
 }
@@ -594,7 +541,6 @@ function loginView(){
     </div>
   </div>`;
 }
-
 async function login(){
   const email = document.getElementById('lemail').value.trim();
   const pass = document.getElementById('lpass').value;
@@ -609,16 +555,12 @@ async function login(){
     render();
   }
 }
-
 function logout(){ stopCam(); signOut(auth); }
 
 function empView(){
   const list = taskList(ST.shift);
   const apprN = list.filter(t=>okS(recOf(t.id,ST.shift)?.status)).length;
-  // التعديل المضاف هنا: احتساب مؤشر الهايجين ومخالفات البوت في النقاط والنسبة
-  const vioN = list.filter(t=>recOf(t.id,ST.shift)?.violation || recOf(t.id,ST.shift)?.status==='rejected').length;
-  const resPct = list.length ? Math.max(0, Math.round(apprN/list.length*100) - vioN*5) : 0;
-  
+  const resPct = list.length ? Math.round(apprN/list.length*100) : 0;
   const rows = list.map(t=>{
     const r = recOf(t.id, ST.shift);
     const st = r ? r.status : 'todo';
@@ -638,24 +580,23 @@ function empView(){
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
     <div style="display:flex;gap:6px"><button class="sec small" onclick="ST.showRef=true;render()">المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">المساعد</button><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
   <div class="card">
-    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة <span style="color:var(--bad);font-size:12px">${vioN>0 ? '(مخالفات هايجين: -'+(vioN*5)+'%)':''}</span></div>
+    <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
     <div class="bar"><div style="width:${resPct}%"></div></div>
-    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة (مع تحليل الهايجين): <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
-    <div class="muted">المهام المرفوضة أو مخالفات الهايجين (Not Done 👎🏻) تؤثر على نسبة النجاح والرسوب وتتيح لك إعادة المحاولة.</div>
+    <div style="margin-top:10px">نسبة إنجاز المهام المعتمدة: <b>${resPct}%</b>${resPct ? " · " + grade(resPct) : ""}</div>
+    <div class="muted">المهام المرفوضة (Not Done 👎🏻) تتيح لك إعادة المحاولة بالدخول عليها وتصحيح التنفيذ والتصوير مجدداً.</div>
   </div>
   ${rows}
   <p class="muted" style="text-align:center">التزامك بالهايجين وسلامة الغذاء شرط أساسي لاعتماد المهام.</p>`;
 }
-
 function openTask(id){
   const r = recOf(id, ST.shift);
   if(r && subS(r.status) && r.status!=='rejected') return;
   ST.cur = id; ST.photo = null; ST.taken = false; render(); startCam();
 }
-
 function taskView(){
   const t = findTask(ST.cur);
-  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
+  if(!t) return '<div class="card"><b>المهمة غير متاحة</b><p class="muted">قد تكون المهمة حُذفت أو توقفت من لوحة المدير.</p><button onclick="closeTask()">رجوع للمهام</button></div>';
+  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
   return `
   <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
   <h2>إنجاز مهمة: ${esc(t.name)}</h2>
@@ -671,7 +612,6 @@ function taskView(){
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
   <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي الإلزامي)</button>`;
 }
-
 async function startCam(){
   try{
     camStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
@@ -682,23 +622,13 @@ async function startCam(){
     if(ph) ph.innerHTML = 'الكاميرا ما فتحتش ('+(e.name||'خطأ')+').<br>اسمح بالكاميرا للمتصفح من إعدادات الموقع، واضغط "فتح الكاميرا من جديد".';
   }
 }
-
 function stopCam(){ if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream=null; } }
-
 function capture(){
   const v = document.getElementById('cam');
   if(!(v && v.srcObject && v.videoWidth)){ alert('الكاميرا مش مفتوحة. اضغط "فتح الكاميرا من جديد" الأول.'); return; }
   const w = 640, h = Math.round(640*v.videoHeight/v.videoWidth);
   const c = document.createElement('canvas'); c.width=w; c.height=h;
-  const cx = c.getContext('2d');
-  cx.drawImage(v,0,0,w,h);
-  const px = cx.getImageData(0,0,w,h).data;
-  let sum = 0, n = 0;
-  for(let i=0; i<px.length; i+=16){ sum += (px[i]+px[i+1]+px[i+2])/3; n++; }
-  if((n ? sum/n : 0) < 45){
-    alert('الصورة معتمة جداً. وضّح الإضاءة، وقرّب الكاميرا من المكان، وصوّر تاني.');
-    return;
-  }
+  c.getContext('2d').drawImage(v,0,0,w,h);
   ST.photo = c.toDataURL('image/jpeg',0.5); ST.taken = true;
   stopCam();
   v.style.display='none';
@@ -709,14 +639,13 @@ function capture(){
   document.getElementById('retakeBtn').style.display='block';
   document.getElementById('sendBtn').style.display='block';
 }
-
 function retake(){ ST.photo=null; ST.taken=false; render(); startCam(); }
 function closeTask(){ stopCam(); ST.cur=null; ST.busy=false; render(); }
 
 async function submitPhoto(){
   if(ST.busy || !ST.taken) return;
   const t = findTask(ST.cur);
-  const isTempTask = /حرارة|فحص الثلاجات|الفريزر|الهولدنج|الباردة|الساخنة/.test(t.name);
+  const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
   let tempVal = null;
   if(isTempTask){
     const tempInput = document.getElementById('tempVal');
@@ -732,22 +661,23 @@ async function submitPhoto(){
   const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
 
-  if(check.status === 'rejected'){
+  if(!check.ok){
     const rejectedRec = {
       date: ST.date, ym: ST.date.slice(0,7),
       year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
       shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
       time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal, violation: !!check.violation,
-      aiNote: 'تم رفض المهمة أوتوماتيكياً بواسطة البوت والجيمي'
+      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal,
+      photoCheckOk: !!check.photoOk, photoCheckReason: check.photoReason || '', tempCheckOk: !!check.tempOk, tempCheckReason: check.tempReason || '',
+      cleanlinessScore: check.cleanlinessScore, hygieneScore: check.hygieneScore, totalScore: check.totalScore, taskMatch: check.taskMatch, findings: check.findings || [],
+      correctiveAction: 'إعادة تنفيذ المهمة بعد تصحيح الملاحظة ثم إعادة التصوير', reinspectionRequired: true,
+      aiNote: 'تم فحص الصورة ودرجة الحرارة كلٌ على حدة؛ الدرجات الآلية تقديرية والمراجعة النهائية للمدير.'
     };
     try{
       await setDoc(doc(fdb,'done',id), rejectedRec);
     }catch(e){
       const q = getQ(); q.push({id, rec: rejectedRec}); setQ(q);
     }
-
-    await sendTelegramAlert(`🚨 تنبيه مخالفة في كنساس!\n👤 الموظف: ${ST.name}\n📋 المهمة: ${t.name} (${t.zone})\n⏰ الشيفت: ${ST.shift}\n❌ السبب: ${check.reason}`);
 
     ST.busy = false;
     closeTask();
@@ -760,7 +690,9 @@ async function submitPhoto(){
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: check.status, tempVal: tempVal, violation: !!check.violation, aiNote: check.reason
+    photo: ST.photo, status: 'done', tempVal: tempVal, photoCheckOk: !!check.photoOk, photoCheckReason: check.photoReason || '', tempCheckOk: !!check.tempOk, tempCheckReason: check.tempReason || '',
+    cleanlinessScore: check.cleanlinessScore, hygieneScore: check.hygieneScore, totalScore: check.totalScore, taskMatch: check.taskMatch, findings: check.findings || [], reinspectionRequired: false,
+    aiNote: 'اجتازت الصورة ودرجة الحرارة الفحص الآلي؛ الدرجات تقديرية والاعتماد النهائي للمدير.'
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
@@ -779,16 +711,25 @@ function mgrView(){
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='qs' ? questionsView() : repView();
   return `
-  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)}</div></div>
-    <button class="sec small" onclick="logout()">خروج</button></div>
+  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)} · KANSAS CHICKEN</div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="sec small" onclick="ST.showRef=true;render()">المرجع</button>
+      <button class="sec small" onclick="ST.showChat=true;render()">المساعد</button>
+      <button class="sec small" onclick="refreshAll()">تحديث</button>
+      <button class="sec small" onclick="logout()">خروج</button>
+    </div></div>
   <div class="tabs">${tabs}</div>${body}`;
 }
-
 function setTab(k){ ST.tab=k; if(k==='rep') loadReport(); if(k==='qs') loadQuestions(); render(); }
 
 function revView(){
   const recs = DONE.filter(r=>ST.revShift==='all' || r.shift===ST.revShift);
   const rejectedRecs = recs.filter(r=>r.status==='rejected');
+  const repeatCounts = {};
+  (ST.report||[]).filter(r=>r.status==='rejected').forEach(r=>{
+    const k=(r.employee||'?')+'|'+(r.taskName||'?');
+    repeatCounts[k]=(repeatCounts[k]||0)+1;
+  });
   const shifts = ST.revShift==='all' ? SHIFTS : [ST.revShift];
   const missing = shifts.flatMap(sh => taskList(sh).filter(t=>!recOf(t.id,sh)).map(t=>({sh,t})));
   
@@ -803,8 +744,10 @@ function revView(){
   const cards = recs.map(r=>`
     <div class="card" style="${r.status==='rejected'?'border-color:var(--bad)':''}">
       <div class="row"><b>${esc(r.taskName)}</b><span class="tag ${stCls(r.status)}">${stLabel(r.status)}</span></div>
+      ${r.status==='rejected'&&(repeatCounts[(r.employee||'?')+'|'+(r.taskName||'?')]||0)>=2?`<div class="badbox" style="margin-top:8px;margin-bottom:0"><b>مخالفة متكررة:</b> تم تسجيل رفض هذه المهمة ${repeatCounts[(r.employee||'?')+'|'+(r.taskName||'?')]} مرات خلال الشهر المحدد.</div>`:''}
       <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
-      ${r.status==='rejected'?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>`:''}
+      ${(r.cleanlinessScore!=null||r.hygieneScore!=null||r.totalScore!=null)?`<div class="score-strip"><span>النظافة: <b>${r.cleanlinessScore??'—'}/100</b></span><span>الهايجين: <b>${r.hygieneScore??'—'}/100</b></span><span>الإجمالي: <b>${r.totalScore??'—'}/100</b></span></div>`:''}
+      ${r.status==='rejected'?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>${r.correctiveAction?`<div class="warnbox" style="margin-top:8px;margin-bottom:0"><b>الإجراء التصحيحي:</b> ${esc(r.correctiveAction)} ${r.reinspectionRequired?' · مطلوب إعادة الفحص':''}</div>`:''}`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
         <button onclick="setStatus('${r.id}','approved')">اعتماد</button>
@@ -827,7 +770,6 @@ function revView(){
   <div class="card"><b>لم تُنفّذ</b>${miss}</div>
   ${cards}`;
 }
-
 function setDate(v){ ST.date=v; subDone(); render(); }
 function setStatus(id,status){
   updateDoc(doc(fdb,'done',id), {status, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الاعتماد', e));
@@ -835,7 +777,9 @@ function setStatus(id,status){
 function rejectRec(id){
   const why = prompt('اكتب سبب الرفض (Not Done 👎🏻):', 'مخالفة معايير الهايجين والنظافة، يرجى إعادة المحاولة.');
   if(!why) return;
-  updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
+  const action = prompt('اكتب الإجراء التصحيحي المطلوب قبل إعادة الفحص:', 'تصحيح الملاحظة، تنظيف المنطقة، ثم إعادة تنفيذ المهمة وتصويرها.');
+  if(action === null) return;
+  updateDoc(doc(fdb,'done',id), {status:'rejected', rejectReason: why.trim(), correctiveAction: action.trim(), reinspectionRequired:true, reviewedBy:'المدير', reviewedAt:new Date().toISOString()}).catch(e=>fail('الرفض', e));
 }
 function removeRec(id){ if(confirm('تحذف التسجيل ده؟')) deleteDoc(doc(fdb,'done',id)).catch(e=>fail('الحذف', e)); }
 
@@ -846,7 +790,7 @@ function tasksView(){
       <div class="task" style="cursor:default;${t.active===false?'opacity:.5':''}">
         <div class="t">${esc(t.name)}<div class="muted">${esc(t.zone)}</div></div>
         <button class="sec small" onclick="editTip('${t.id}')">نصيحة</button>
-        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active!==false?'تفعيل':'إيقاف'}</button>
+        <button class="sec small" onclick="toggleTask('${t.id}',${t.active!==false})">${t.active===false?'تفعيل':'إيقاف'}</button>
         <button class="sec small danger" onclick="delTask('${t.id}')">حذف</button>
       </div>`).join('');
     return `<div class="card"><b>شيفت ${sh}</b>${items||'<div class="muted">لا توجد مهام</div>'}</div>`;
@@ -859,7 +803,6 @@ function tasksView(){
     <button onclick="addTask()">إضافة</button></div>
   ${lists}`;
 }
-
 function addTask(){
   const name = document.getElementById('nt_name').value.trim();
   const zone = document.getElementById('nt_zone').value.trim() || 'عام';
@@ -867,7 +810,6 @@ function addTask(){
   if(!name){ alert('اكتب اسم المهمة'); return; }
   addDoc(collection(fdb,'tasks'), {name, zone, shift, order: Date.now(), active:true}).catch(e=>fail('إضافة المهمة', e));
 }
-
 function editTip(id){
   const t = findTask(id);
   const cur = t.tip || TIPS[t.name] || '';
@@ -875,17 +817,14 @@ function editTip(id){
   if(v === null) return;
   updateDoc(doc(fdb,'tasks',id), {tip: v.trim()}).catch(e=>fail('حفظ النصيحة', e));
 }
-
 function toggleTask(id, active){ updateDoc(doc(fdb,'tasks',id), {active:!active}).catch(e=>fail('التعديل', e)); }
 function delTask(id){ if(confirm('تحذف المهام من القايمة؟')) deleteDoc(doc(fdb,'tasks',id)).catch(e=>fail('الحذف', e)); }
-
 function importDefaults(){
   Promise.all(DEFAULT_TASKS.map(([shift,zone,name],i)=>addDoc(collection(fdb,'tasks'), {name, zone, shift, order:i+1, active:true})))
     .catch(e=>fail('الاستيراد', e));
 }
 
 function grade(p){ return p>=95?'ممتاز':p>=90?'جيد جداً':p>=85?'ناجح':'راسب'; }
-
 function repView(){
   const [y,m] = ST.month.split('-').map(Number);
   const days = new Date(y, m, 0).getDate();
@@ -915,8 +854,7 @@ function repView(){
   const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
     const total = taskList(g.shift).length;
     const ok = g.list.filter(r=>okS(r.status)).length;
-    const vio = g.list.filter(r=>r.violation).length;
-    const p = total ? Math.max(0, Math.round(ok/total*100) - vio*5) : 0;
+    const p = total ? Math.round(ok/total*100) : 0;
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
         <div><b>${esc(r.taskName)}</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
         ${r.status==='rejected' ? `<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>` : ''}
@@ -938,16 +876,15 @@ function repView(){
   </div>
   <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
-    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>{rows}</table></div>
   <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>{empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
-    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>{missHtml}</div>
   </div>`;
 }
-
 function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
 function setMonth(v){ ST.month=v; loadReport(); }
 function loadReport(){
