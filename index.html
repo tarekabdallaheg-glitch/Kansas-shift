@@ -19,6 +19,7 @@ h1{font-size:20px;margin:6px 0 4px}h2{font-size:17px;margin:0 0 8px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;transition:background .3s,border-color .3s}
 label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
 input,select{width:100%;padding:11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:15px}
+input.error, select.error { border-color: var(--bad); background: rgba(198,40,40,0.04); }
 button{width:100%;padding:13px;border:0;border-radius:12px;background:var(--main);color:var(--onmain);font-size:15px;font-weight:bold;cursor:pointer;margin-top:8px}
 button.sec{background:transparent;color:var(--text);border:1px solid var(--line)}
 button.danger{color:var(--bad);border-color:var(--bad)}
@@ -55,10 +56,8 @@ button:disabled{opacity:.45}
 .placeholder{width:100%;aspect-ratio:3/4;background:#2b3440;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#cfd8e1;font-size:14px;text-align:center;padding:16px}
 .meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.8}
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;border-bottom:1px solid var(--line);text-align:center}th{color:var(--muted);font-weight:normal}
-.warnbox{background:#fff4e0;color:#8a5a00;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
-[data-theme="dark"] .warnbox{background:#3a2e14;color:#ffd58a}
-.badbox{background:#ffebee;color:#c62828;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px}
-[data-theme="dark"] .badbox{background:#3a1d1d;color:#ff8a8a}
+.warnbox{background:#ffebee;color:#c62828;border-radius:10px;padding:10px;font-size:13px;margin-bottom:12px;border:1px solid rgba(198,40,40,0.2)}
+[data-theme="dark"] .warnbox{background:#3a1d1d;color:#ff8a8a}
 
 .login-wrap{padding-top:36px}
 .greet{text-align:center;color:var(--muted);margin:6px 0 18px;font-size:15px}
@@ -445,7 +444,8 @@ async function flushQ(){
 window.addEventListener('online', flushQ);
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const ST = { user:null, role:null, name:'', shift:'صباحي', tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
-  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
+  revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[],
+  formEmail:'', formPass:'', formShift:'', errEmail:false, errPass:false, errShift:false };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
 const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -537,16 +537,27 @@ function loginView(){
     <div class="brand" style="margin-top:14px">Kansas Operations</div>
     <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
     <div class="card login-card">
-      <label>الإيميل</label><input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local" oninput="checkLoginType(this.value)">
-      <label>الباسورد</label><input id="lpass" type="password" autocomplete="current-password">
-      <div id="shiftFieldWrap">
+      <label>الإيميل</label>
+      <input id="lemail" type="email" autocomplete="username" placeholder="name@kansas.local" 
+             value="${esc(ST.formEmail)}" 
+             class="${ST.errEmail ? 'error' : ''}" 
+             oninput="ST.formEmail=this.value; ST.errEmail=false; checkLoginType(this.value)">
+             
+      <label>الباسورد</label>
+      <input id="lpass" type="password" autocomplete="current-password" 
+             value="${esc(ST.formPass)}" 
+             class="${ST.errPass ? 'error' : ''}" 
+             oninput="ST.formPass=this.value; ST.errPass=false;">
+             
+      <div id="shiftFieldWrap" style="${(ST.formEmail.trim().toLowerCase() === MANAGER_EMAIL.toLowerCase()) ? 'display:none' : 'display:block'}">
         <label>اختر الشيفت (إجباري)</label>
-        <select id="lshift">
-          <option value="" disabled selected>-- اختر الشيفت --</option>
-          <option>صباحي</option>
-          <option>مسائي</option>
+        <select id="lshift" class="${ST.errShift ? 'error' : ''}" onchange="ST.formShift=this.value; ST.errShift=false;">
+          <option value="" disabled ${!ST.formShift ? 'selected' : ''}>-- اختر الشيفت --</option>
+          <option ${ST.formShift==='صباحي'?'selected':''}>صباحي</option>
+          <option ${ST.formShift==='مسائي'?'selected':''}>مسائي</option>
         </select>
       </div>
+      
       <button class="login-btn" onclick="login()">دخول</button>
       ${ST.authErr ? `<div class="warnbox" style="margin-top:10px">${esc(ST.authErr)}</div>` : ''}
     </div>
@@ -564,23 +575,29 @@ function checkLoginType(val){
 }
 
 async function login(){
-  const email = document.getElementById('lemail').value.trim();
-  const pass = document.getElementById('lpass').value;
-  const shiftEl = document.getElementById('lshift');
-  const shift = shiftEl ? shiftEl.value : '';
+  const emailInput = document.getElementById('lemail');
+  const passInput = document.getElementById('lpass');
+  const shiftInput = document.getElementById('lshift');
   
-  if(!email || !pass){ ST.authErr='اكتب الإيميل والباسورد'; render(); return; }
+  ST.formEmail = emailInput ? emailInput.value.trim() : '';
+  ST.formPass = passInput ? passInput.value : '';
+  ST.formShift = shiftInput ? shiftInput.value : '';
   
-  if(email.toLowerCase() !== MANAGER_EMAIL.toLowerCase() && !shift){
-    ST.authErr='يجب اختيار الشيفت بشكل إجباري لتسجيل الدخول كمرؤوس/موظف.';
+  ST.errEmail = !ST.formEmail;
+  ST.errPass = !ST.formPass;
+  ST.errShift = (ST.formEmail.toLowerCase() !== MANAGER_EMAIL.toLowerCase() && !ST.formShift);
+  
+  if(ST.errEmail || ST.errPass || ST.errShift){
+    ST.authErr = 'يرجى استكمال الحقول الناقصة المحددة باللون الأحمر.';
     render();
     return;
   }
 
   try{
-    ST.shift = shift || 'صباحي';
-    await signInWithEmailAndPassword(auth, email, pass);
+    ST.shift = ST.formShift || 'صباحي';
+    await signInWithEmailAndPassword(auth, ST.formEmail, ST.formPass);
     ST.authErr = '';
+    ST.errEmail = false; ST.errPass = false; ST.errShift = false;
   }catch(e){
     ST.authErr='الإيميل أو الباسورد غلط، أو الحساب مش موجود. كلم المدير.';
     render();
