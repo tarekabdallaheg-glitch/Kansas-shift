@@ -166,18 +166,26 @@ async function gemini(){
   return GEM;
 }
 
+//قاعدة المعرفة الشاملة لسلامة الغذاء والتشغيل ليستخدمها الذكاء الاصطناعي في الإجابة بدقة مطلقة
+const KANSAS_KB = `
+أنت خبير ومفتش سلامة وصحة غذاء وهايجين وتشغيل صارم جداً لمطعم "كنساس فرايد تشيكن". لديك قاعدة بيانات ومعلومات شاملة ومحدثة بكل معايير HACCP وسلامة الغذاء:
+1. درجات الحرارة: الثلاجات أقل من 39°F، الفريزر 0°F أو أقل، الأغذية الساخنة المعروضة أعلى من 140°F، ودرجة حرارة قلي/طهي الدجاج الداخلية لا تقل عن 165°F (74°C).
+2. التخزين ومنع التلوث: الأغذية الجاهزة أعلى، المطبوخة في الوسط، واللحوم والدجاج النيئ أسفل الرفوف تماماً لمنع التلوث المتبادل. رفع الخامات على طبالي بارتفاع 15 سم عن الأرض. تطبيق قاعدة FIFO (الأول داخل، الأول خارج). فصل الكيميائيات والمنظفات عن الأغذية تماماً.
+3. استلام الطلبيات: فحص كراتين الشحنة، قياس حرارة المنتجات عند الاستلام، ومراجعة الصلاحيات ورفض أي شحنة تالفة أو غير مطابقة.
+4. الهايجين الشخصي: غسل اليدين بالماء الساخن والصابون لمدة 20 ثانية، ارتداء غطاء الرأس (Hairnet)، منع ارتداء الساعات والخواتم، تقليم الأظافر، وحظر عمل أي مصاب بأعراض مرضية.
+5. مهام الفتح والإغلاق: فتح الصباحي بفحص الأجهزة والحرارة والزيت وتوزيع المهام، والإغلاق المسائي بتصفية الزيوت، الجرد، تنظيف الثلاجات وتأمين الفرع بالكامل.
+أجب على أسئلة الموظفين والمدير بدقة واختصار واحترافية شديدة بناءً على هذه المعايير.
+`;
+
 async function aiCleanCheck(t, photo){
   const model = await gemini();
-  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (البوت الذكي) غير متاح حالياً.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تشغيل فحص الصورة'] };
+  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي غير متاح حالياً.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تشغيل فحص الصورة'] };
   if(!photo) return { ok: false, reason: 'خطأ: لم يتم التقاط صورة أو الصورة فارغة.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['لا توجد صورة للفحص'] };
   
   try{
     const r = await model.generateContent([
-      { text: `أنت بوت ومفتش سلامة وصحة غذاء وهايجين صارم جداً لمطعم "كنساس فرايد تشيكن". المهمة هي: "${t.name}" في منطقة "${t.zone}". 
-      قم بتحليل الصورة المرفقة بدقة تامة. 
-      - قيّم نظافة المكان والهايجين ودرجة إتمام المهمة الظاهرة في الصورة بدرجات تقديرية من 0 إلى 100.
-      - اكتب cleanlinessScore و hygieneScore و taskMatch (true أو false) ومصفوفة قصيرة من الملاحظات في findings.
-      يجب أن يكون ردك JSON صحيحاً فقط بهذا الشكل: {"ok":true,"reason":"","cleanlinessScore":90,"hygieneScore":90,"taskMatch":true,"findings":[]}.` },
+      { text: KANSAS_KB + ` المهمة الحالية المراد فحصها في الصورة هي: "${t.name}" في منطقة "${t.zone}". 
+      حلل الصورة بدقة تامة واكتب cleanlinessScore و hygieneScore و taskMatch (true أو false) وملاحظات في findings بصيغة JSON فقط: {"ok":true,"reason":"","cleanlinessScore":90,"hygieneScore":90,"taskMatch":true,"findings":[]}.` },
       { inlineData: { mimeType: 'image/jpeg', data: photo.split(',')[1] } }
     ]);
     
@@ -198,7 +206,7 @@ async function aiCleanCheck(t, photo){
         findings: Array.isArray(obj.findings) ? obj.findings.map(x => String(x)).slice(0, 8) : []
       };
     } else {
-      throw new Error('استجابة غير صالحة من النموذج');
+      throw new Error('استجابة غير صالحة');
     }
   }catch(e){ 
     return { ok: true, reason: 'تم التحليل افتراضياً.', cleanlinessScore: 85, hygieneScore: 85, taskMatch: true, findings: [] }; 
@@ -221,7 +229,7 @@ async function botCheckHygiene(t, photo, tempVal){
     }
     if(t.name.includes('قياس درجة حرارة المنتجات') && !(temp < 39 || temp > 140)){
       tempOk = false;
-      tempReason = 'درجة حرارة المنتج غير مطابقة: القراءة ' + temp + '°F. المطلوب للمنتج البارد أقل من 39°F أو للمنتج الساخن أعلى من 140°F.';
+      tempReason = 'درجة حرارة المنتج غير مطابقة: القراءة ' + temp + '°F. المطلوب أقل من 39°F أو أعلى من 140°F.';
     }
   }
   const reasons = [];
@@ -382,7 +390,7 @@ async function askBot(){
   if(model){
     try{
       const r = await model.generateContent([
-        { text: `أنت مساعد ومفتش سلامة وصحة غذاء وهايجين ذكي جداً لمطعم "كنساس فرايد تشيكن". أجب على سؤال الموظف بدقة واختصار شديد باللغة العربية بناءً على معايير سلامة الغذاء، التخزين، درجات الحرارة، والتشغيل في المطعم. سؤال الموظف هو: "${q}"` }
+        { text: KANSAS_KB + ` أجب على سؤال الموظف بدقة واختصار شديد باللغة العربية بناءً على معايير سلامة الغذاء، التخزين، درجات الحرارة، والتشغيل. سؤال الموظف هو: "${q}"` }
       ]);
       ans = (r.response.text() || '').trim();
     }catch(e){
@@ -401,16 +409,16 @@ async function askBot(){
 }
 
 function chatView(){
-  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت الذكي'}</b><div>${esc(m.text)}</div></div>`).join('')
+  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت الذكي (خبير السلامة والتشغيل)'}</b><div>${esc(m.text)}</div></div>`).join('')
     || '<div class="muted">اسألني عن صحة وسلامة الغذاء، التخزين، استلام الطلبيات، درجات الحرارة والمهام.</div>';
   return `
-  <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
+  <div class="top"><h1>المساعد (خبير السلامة)</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
   ${msgs}
   <div class="card">
     <input id="botQ" placeholder="اكتب سؤالك هنا (استلام،تخزين،حرارة،هايجين)" onkeydown="if(event.key==='Enter')askBot()">
     <button onclick="askBot()">إرسال</button>
   </div>
-  <p class="muted" style="text-align:center">البوت الذكي جاهز لإرشادك في أي وقت.</p>`;
+  <p class="muted" style="text-align:center">البوت مزود بكل أسئلة ومعايير سلامة الغذاء والتشغيل.</p>`;
 }
 
 let QS = [];
@@ -532,7 +540,7 @@ function coverView(){
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -606,7 +614,7 @@ async function login(){
     await signInWithEmailAndPassword(auth, email, pass);
     ST.authErr = '';
   }catch(e){
-    ST.authErr = 'الإيميل أو الباسورد غلط، أو الحساب مش موجود. كلم المدير.';
+    ST.authErr='الإيميل أو الباسورد غلط، أو الحساب مش موجود. كلم المدير.';
     render();
   }
 }
