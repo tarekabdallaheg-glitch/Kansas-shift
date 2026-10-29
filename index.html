@@ -131,7 +131,7 @@ table{min-width:540px;border-collapse:separate;border-spacing:0;font-size:13px}t
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 
-/* ===== KANSAS OPERATIONS REDESIGN V2: visible layout changes ===== */
+/* ===== KANSAS OPERATIONS SMART DAILY: visible layout changes ===== */
 .ops-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.ops-kpis>div{background:#f6f8fb;border:1px solid #e5eaf0;border-radius:15px;padding:14px 10px;text-align:center;min-width:0}.ops-kpis strong{display:block;font-size:clamp(23px,4vw,34px);font-weight:950;color:#202a38;line-height:1.2}.ops-kpis span{display:block;font-size:12px;font-weight:750;color:#657286;margin-top:7px}@media(max-width:480px){.ops-kpis{gap:6px}.ops-kpis>div{padding:11px 5px}.ops-kpis span{font-size:10px}}
 
 :root{--bg:#f1f4f8;--card:#fff;--text:#182230;--muted:#667487;--main:#f6bd16;--onmain:#202630;--ok:#18834a;--warn:#b8750b;--bad:#c72c36;--line:#dfe5ed;--brand:#c92630;--shadow:0 10px 30px rgba(24,34,48,.085);--radius:20px}
@@ -165,6 +165,30 @@ label{color:#526174;font-weight:800}
 #cam,#shot,.placeholder{border-radius:18px}
 @media(min-width:760px){.app-release-banner{margin-bottom:20px}.top{padding:20px}.task{padding:18px}}
 @media(max-width:640px){body{background:linear-gradient(180deg,#202a38 0,#202a38 118px,#f1f4f8 118px,#f1f4f8 100%) fixed!important}#app{width:calc(100% - 18px);padding-top:12px}.app-release-banner{padding:10px 12px;border-radius:13px}.app-release-banner .release-title{font-size:12px}.app-release-banner .release-sub{font-size:10px}.app-release-banner .release-pill{font-size:9px;padding:4px 7px}.top{padding:13px;border-radius:15px}.card{border-radius:16px;padding:14px}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.tab{min-width:0;padding:10px 5px;font-size:12px}.task{padding:12px;border-radius:14px}.btns button{flex:1 1 100%}}
+
+
+/* KANSAS modern action controls + employee daily evaluation */
+.top > div:last-child{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.top button.sec.small{border:1px solid #d9e2ed;border-radius:13px;padding:9px 13px;min-height:40px;font-weight:850;box-shadow:0 3px 10px rgba(24,34,48,.06);transition:transform .15s ease,box-shadow .15s ease}
+.top button.sec.small:active{transform:scale(.97)}
+.top button.sec.small[onclick*="showRef"]{background:linear-gradient(135deg,#fff9df,#fff0b5);border-color:#f0dda0;color:#765800}
+.top button.sec.small[onclick*="showChat"]{background:linear-gradient(135deg,#e9fbf1,#d7f5e4);border-color:#b9e8cc;color:#17663b}
+.top button.sec.small[onclick*="refreshAll"]{background:linear-gradient(135deg,#edf6ff,#dcecff);border-color:#c8def9;color:#185aa2}
+.top button.sec.small[onclick*="logout"]{background:linear-gradient(135deg,#fff0ef,#ffe0dd);border-color:#f3c7c3;color:#ad2929}
+.employee-identity{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:7px}
+.employee-name{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff0ad,#ffd84f);color:#332600;border:1px solid #f0cb38;border-radius:999px;padding:6px 12px;font-weight:950;font-size:15px;box-shadow:0 4px 12px rgba(245,184,0,.16)}
+.shift-label{display:inline-flex;align-items:center;background:#edf2f8;color:#435166;border:1px solid #dce4ee;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:850}
+.daily-eval{border:1px solid #e5eaf1;background:linear-gradient(145deg,#fff,#f8fafc);border-radius:20px;padding:16px;margin:0 0 14px;box-shadow:0 8px 22px rgba(24,34,48,.055)}
+.daily-eval-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.daily-eval-title{font-weight:950;font-size:16px;color:#1b2635}
+.daily-eval-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.daily-eval-item{padding:11px 7px;border:1px solid #e5eaf0;background:#fff;border-radius:14px;text-align:center;min-width:0}
+.daily-eval-item strong{display:block;font-size:22px;line-height:1.25;font-weight:950;color:#202a38}
+.daily-eval-item span{display:block;font-size:11px;font-weight:800;color:#667487;margin-top:5px}
+.daily-eval .bar{margin-top:12px}
+#cam,#shot,.placeholder{max-height:min(38vh,360px)}
+#capBtn{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;width:100%;min-height:54px;border-radius:15px;box-shadow:0 8px 22px rgba(245,184,0,.3)}
+@media(max-width:640px){body{background:var(--bg)!important}.top > div:last-child{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.top button.sec.small{width:100%;padding:9px 7px;font-size:12px}.daily-eval-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-name{font-size:14px}}
 
 </style>
 </head>
@@ -202,7 +226,7 @@ async function gemini(){
 
 async function aiCleanCheck(t, photo){
   const model = await gemini();
-  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (Gemini) غير متاح حالياً.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تشغيل فحص الصورة'] };
+  if(!model) return { ok: false, reason: 'خطأ: نموذج الذكاء الاصطناعي (البوت الذكي) غير متاح حالياً.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تشغيل فحص الصورة'] };
   if(!photo) return { ok: false, reason: 'خطأ: لم يتم التقاط صورة أو الصورة فارغة.', cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['لا توجد صورة للفحص'] };
   
   try{
@@ -236,7 +260,7 @@ async function aiCleanCheck(t, photo){
       throw new Error('استجابة غير صالحة من النموذج');
     }
   }catch(e){ 
-    return { ok: false, reason: 'خطأ في التحليل: ' + (e.message || 'تعذر معالجة الصورة بواسطة جيمي'), cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تحليل استجابة فحص الصورة'] }; 
+    return { ok: false, reason: 'خطأ في التحليل: ' + (e.message || 'تعذر معالجة الصورة بواسطة البوت الذكي'), cleanlinessScore: 0, hygieneScore: 0, taskMatch: false, findings: ['تعذر تحليل استجابة فحص الصورة'] }; 
   }
 }
 
@@ -246,13 +270,18 @@ async function botCheckHygiene(t, photo, tempVal){
   let tempOk = true;
   let tempReason = '';
   if(tempVal !== null && tempVal !== undefined && !Number.isNaN(Number(tempVal))){
-    if(t.name.includes('الثلاجات') && Number(tempVal) >= 39){
+    const temp = Number(tempVal);
+    if(t.name.includes('الثلاجات') && temp >= 39){
       tempOk = false;
-      tempReason = 'درجة حرارة الثلاجة مرتفعة (' + tempVal + '°F)، والمطلوب أقل من 39°F.';
+      tempReason = 'درجة حرارة الثلاجة غير مطابقة: القراءة ' + temp + '°F، والمطلوب أقل من 39°F.';
     }
-    if(t.name.includes('الفريزر') && Number(tempVal) > 0){
+    if(t.name.includes('الفريزر') && temp > 0){
       tempOk = false;
-      tempReason = 'درجة حرارة الفريزر غير مطابقة (' + tempVal + '°F)، والمطلوب 0°F أو أقل.';
+      tempReason = 'درجة حرارة الفريزر غير مطابقة: القراءة ' + temp + '°F، والمطلوب 0°F أو أقل.';
+    }
+    if(t.name.includes('قياس درجة حرارة المنتجات') && !(temp < 39 || temp > 140)){
+      tempOk = false;
+      tempReason = 'درجة حرارة المنتج غير مطابقة: القراءة ' + temp + '°F. المطلوب للمنتج البارد أقل من 39°F أو للمنتج الساخن أعلى من 140°F.';
     }
   }
   const reasons = [];
@@ -409,7 +438,7 @@ async function askBot(){
 }
 
 function chatView(){
-  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت والجيمي'}</b><div>${esc(m.text)}</div></div>`).join('')
+  const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:#fff8d6':''}"><b>${m.who==='me'?'أنت':'البوت الذكي'}</b><div>${esc(m.text)}</div></div>`).join('')
     || '<div class="muted">اسألني عن صحة وسلامة الغذاء، درجات الحرارة، الهايجين، النظافة والمهام.</div>';
   return `
   <div class="top"><h1>المساعد</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
@@ -418,7 +447,7 @@ function chatView(){
     <input id="botQ" placeholder="اكتب سؤالك هنا (حرارة،هايجين،سلامة غذاء)" onkeydown="if(event.key==='Enter')askBot()">
     <button onclick="askBot()">إرسال</button>
   </div>
-  <p class="muted" style="text-align:center">البوت والجيمي يعملان معاً لضمان الجودة والسلامة.</p>`;
+  <p class="muted" style="text-align:center">البوت الذكي يعملان معاً لضمان الجودة والسلامة.</p>`;
 }
 
 let QS = [];
@@ -474,7 +503,7 @@ function fmtDate(s){const [y,m,d]=s.split('-');return d+'/'+m+'/'+y;}
 function weekday(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('ar-EG',{weekday:'long'});}
 const okS = s => s==='approved'||s==='done';
 const subS = s => s==='pending' || s==='done' || s==='approved';
-function stLabel(s){return ({done:'Done 👍🏻',pending:'بانتظار المراجعة',approved:'معتمدة',rejected:'Not Done 👎🏻'})[s]||'لسه';}
+function stLabel(s){return ({done:'بانتظار مراجعة المدير',pending:'بانتظار مراجعة المدير',approved:'معتمدة',rejected:'مرفوضة - حرارة غير مطابقة'})[s]||'لسه';}
 function stCls(s){return (s==='approved'||s==='done')?'done':(s==='pending'?'review':s==='rejected'?'bad':'');}
 function taskList(sh){return TASKS.filter(t=>t.active!==false && t.shift===sh).sort((a,b)=>(a.order||0)-(b.order||0));}
 function findTask(id){return TASKS.find(t=>t.id===id);}
@@ -558,7 +587,7 @@ function render(){
   else if(ST.cur) app.innerHTML = taskView();
   else app.innerHTML = empView();
   // Visible build marker confirms the redesigned file is the version being displayed.
-  app.insertAdjacentHTML('afterbegin', `<div class="app-release-banner"><div><div class="release-title">KANSAS CHICKEN · OPERATIONS</div><div class="release-sub">واجهة تشغيل مطوّرة · ${new Date().toLocaleDateString('ar-EG')}</div></div><span class="release-pill">REDESIGN V2</span></div>`);
+  app.insertAdjacentHTML('afterbegin', `<div class="app-release-banner"><div><div class="release-title">KANSAS CHICKEN · OPERATIONS</div><div class="release-sub">واجهة تشغيل مطوّرة · ${new Date().toLocaleDateString('ar-EG')}</div></div><span class="release-pill">SMART DAILY</span></div>`);
 }
 
 function loginView(){
@@ -609,14 +638,32 @@ function empView(){
         <div>${esc(t.name)}</div>
         <div class="muted">${esc(t.zone)}</div>
         ${(t.tip||TIPS[t.name])?`<div class="muted" style="color:#2e7d32">💡 ${esc(t.tip||TIPS[t.name])}</div>`:''}
-        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'مخالفة هايجين')})</span></div>`:''}
+        ${r && r.status==="rejected"?`<div style="color:#c62828;font-weight:bold;margin-top:4px">🌡️ مرفوضة بسبب الحرارة <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'درجة الحرارة خارج الحدود')})</span></div>`:''}
       </div>
       ${tag}
     </div>`;
   }).join('') || '<div class="card muted">مفيش مهام لشيفتك دلوقتي. اضغط تحديث، ولو فضلت كده كلم المدير.</div>';
+  const myToday = DONE.filter(r=>r.uid===ST.user.uid && r.date===ST.date);
+  const myApproved = myToday.filter(r=>r.status==='approved'||r.status==='done').length;
+  const myPending = myToday.filter(r=>r.status==='pending').length;
+  const myRejected = myToday.filter(r=>r.status==='rejected').length;
+  const myScores = myToday.filter(r=>Number.isFinite(Number(r.totalScore))).map(r=>Number(r.totalScore));
+  const myAvg = myScores.length ? Math.round(myScores.reduce((a,b)=>a+b,0)/myScores.length) : 0;
+  const dailyPct = list.length ? Math.round(myApproved/list.length*100) : 0;
   return `
-  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="muted">${esc(ST.name)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</div></div>
-    <div style="display:flex;gap:6px"><button class="sec small" onclick="ST.showRef=true;render()">المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">المساعد</button><button class="sec small" onclick="refreshAll()">تحديث</button><button class="sec small" onclick="logout()">خروج</button></div></div>
+  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="employee-identity"><span class="shift-label">${esc(ST.shift)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</span><span class="employee-name">👤 ${esc(ST.name)}</span></div></div>
+    <div><button class="sec small" onclick="ST.showRef=true;render()">📘 المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">🤖 المساعد</button><button class="sec small" onclick="refreshAll()">🔄 تحديث</button><button class="sec small" onclick="logout()">🚪 خروج</button></div></div>
+  <div class="daily-eval">
+    <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييمك اليومية</div><span class="tag ${myRejected?'bad':myPending?'review':'done'}">${myRejected?'توجد مهمة حرارة مرفوضة':myPending?'بانتظار مراجعة المدير':'تقييم اليوم'}</span></div>
+    <div class="daily-eval-grid">
+      <div class="daily-eval-item"><strong>${myApproved}</strong><span>مهام معتمدة</span></div>
+      <div class="daily-eval-item"><strong>${myPending}</strong><span>بانتظار المدير</span></div>
+      <div class="daily-eval-item"><strong>${myRejected}</strong><span>مرفوضة للحرارة</span></div>
+      <div class="daily-eval-item"><strong>${myScores.length?myAvg+'%':'—'}</strong><span>متوسط تحليل البوت</span></div>
+    </div>
+    <div class="bar"><div style="width:${dailyPct}%"></div></div>
+    <div class="muted" style="margin-top:7px">إنجاز المهام المعتمدة اليوم: <b>${dailyPct}%</b> · التحليل الآلي استرشادي، والاعتماد النهائي للمدير.</div>
+  </div>
   <div class="card">
     <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
     <div class="bar"><div style="width:${resPct}%"></div></div>
@@ -643,12 +690,12 @@ function taskView(){
     <video id="cam" autoplay playsinline muted></video>
     <img id="shot" alt="">
     <div id="ph" class="placeholder">جاري فتح الكاميرا...</div>
-    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: يتم فحص الهايجين وسلامة الغذاء بواسطة البوت والجيمي بشكل إلزامي.</div>
+    <div class="meta">التاريخ: ${fmtDate(ST.date)} · الوقت: ${new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}<br>تنبيه: البوت الذكي يحلل الصورة والحرارة؛ مخالفة الحرارة ترفض المهمة، وباقي النتائج تنتظر مراجعة المدير.</div>
   </div>
   <button id="capBtn" onclick="capture()">التقاط صورة</button>
   <button id="startBtn" class="sec" onclick="startCam()">فتح الكاميرا من جديد</button>
   <button id="retakeBtn" class="sec" style="display:none" onclick="retake()">إعادة المحاولة (تصوير جديد)</button>
-  <button id="sendBtn" style="display:none" onclick="submitPhoto()">Done 👍🏻 (فحص البوت والجيمي الإلزامي)</button>`;
+  <button id="sendBtn" style="display:none" onclick="submitPhoto()">إرسال للتحليل الذكي</button>`;
 }
 async function startCam(){
   try{
@@ -693,19 +740,19 @@ async function submitPhoto(){
 
   ST.busy = true;
   const sendBtn = document.getElementById('sendBtn');
-  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 البوت والجيمي يفحصان المهمة الآن...'; }
+  if(sendBtn){ sendBtn.disabled = true; sendBtn.innerText = '🔍 البوت الذكي يحلل المهمة الآن...'; }
   
   const check = await botCheckHygiene(t, ST.photo, tempVal);
   const now = new Date();
   const id = ST.date+'_'+SK[ST.shift]+'_'+t.id+'_'+ST.user.uid.slice(0,6);
 
-  if(!check.ok){
+  if(isTempTask && check.tempOk === false){
     const rejectedRec = {
       date: ST.date, ym: ST.date.slice(0,7),
       year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
       shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
       time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-      photo: ST.photo, status: 'rejected', rejectReason: check.reason, tempVal: tempVal,
+      photo: ST.photo, status: 'rejected', rejectReason: check.tempReason || 'درجة الحرارة خارج الحدود المحددة للمهمة', tempVal: tempVal,
       photoCheckOk: !!check.photoOk, photoCheckReason: check.photoReason || '', tempCheckOk: !!check.tempOk, tempCheckReason: check.tempReason || '',
       cleanlinessScore: check.cleanlinessScore, hygieneScore: check.hygieneScore, totalScore: check.totalScore, taskMatch: check.taskMatch, findings: check.findings || [],
       correctiveAction: 'إعادة تنفيذ المهمة بعد تصحيح الملاحظة ثم إعادة التصوير', reinspectionRequired: true,
@@ -719,7 +766,7 @@ async function submitPhoto(){
 
     ST.busy = false;
     closeTask();
-    alert('⚠️ Not Done 👎🏻\nتم رفض المهمة رسمياً وسجلها النظام كـ Not Done:\nسبب الرفض: ' + check.reason + '\n\nتم إخراجك للقائمة، وبإمكانك المحاولة مرة أخرى بالدخول على نفس المهمة وتصويرها بالشكل الصحيح.');
+    alert('🌡️ تم رفض المهمة بسبب درجة الحرارة.\nالقراءة المسجلة: ' + tempVal + '°F\nالحد المطلوب: ' + (check.tempReason || 'راجع حد الحرارة المكتوب في قالب المهمة') + '\n\nراجع القراءة وصحّحها ثم أعد المحاولة.');
     return;
   }
 
@@ -728,9 +775,10 @@ async function submitPhoto(){
     year: String(now.getFullYear()), month: String(now.getMonth()+1), day: String(now.getDate()),
     shift: ST.shift, taskId: t.id, taskName: t.name, zone: t.zone, employee: ST.name, uid: ST.user.uid,
     time: now.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}),
-    photo: ST.photo, status: 'done', tempVal: tempVal, photoCheckOk: !!check.photoOk, photoCheckReason: check.photoReason || '', tempCheckOk: !!check.tempOk, tempCheckReason: check.tempReason || '',
+    photo: ST.photo, status: 'pending', tempVal: tempVal, photoCheckOk: !!check.photoOk, photoCheckReason: check.photoReason || '', tempCheckOk: !!check.tempOk, tempCheckReason: check.tempReason || '',
     cleanlinessScore: check.cleanlinessScore, hygieneScore: check.hygieneScore, totalScore: check.totalScore, taskMatch: check.taskMatch, findings: check.findings || [], reinspectionRequired: false,
-    aiNote: 'اجتازت الصورة ودرجة الحرارة الفحص الآلي؛ الدرجات تقديرية والاعتماد النهائي للمدير.'
+    aiWarning: check.photoOk ? '' : (check.photoReason || check.reason || 'توجد ملاحظات في تحليل الصورة'),
+    aiNote: 'حلل البوت الصورة ودرجة الحرارة. الحالة بانتظار مراجعة المدير؛ التحليل الآلي للصورة استرشادي ولا يرفض المهمة تلقائياً.'
   };
   try{
     await setDoc(doc(fdb,'done',id), rec);
@@ -749,7 +797,7 @@ function mgrView(){
     .map(([k,l])=>`<button class="tab ${ST.tab===k?'on':''}" onclick="setTab('${k}')">${l}</button>`).join('');
   const body = ST.tab==='rev' ? revView() : ST.tab==='tasks' ? tasksView() : ST.tab==='qs' ? questionsView() : repView();
   const todayRecords = DONE;
-  const approvedCount = todayRecords.filter(r=>r.status==='approved'||r.status==='done').length;
+  const approvedCount = todayRecords.filter(r=>r.status==='approved').length;
   const rejectedCount = todayRecords.filter(r=>r.status==='rejected').length;
   const pendingCount = todayRecords.filter(r=>r.status==='pending').length;
   return `
@@ -790,6 +838,8 @@ function revView(){
       ${r.status==='rejected'&&(repeatCounts[(r.employee||'?')+'|'+(r.taskName||'?')]||0)>=2?`<div class="badbox" style="margin-top:8px;margin-bottom:0"><b>مخالفة متكررة:</b> تم تسجيل رفض هذه المهمة ${repeatCounts[(r.employee||'?')+'|'+(r.taskName||'?')]} مرات خلال الشهر المحدد.</div>`:''}
       <div class="muted">${esc(r.zone)} · ${esc(r.shift)} · ${esc(r.employee)} · ${esc(r.time)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
       ${(r.cleanlinessScore!=null||r.hygieneScore!=null||r.totalScore!=null)?`<div class="score-strip"><span>النظافة: <b>${r.cleanlinessScore??'—'}/100</b></span><span>الهايجين: <b>${r.hygieneScore??'—'}/100</b></span><span>الإجمالي: <b>${r.totalScore??'—'}/100</b></span></div>`:''}
+      ${r.aiWarning?`<div class="warnbox" style="margin-top:8px;margin-bottom:8px"><b>ملاحظة البوت:</b> ${esc(r.aiWarning)}</div>`:''}
+      ${(Array.isArray(r.findings)&&r.findings.length)?`<div class="meta"><b>ملاحظات التحليل:</b> ${r.findings.map(x=>esc(x)).join(' · ')}</div>`:''}
       ${r.status==='rejected'?`<div style="color:#c62828;font-weight:bold;margin-top:4px">Not Done 👎🏻 <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>${r.correctiveAction?`<div class="warnbox" style="margin-top:8px;margin-bottom:0"><b>الإجراء التصحيحي:</b> ${esc(r.correctiveAction)} ${r.reinspectionRequired?' · مطلوب إعادة الفحص':''}</div>`:''}`:''}
       ${r.photo ? `<img class="shot" src="${r.photo}" alt="">` : '<div class="muted" style="margin-top:6px">بدون صورة</div>'}
       <div class="btns">
@@ -942,4 +992,3 @@ Object.assign(window, { ST, render, login, logout, openTask, closeTask, startCam
 </script>
 </body>
 </html>
-
