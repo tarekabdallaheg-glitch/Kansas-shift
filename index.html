@@ -24,7 +24,13 @@ button.sec{background:transparent;color:var(--text);border:1px solid var(--line)
 button.danger{color:var(--bad);border-color:var(--bad)}
 button.small{width:auto;padding:8px 10px;margin:0;font-size:13px}
 button:disabled{opacity:.45}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+
+/* تحسين تصميم الهيدر العلوي والأيقونات ليكون مرتباً وواضحاً */
+.header-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 4px 15px rgba(0,0,0,.04)}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.shift-title-main{font-size:22px;font-weight:950;color:var(--brand);display:flex;align-items:center;gap:8px}
+.header-actions{display:flex;gap:6px;flex-wrap:wrap}
+
 .tabs{display:flex;gap:6px;margin-bottom:12px}
 .tab{flex:1;margin:0;padding:10px;background:var(--card);color:var(--text);border:1px solid var(--line)}
 .tab.on{background:var(--main);color:var(--onmain);border-color:var(--main)}
@@ -78,10 +84,10 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .app-release-banner .release-pill{background:#fff4ce;color:#805900;border:1px solid #f1df9f;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
 [data-theme="dark"] .app-release-banner .release-pill{background:#3d2f12;color:#ffd58a;border-color:#5a4312}
 
-.employee-identity{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:7px}
-.employee-name{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff0ad,#ffd84f);color:#332600;border:1px solid #f0cb38;border-radius:999px;padding:6px 12px;font-weight:950;font-size:15px}
+.employee-identity{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px}
+.employee-name{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff0ad,#ffd84f);color:#332600;border:1px solid #f0cb38;border-radius:999px;padding:5px 12px;font-weight:950;font-size:14px}
 [data-theme="dark"] .employee-name{background:linear-gradient(135deg,#3d2f12,#5a4312);color:#ffd58a;border-color:#7a5c18}
-.shift-label{display:inline-flex;align-items:center;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:850}
+.shift-label{display:inline-flex;align-items:center;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:850}
 
 .daily-eval{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:16px;margin:0 0 14px;box-shadow:0 8px 22px rgba(0,0,0,.05)}
 .daily-eval-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -93,7 +99,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .daily-eval .bar{margin-top:12px}
 #cam,#shot,.placeholder{max-height:min(38vh,360px)}
 #capBtn{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;width:100%;min-height:54px;border-radius:15px;box-shadow:0 8px 22px rgba(245,184,0,.3)}
-@media(max-width:640px){.daily-eval-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-name{font-size:14px}}
+@media(max-width:640px){.daily-eval-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-name{font-size:13px}}
 </style>
 </head>
 <body>
@@ -118,7 +124,6 @@ const app = initializeApp(firebaseConfig);
 const fdb = getFirestore(app);
 const auth = getAuth(app);
 
-// قراءة الوضع التلقائي لتليفون المستخدم أو الاستجابة لزر التبديل اليدوي
 const savedTheme = localStorage.getItem('kansas_theme');
 if (savedTheme) {
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -354,7 +359,7 @@ const REFERENCE = [
 
 function refView(){
   const secs = REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="margin:6px 0;font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
-  return `<div class="top"><h1>المرجع والشامل التشغيلي</h1><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div>${secs}<p class="muted" style="text-align:center">هذا الدليل التشغيلي مرجع أساسي لكل فريق كنساس فرايد تشيكن.</p>`;
+  return `<div class="header-box"><div class="header-top"><div class="shift-title-main">📘 المرجع الشامل</div><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div></div>${secs}`;
 }
 
 function askBot(){
@@ -372,7 +377,7 @@ function askBot(){
   } else if(q.includes('استلام') || q.includes('طلبيات') || q.includes('شحنة') || q.includes('مورد')){
     ans = '📥 أساسيات استلام الطلبيات:\n- افحص كراتين الشحنة ظاهرياً للتأكد من خلوها من التمزق أو التلف.\n- قيس حرارة المنتجات المبردة والمجمدة بترمومتر معقم عند باب الفرع وارفض أي شحنة غير مطابقة.\n- تأكد من تواريخ الصلاحية وادخلها المخزن فوراً.';
   } else if(q.includes('هايجين') || q.includes('نظافة') || q.includes('ايدين') || q.includes('غسل') || q.includes('لبس')){
-    ans = '🧼 الهايجين الشخصي والنظافة العامة:\n- غسل اليدين بالماء الساخن والصابون لمدة 20 ثانية إجباري قبل البدء وبعد الحمام أو لمس النقود والهواتف.\n- ارتداء الزي الرسمي النظيف وغطاء الرأس (Hairnet) وقناع الوجه عند الحاجة، مع قص الأظافر وعدم ارتداء الساعات والخواتم.\n- يمنع تماماً عمل أي موظف تظهر عليه أعراض مرضية.';
+    ans = '🧼 الهايجين الشخصي والنظافة العامة:\n- غسل اليدين بالماء الساخن والصابون لمدة 20 ثانية إجباري قبل البدء وبعد الحمام أو لمس النقود والهواتف.\n- ارتداء الزي الرسمي النظيف وغطاء الرأس (Hairnet) وقص الأظافر، ومنع الساعات والخواتم.\n- يمنع تماماً عمل أي موظف تظهر عليه أعراض مرضية.';
   } else if(q.includes('صباحي') || q.includes('فتح') || q.includes('وردية الصباح')){
     ans = '🌅 مهام الوردية الصباحية (الفتح):\n- استلام الفرع وفحص الأمان والكاميرات.\n- تشغيل الكاشيرات والشاشات والإنترنت.\n- تسجيل قراءات درجات حرارة الثلاجات والمقالي وفلاتر الهود.\n- توزيع المهام على الموظفين والتأكد من الجاهزية الكاملة قبل استقبال أول عميل.';
   } else if(q.includes('مسائي') || q.includes('إغلاق') || q.includes('قفل') || q.includes('زيت')){
@@ -389,13 +394,12 @@ function chatView(){
   const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:var(--bg)':''}"><b>${m.who==='me'?'أنت':'خبير السلامة والتشغيل'}</b><div>${esc(m.text).replace(/\n/g, '<br>')}</div></div>`).join('')
     || '<div class="muted">اسألني عن صحة وسلامة الغذاء، التخزين، استلام الطلبيات، درجات الحرارة والمهام.</div>';
   return `
-  <div class="top"><h1>المساعد (خبير السلامة)</h1><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div>
+  <div class="header-box"><div class="header-top"><div class="shift-title-main">🤖 المساعد الذكي</div><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div></div>
   ${msgs}
   <div class="card">
     <input id="botQ" placeholder="اكتب سؤالك هنا (استلام،تخزين،حرارة،هايجين)" onkeydown="if(event.key==='Enter')askBot()">
     <button onclick="askBot()">إرسال</button>
-  </div>
-  <p class="muted" style="text-align:center">البوت مزود بكل أسئلة ومعايير سلامة الغذاء والتشغيل.</p>`;
+  </div>`;
 }
 
 let QS = [];
@@ -614,8 +618,22 @@ function empView(){
   const myAvgText = dailyPct ? (dailyPct + '% · ' + (dailyPct >= 85 ? 'ناجح' : 'راسب')) : '—';
 
   return `
-  <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="employee-identity"><span class="shift-label">${esc(ST.shift)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</span><span class="employee-name">👤 ${esc(ST.name)}</span></div></div>
-    <div><button class="sec small" onclick="toggleTheme()" title="تبديل الوضع الليلي">${themeIcon}</button><button class="sec small" onclick="ST.showRef=true;render()">📘 المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">🤖 المساعد</button><button class="sec small" onclick="logout()">🚪 خروج</button></div></div>
+  <div class="header-box">
+    <div class="header-top">
+      <div class="shift-title-main">⚡ شيفت ${esc(ST.shift)}</div>
+      <div class="header-actions">
+        <button class="sec small" onclick="toggleTheme()" title="تبديل الوضع الليلي">${themeIcon}</button>
+        <button class="sec small" onclick="ST.showRef=true;render()" title="المرجع">📘</button>
+        <button class="sec small" onclick="ST.showChat=true;render()" title="المساعد">🤖</button>
+        <button class="sec small danger" onclick="logout()" title="خروج">🚪</button>
+      </div>
+    </div>
+    <div class="employee-identity">
+      <span class="shift-label">📅 ${weekday(ST.date)} ${fmtDate(ST.date)}</span>
+      <span class="employee-name">👤 ${esc(ST.name)}</span>
+    </div>
+  </div>
+
   <div class="daily-eval">
     <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييمك اليومية</div><span class="tag ${myRejected?'bad':myPending?'review':'done'}">${myRejected?'توجد مهمة مرفوضة':myPending?'بانتظار مراجعة المدير':'تقييم اليوم'}</span></div>
     <div class="daily-eval-grid">
@@ -645,8 +663,8 @@ function taskView(){
   if(!t) return '<div class="card"><b>المهمة غير متاحة</b><p class="muted">قد تكون المهمة حُذفت أو توقفت من لوحة المدير.</p><button onclick="closeTask()">رجوع للمهام</button></div>';
   const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
   return `
-  <div class="top"><button class="sec small" onclick="closeTask()">رجوع</button><span class="muted">${esc(t.zone)}</span></div>
-  <h2>إنجاز مهمة: هل تم ${esc(t.name)}؟</h2>
+  <div class="header-box"><div class="header-top"><div class="shift-title-main">📸 إنجاز المهمة</div><button class="sec small" onclick="closeTask()">رجوع</button></div><div class="muted">${esc(t.zone)}</div></div>
+  <h2>هل تم ${esc(t.name)}؟</h2>
   <div class="card">
     ${isTempTask ? `<label>درجة الحرارة المسجلة (°F):</label><input id="tempVal" type="number" step="0.1" placeholder="مثال: 36 أو -5" style="margin-bottom:10px">` : ''}
     <video id="cam" autoplay playsinline muted></video>
@@ -771,13 +789,19 @@ function mgrView(){
   const themeIcon = currentTheme === 'dark' ? '☀️' : '🌙';
 
   return `
-  <div class="top"><div><h1>لوحة المدير</h1><div class="muted">${esc(ST.user.email)} · KANSAS CHICKEN</div></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
-      <button class="sec small" onclick="toggleTheme()" title="تبديل الوضع الليلي">${themeIcon}</button>
-      <button class="sec small" onclick="ST.showRef=true;render()">المرجع</button>
-      <button class="sec small" onclick="ST.showChat=true;render()">المساعد</button>
-      <button class="sec small" onclick="logout()">خروج</button>
-    </div></div>
+  <div class="header-box">
+    <div class="header-top">
+      <div class="shift-title-main">⚡ لوحة المدير</div>
+      <div class="header-actions">
+        <button class="sec small" onclick="toggleTheme()" title="تبديل الوضع الليلي">${themeIcon}</button>
+        <button class="sec small" onclick="ST.showRef=true;render()" title="المرجع">📘</button>
+        <button class="sec small" onclick="ST.showChat=true;render()" title="المساعد">🤖</button>
+        <button class="sec small danger" onclick="logout()" title="خروج">🚪</button>
+      </div>
+    </div>
+    <div class="muted">${esc(ST.user.email)} · KANSAS CHICKEN</div>
+  </div>
+
   <div class="card">
     <h2>ملخص الشيفت المحدد</h2>
     <div class="daily-eval" style="margin:10px 0 0">
