@@ -125,7 +125,7 @@ label{color:#526174;font-weight:800}
 .daily-eval-title{font-weight:950;font-size:16px;color:#1b2635}
 .daily-eval-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .daily-eval-item{padding:11px 7px;border:1px solid #e5eaf0;background:#fff;border-radius:14px;text-align:center;min-width:0}
-.daily-eval-item strong{display:block;font-size:22px;line-height:1.25;font-weight:950;color:#202a38}
+.daily-eval-item strong{display:block;font-size:19px;line-height:1.25;font-weight:950;color:#202a38}
 .daily-eval-item span{display:block;font-size:11px;font-weight:800;color:#667487;margin-top:5px}
 .daily-eval .bar{margin-top:12px}
 #cam,#shot,.placeholder{max-height:min(38vh,360px)}
@@ -281,7 +281,7 @@ const TIPS = {
  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
- 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون المناديل والمعقّم.',
  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
@@ -513,7 +513,7 @@ function coverView(){
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -592,10 +592,9 @@ function empView(){
   const myPending = myToday.filter(r=>r.status==='pending').length;
   const myRejected = myToday.filter(r=>r.status==='rejected').length;
   
-  // يحسب متوسط تحليل البوت للمهام المعتمدة فقط
-  const targetScores = myApproved.map(r=>Number(r.totalScore || r.cleanlinessScore || 85));
-  const myAvg = targetScores.length ? Math.round(targetScores.reduce((a,b)=>a+b,0)/targetScores.length) : 0;
   const dailyPct = list.length ? Math.round(myApproved.length/list.length*100) : 0;
+  // جعل متوسط تحليل البوت يعرض نفس نسبة إنجاز المهام المعتمدة مع التقدير أو راسب
+  const myAvgText = dailyPct ? (dailyPct + '% · ' + (dailyPct >= 85 ? 'ناجح' : 'راسب')) : '—';
 
   return `
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="employee-identity"><span class="shift-label">${esc(ST.shift)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</span><span class="employee-name">👤 ${esc(ST.name)}</span></div></div>
@@ -606,10 +605,10 @@ function empView(){
       <div class="daily-eval-item"><strong>${myApproved.length}</strong><span>مهام معتمدة</span></div>
       <div class="daily-eval-item"><strong>${myPending}</strong><span>بانتظار المدير</span></div>
       <div class="daily-eval-item"><strong>${myRejected}</strong><span>مرفوضة</span></div>
-      <div class="daily-eval-item"><strong>${myAvg ? myAvg+'%' : '—'}</strong><span>متوسط تحليل البوت</span></div>
+      <div class="daily-eval-item"><strong>${myAvgText}</strong><span>متوسط تحليل البوت</span></div>
     </div>
     <div class="bar"><div style="width:${dailyPct}%"></div></div>
-    <div class="muted" style="margin-top:7px">إنجاز المهام المعتمدة اليوم: <b>${dailyPct}%</b> · متوسط البوت للمهام المعتمدة فقط.</div>
+    <div class="muted" style="margin-top:7px">إنجاز المهام المعتمدة اليوم: <b>${dailyPct}%</b> · تقييم البوت يعكس نسبة الإنجاز المعتمدة.</div>
   </div>
   <div class="card">
     <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
