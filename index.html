@@ -438,7 +438,7 @@ async function flushQ(){
 }
 window.addEventListener('online', flushQ);
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-const ST = { user:null, role:null, name:'', shift:null, tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
+const ST = { user:null, role:null, name:'', shift:'صباحي', tab:'rev', date:todayStr(), month:todayStr().slice(0,7),
   revShift:'all', reportDay:todayStr(), report:[], cur:null, photo:null, taken:false, busy:false, authErr:'', showRef:false, showChat:false, chatMsgs:[] };
 let TASKS=[], DONE=[], unsubDone=null, camStream=null;
 
@@ -511,7 +511,7 @@ function coverView(){
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
+    <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
@@ -762,7 +762,7 @@ function mgrView(){
   <div class="card">
     <h2>ملخص الشيفت المحدد</h2>
     <div class="daily-eval" style="margin:10px 0 0">
-      <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييم الشيفت الحالي</div><span class="tag ${rejectedCount?'bad':pendingCount?'review':'done'}">${rejectedCount?'توجد مهام مرفوضة':pendingList?'بانتظار المراجعة':'تقييم المتابعة'}</span></div>
+      <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييم الشيفت الحالي</div><span class="tag ${rejectedCount?'bad':pendingCount?'review':'done'}">${rejectedCount?'توجد مهام مرفوضة':pendingCount?'بانتظار المراجعة':'تقييم المتابعة'}</span></div>
       <div class="daily-eval-grid">
         <div class="daily-eval-item"><strong>${approvedCount}</strong><span>مهام معتمدة</span></div>
         <div class="daily-eval-item"><strong>${pendingCount}</strong><span>بانتظار المدير</span></div>
@@ -823,7 +823,7 @@ function revView(){
     </select>
     <div style="margin-top:10px">${recs.length} منفذة · ${missing.length} ناقصة</div>
   </div>
-  <div class="card"><b>لم تُنفّذ</b>{miss}</div>
+  <div class="card"><b>لم تُنفّذ</b>${miss}</div>
   ${cards}`;
 }
 function setDate(v){ ST.date=v; subDone(); render(); }
@@ -950,13 +950,13 @@ function repView(){
   </div>
   <div class="card" style="overflow-x:auto"><b>الملخص الشهري</b>
     <div style="margin:6px 0">أيام فيها تسجيل: ${workDays} · أيام ناجحة: ${passDays} · متوسط: ${avg}% · ${workDays?grade(avg):'-'}</div>
-    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>{rows}</table></div>
+    <table><tr><th>اليوم</th><th>صباحي</th><th>مسائي</th><th>النسبة</th><th>التقدير</th></tr>${rows}</table></div>
   <div class="card" style="overflow-x:auto"><b>تقييم الموظفين للشهر</b>
-    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>{empRows}</table></div>
+    <table><tr><th>الموظف</th><th>تسجيلات</th><th>معتمدة</th><th>مرفوضة</th><th>نسبة الاعتماد</th><th>التقدير</th></tr>${empRows}</table></div>
   <div id="printArea">
     <h2 style="text-align:center">تقرير يوم ${fmtDate(ST.reportDay)} · KANSAS CHICKEN</h2>
     ${groupHtml}
-    <div class="card"><b>لم تُنفّذ في اليوم ده</b>{missHtml}</div>
+    <div class="card"><b>لم تُنفّذ في اليوم ده</b>${missHtml}</div>
   </div>`;
 }
 function setReportDay(v){ ST.reportDay=v; if(v.slice(0,7)!==ST.month){ ST.month=v.slice(0,7); loadReport(); } render(); }
