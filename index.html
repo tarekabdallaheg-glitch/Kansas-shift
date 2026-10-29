@@ -281,7 +281,7 @@ const TIPS = {
  'تنظيف الصالة وترتيب الكراسي والترابيزات': 'امسح الترابيزات والكراسي بمنظف مناسب، ورتّبها بمسافات متساوية، واتأكد إن مفيش فتات على الأرض.',
  'نظافة الأرضية': 'امسح الأرضية بالمكنسة ثم بالماء والمنظف، وحط لافتة تحذير لو الأرض مبلولة.',
  'نظافة ستارة التهوية': 'نظّف الستارة من التراب والدهون، واتأكد إنها مثبتة وشغّالة كويس.',
- 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون المناديل والمعقّم.',
+ 'تنظيف الحمامات وتعبئة المستلزمات': 'نظّف المرحاض والحوض والأرضية بمنظف مطهّر، واملا الصابون والمناديل والمعقّم.',
  'تشغيل الكاشير والشاشات والتأكد من الإنترنت': 'شغّل الكاشير والشاشات، واتأكد إن الإنترنت شغال، واختبر فاتورة تجريبية.',
  'تصفية زيت المقلاة وتنظيفها': 'صفّي الزيت بعد ما يبرد قليلاً، ونظّف المقلاة من البقايا قبل تخزين الزيت.',
  'تنظيف المقلاة والمعدات وفصل الكهرباء': 'نظّف المقلاة والمعدات بعد ما تبرد، وافصل الكهرباء قبل أي تنظيف بالماء.',
@@ -513,7 +513,7 @@ function coverView(){
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#1d2630"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
@@ -593,7 +593,6 @@ function empView(){
   const myRejected = myToday.filter(r=>r.status==='rejected').length;
   
   const dailyPct = list.length ? Math.round(myApproved.length/list.length*100) : 0;
-  // جعل متوسط تحليل البوت يعرض نفس نسبة إنجاز المهام المعتمدة مع التقدير أو راسب
   const myAvgText = dailyPct ? (dailyPct + '% · ' + (dailyPct >= 85 ? 'ناجح' : 'راسب')) : '—';
 
   return `
@@ -888,19 +887,37 @@ function repView(){
   const dayRecs = ST.report.filter(r=>r.date===ST.reportDay);
   const groups = {};
   dayRecs.forEach(r=>{ const k=(r.employee||'?')+'|'+r.shift; (groups[k]=groups[k]||{name:r.employee||'?', shift:r.shift, list:[]}).list.push(r); });
+  
   const groupHtml = Object.values(groups).sort((a,b)=>a.shift>b.shift?1:-1).map(g=>{
     const total = taskList(g.shift).length;
-    const ok = g.list.filter(r=>okS(r.status)).length;
-    const p = total ? Math.round(ok/total*100) : 0;
+    const approvedList = g.list.filter(r=>okS(r.status));
+    const pendingList = g.list.filter(r=>r.status==='pending').length;
+    const rejectedList = g.list.filter(r=>r.status==='rejected').length;
+    const p = total ? Math.round(approvedList.length/total*100) : 0;
+    const botText = p ? (p + '% · ' + (p >= 85 ? 'ناجح' : 'راسب')) : '—';
+
     const items = g.list.slice().sort((a,b)=>(a.time>b.time?1:-1)).map(r=>`<div class="rec">
         <div><b>هل تم ${esc(r.taskName)}؟</b> · ${esc(r.zone)} · ${esc(r.time)} · ${stLabel(r.status)} ${r.tempVal!==null&&r.tempVal!==undefined?`· حرارة: <b>${r.tempVal}°F</b>`:''}</div>
         ${r.status==='rejected' ? `<div style="color:#c62828;font-weight:bold;margin-top:4px">❌ مرفوضة <span style="font-weight:normal;color:var(--muted)">(${esc(r.rejectReason||'')})</span></div>` : ''}
         ${r.photo ? `<img src="${r.photo}" alt="">` : '<div class="muted">بدون صورة</div>'}
       </div>`).join('');
-    return `<div class="card emp-block"><b>${esc(g.name)}</b> · شيفت ${esc(g.shift)}<br>
-      النتيجة: <b>${p}%</b> (${grade(p)}) · معتمد ${ok} من ${total}
+
+    return `<div class="card emp-block">
+      <div class="daily-eval" style="margin-top:0">
+        <div class="daily-eval-head"><div class="daily-eval-title">📊 ملخص شيفت ${esc(g.shift)} · ${esc(g.name)}</div><span class="tag ${rejectedList?'bad':pendingList?'review':'done'}">${rejectedList?'توجد مهام مرفوضة':pendingList?'بانتظار المراجعة':'تقييم اليوم'}</span></div>
+        <div class="daily-eval-grid">
+          <div class="daily-eval-item"><strong>${approvedList.length}</strong><span>مهام معتمدة</span></div>
+          <div class="daily-eval-item"><strong>${pendingList}</strong><span>بانتظار المدير</span></div>
+          <div class="daily-eval-item"><strong>${rejectedList}</strong><span>مرفوضة</span></div>
+          <div class="daily-eval-item"><strong>${botText}</strong><span>متوسط تحليل البوت</span></div>
+        </div>
+        <div class="bar"><div style="width:${p}%"></div></div>
+        <div class="muted" style="margin-top:7px">نسبة إنجاز المهام المعتمدة: <b>${p}%</b> · ${grade(p)}</div>
+      </div>
+      <div style="margin-top:12px;font-weight:bold;font-size:14px">تفاصيل مهام الشيفت:</div>
       ${items}</div>`;
   }).join('') || '<div class="card muted">ما فيش تنفيذ في اليوم ده.</div>';
+
   const dayMissing = SHIFTS.flatMap(sh => taskList(sh).filter(t=>!dayRecs.some(r=>r.taskId===t.id && r.shift===sh)).map(t=>({sh,t})));
   const missHtml = dayMissing.map(x=>`<div class="muted">• هل تم ${esc(x.t.name)}؟ (${esc(x.sh)})</div>`).join('') || '<div class="muted">كل المهام اتنفذت ✓</div>';
 
