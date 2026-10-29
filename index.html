@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F5B800">
+<meta name="theme-color" content="#1b2530">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <title>KANSAS CHICKEN - الشيفتات</title>
@@ -25,13 +25,12 @@ button.danger{color:var(--bad);border-color:var(--bad)}
 button.small{width:auto;padding:8px 12px;margin:0;font-size:13px;display:inline-flex;align-items:center;gap:5px}
 button:disabled{opacity:.45}
 
-/* تصميم الهيدر الجديد المنظم والاحترافي */
+/* إعادة ترتيب الهيدر والأزرار بشكل احترافي ومنظم ومتناسق */
 .header-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 15px rgba(0,0,0,.04)}
-.header-main-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.shift-title-main{font-size:20px;font-weight:950;color:var(--brand);display:flex;align-items:center;gap:8px}
-.header-actions{display:flex;gap:6px;flex-wrap:wrap}
+.header-actions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.header-actions-grid button{margin:0;width:100%;justify-content:center;font-size:13px;padding:10px}
 
-.app-info-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.app-info-bar{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:10px}
 .app-info-title{font-weight:900;font-size:13px;color:var(--text)}
 .app-info-sub{font-size:11px;color:var(--muted);margin-top:2px}
 
@@ -68,9 +67,9 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .login-btn{padding:16px;font-size:17px;border-radius:14px;box-shadow:0 6px 14px rgba(245,184,0,.4);transition:transform .15s}
 .login-btn:active{transform:scale(.97)}
 
-/* تصميم شاشة التحميل البارزة والمضيئة */
+/* شاشة التحميل (بدون K، مع المثلث الأحمر المقلوب ومدة 1.8 ثانية) */
 .splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);z-index:9;padding:20px;text-align:center}
-.sp-logo{animation:spIn .5s ease-out both}
+.sp-logo{animation:spIn .5s ease-out both;font-size:52px;color:var(--brand);text-shadow:0 0 20px rgba(211,47,47,.5)}
 @keyframes spIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
 .sp-name{font-size:25px;font-weight:950;margin-top:16px;letter-spacing:1px;direction:ltr;color:var(--brand);text-shadow:0 0 18px rgba(211,47,47,.4)}
 .sp-sub{font-size:13px;font-weight:850;color:var(--text);margin-top:6px;letter-spacing:0.5px}
@@ -84,10 +83,9 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 @media print{body{background:#fff}body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{display:block;position:absolute;left:0;top:0;width:100%;padding:12px}.emp-block{page-break-inside:avoid}}
 .rec{page-break-inside:avoid;border-bottom:1px solid var(--line);padding:8px 0}.rec img{width:100%;max-width:260px;display:block;margin-top:6px;border-radius:8px}
 
-.employee-identity{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:6px}
-.employee-name{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#fff0ad,#ffd84f);color:#332600;border:1px solid #f0cb38;border-radius:999px;padding:5px 12px;font-weight:950;font-size:14px}
-[data-theme="dark"] .employee-name{background:linear-gradient(135deg,#3d2f12,#5a4312);color:#ffd58a;border-color:#7a5c18}
-.shift-label{display:inline-flex;align-items:center;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:850}
+.employee-identity{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.employee-name{font-weight:900;font-size:14px;color:var(--text)}
+.shift-label{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:12px;font-weight:850}
 
 .daily-eval{border:1px solid var(--line);background:var(--card);border-radius:20px;padding:16px;margin:0 0 14px;box-shadow:0 8px 22px rgba(0,0,0,.05)}
 .daily-eval-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -99,7 +97,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px 4px;b
 .daily-eval .bar{margin-top:12px}
 #cam,#shot,.placeholder{max-height:min(38vh,360px)}
 #capBtn{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:5;width:100%;min-height:54px;border-radius:15px;box-shadow:0 8px 22px rgba(245,184,0,.3)}
-@media(max-width:640px){.daily-eval-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.employee-name{font-size:13px}}
+@media(max-width:640px){.daily-eval-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -359,7 +357,7 @@ const REFERENCE = [
 
 function refView(){
   const secs = REFERENCE.map(s=>`<div class="card"><b>${s.t}</b><ul style="padding-right:18px;margin:8px 0 0">${s.i.map(x=>`<li style="margin:6px 0;font-size:14px">${esc(x)}</li>`).join('')}</ul></div>`).join('');
-  return `<div class="header-box"><div class="header-main-row"><div class="shift-title-main">📘 المرجع الشامل</div><button class="sec small" onclick="ST.showRef=false;render()">رجوع</button></div></div>${secs}`;
+  return `<div class="header-box"><div class="header-actions-grid"><button class="sec" onclick="ST.showRef=false;render()">رجوع للمهام</button></div></div>${secs}`;
 }
 
 function askBot(){
@@ -394,7 +392,7 @@ function chatView(){
   const msgs = ST.chatMsgs.map(m => `<div class="card" style="${m.who==='me'?'background:var(--bg)':''}"><b>${m.who==='me'?'أنت':'خبير السلامة والتشغيل'}</b><div>${esc(m.text).replace(/\n/g, '<br>')}</div></div>`).join('')
     || '<div class="muted">اسألني عن صحة وسلامة الغذاء، التخزين، استلام الطلبيات، درجات الحرارة والمهام.</div>';
   return `
-  <div class="header-box"><div class="header-main-row"><div class="shift-title-main">🤖 المساعد الذكي</div><button class="sec small" onclick="ST.showChat=false;render()">رجوع</button></div></div>
+  <div class="header-box"><div class="header-actions-grid"><button class="sec" onclick="ST.showChat=false;render()">رجوع للمهام</button></div></div>
   ${msgs}
   <div class="card">
     <input id="botQ" placeholder="اكتب سؤالك هنا (استلام،تخزين،حرارة،هايجين)" onkeydown="if(event.key==='Enter')askBot()">
@@ -492,7 +490,7 @@ onAuthStateChanged(auth, u=>{
 
 function splashView(){
   return `<div class="splash">
-    <div class="logo sp-logo">K</div>
+    <div class="sp-logo">🔻</div>
     <div class="sp-name">Kansas Operations</div>
     <div class="sp-sub">إدارة وعمليات الشيفت الذكية</div>
     <div class="sp-bar"><div></div></div>
@@ -501,10 +499,10 @@ function splashView(){
 
 function coverView(){
   return `<div class="cover">
-    <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار K، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
+    <svg viewBox="0 0 380 460" role="img"><title>غلاف تطبيق KANSAS CHICKEN</title><desc>خلفية صفرا، شعار، خمسة أشخاص متشابكين الأيدي، وعبارة فريق واحد شيفت واحد.</desc>
     <rect x="0" y="0" width="380" height="460" rx="16" fill="#F5B800"/>
     <circle cx="190" cy="92" r="46" fill="#ffffff"/>
-    <text x="190" y="110" text-anchor="middle" font-size="46" font-weight="500" fill="#D32F2F">K</text>
+    <text x="190" y="110" text-anchor="middle" font-size="38" font-weight="500" fill="#D32F2F">🔻</text>
     <text x="190" y="176" text-anchor="middle" font-size="22" font-weight="500" fill="#1d2630">Kansas Operations</text>
     <rect x="36" y="304" width="308" height="8" rx="4" fill="#1d2630"/>
     <circle cx="64" cy="268" r="15" fill="#1d2630"/><rect x="44" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
@@ -535,7 +533,7 @@ function loginView(){
   const greet = h < 12 ? 'صباح الخير' : h < 17 ? 'أهلاً بيك' : 'مساء الخير';
   return `
   <div class="login-wrap">
-    <div class="logo">K</div>
+    <div class="logo">🔻</div>
     <div class="brand" style="margin-top:14px">Kansas Operations</div>
     <p class="greet">${greet} 👋 جاهز لشيفتك؟</p>
     <div class="card login-card">
@@ -622,16 +620,13 @@ function empView(){
   const myAvgText = dailyPct ? (dailyPct + '% · ' + (dailyPct >= 85 ? 'ناجح' : 'راسب')) : '—';
 
   return `
-  <!-- الهيدر الاحترافي الجديد مع وضوح المسميات والأزرار -->
+  <!-- الهيدر المنظم والمرتب بدون زحمة وأزرار مترتبة في شبكة احترافية -->
   <div class="header-box">
-    <div class="header-main-row">
-      <div class="shift-title-main">⚡ كنساس · شيفت ${esc(ST.shift)}</div>
-      <div class="header-actions">
-        <button class="sec small" onclick="toggleTheme()">${themeIcon}</button>
-        <button class="sec small" onclick="ST.showRef=true;render()">📘 المرجع</button>
-        <button class="sec small" onclick="ST.showChat=true;render()">🤖 المساعد</button>
-        <button class="sec small danger" onclick="logout()">🚪 خروج</button>
-      </div>
+    <div class="header-actions-grid">
+      <button class="sec" onclick="toggleTheme()">${themeIcon}</button>
+      <button class="sec" onclick="ST.showRef=true;render()">📘 المرجع</button>
+      <button class="sec" onclick="ST.showChat=true;render()">🤖 المساعد</button>
+      <button class="sec danger" onclick="logout()">🚪 خروج</button>
     </div>
     
     <div class="app-info-bar">
@@ -644,9 +639,9 @@ function empView(){
       </div>
     </div>
 
-    <div class="employee-identity" style="justify-content:space-between">
-      <span class="employee-name">👤 الموظف المسجل: ${esc(ST.name)}</span>
-      <span class="shift-label" style="background:var(--main);color:var(--onmain);font-weight:900">الشيفت النشط: ${esc(ST.shift)}</span>
+    <div class="employee-identity" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <span class="employee-name">👤 ${esc(ST.name)}</span>
+      <span style="background:var(--main);color:var(--onmain);padding:5px 12px;border-radius:999px;font-weight:900;font-size:12px;">الشيفت النشط: ${esc(ST.shift)}</span>
     </div>
   </div>
 
@@ -679,7 +674,7 @@ function taskView(){
   if(!t) return '<div class="card"><b>المهمة غير متاحة</b><p class="muted">قد تكون المهمة حُذفت أو توقفت من لوحة المدير.</p><button onclick="closeTask()">رجوع للمهام</button></div>';
   const isTempTask = t.name.includes('حرارة') || t.name.includes('الثلاجات') || t.name.includes('المنتجات');
   return `
-  <div class="header-box"><div class="header-main-row"><div class="shift-title-main">📸 إنجاز المهمة</div><button class="sec small" onclick="closeTask()">رجوع</button></div><div class="muted">${esc(t.zone)}</div></div>
+  <div class="header-box"><div class="header-actions-grid"><button class="sec" onclick="closeTask()">رجوع للمهام</button></div><div class="muted">${esc(t.zone)}</div></div>
   <h2>هل تم ${esc(t.name)}؟</h2>
   <div class="card">
     ${isTempTask ? `<label>درجة الحرارة المسجلة (°F):</label><input id="tempVal" type="number" step="0.1" placeholder="مثال: 36 أو -5" style="margin-bottom:10px">` : ''}
@@ -805,16 +800,13 @@ function mgrView(){
   const themeIcon = currentTheme === 'dark' ? '☀️ وضع نهاري' : '🌙 وضع ليلي';
 
   return `
-  <!-- الهيدر الاحترافي للمدير -->
+  <!-- الهيدر الاحترافي للمدير ومنظم تماماً -->
   <div class="header-box">
-    <div class="header-main-row">
-      <div class="shift-title-main">⚡ لوحة المدير</div>
-      <div class="header-actions">
-        <button class="sec small" onclick="toggleTheme()">${themeIcon}</button>
-        <button class="sec small" onclick="ST.showRef=true;render()">📘 المرجع</button>
-        <button class="sec small" onclick="ST.showChat=true;render()">🤖 المساعد</button>
-        <button class="sec small danger" onclick="logout()">🚪 خروج</button>
-      </div>
+    <div class="header-actions-grid">
+      <button class="sec" onclick="toggleTheme()">${themeIcon}</button>
+      <button class="sec" onclick="ST.showRef=true;render()">📘 المرجع</button>
+      <button class="sec" onclick="ST.showChat=true;render()">🤖 المساعد</button>
+      <button class="sec danger" onclick="logout()">🚪 خروج</button>
     </div>
     
     <div class="app-info-bar">
