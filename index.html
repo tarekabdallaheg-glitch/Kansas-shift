@@ -161,12 +161,12 @@ async function gemini(){
   if(GEM !== null) return GEM;
   try{
     const ai = getAI(app, { backend: new GoogleAIBackend() });
-    GEM = getGenerativeModel(ai, { model: 'gemini-2.5-flash-lite' });
+    // تم التحديث إلى موديل مستقر ومتاح للجميع
+    GEM = getGenerativeModel(ai, { model: 'gemini-2.5-flash' });
   }catch(e){ GEM = false; }
   return GEM;
 }
 
-//قاعدة المعرفة الشاملة لسلامة الغذاء والتشغيل ليستخدمها الذكاء الاصطناعي في الإجابة بدقة مطلقة
 const KANSAS_KB = `
 أنت خبير ومفتش سلامة وصحة غذاء وهايجين وتشغيل صارم جداً لمطعم "كنساس فرايد تشيكن". لديك قاعدة بيانات ومعلومات شاملة ومحدثة بكل معايير HACCP وسلامة الغذاء:
 1. درجات الحرارة: الثلاجات أقل من 39°F، الفريزر 0°F أو أقل، الأغذية الساخنة المعروضة أعلى من 140°F، ودرجة حرارة قلي/طهي الدجاج الداخلية لا تقل عن 165°F (74°C).
@@ -540,7 +540,7 @@ function coverView(){
     <circle cx="128" cy="258" r="16" fill="#D32F2F"/><rect x="107" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
     <circle cx="190" cy="250" r="17" fill="#1d2630"/><rect x="168" y="271" width="44" height="82" rx="14" fill="#D32F2F"/>
     <circle cx="252" cy="258" r="16" fill="#D32F2F"/><rect x="231" y="278" width="42" height="74" rx="14" fill="#D32F2F"/>
-    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#D32F2F"/>
+    <circle cx="316" cy="268" r="15" fill="#1d2630"/><rect x="296" y="286" width="40" height="66" rx="14" fill="#1d2630"/>
     <text x="190" y="392" text-anchor="middle" font-size="20" font-weight="500" fill="#1d2630">فريق واحد.. شيفت واحد</text>
     <text x="190" y="422" text-anchor="middle" font-size="14" font-weight="400" fill="#1d2630">سوا نعمل الأحسن</text>
     </svg>
