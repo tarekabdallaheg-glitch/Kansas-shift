@@ -589,11 +589,11 @@ function empView(){
   
   const myToday = DONE.filter(r=>r.uid===ST.user.uid && r.date===ST.date);
   const myApproved = myToday.filter(r=>r.status==='approved'||r.status==='done');
-  const myRejected = myToday.filter(r=>r.status==='rejected');
   const myPending = myToday.filter(r=>r.status==='pending').length;
+  const myRejected = myToday.filter(r=>r.status==='rejected').length;
   
-  // يحسب متوسط تحليل البوت للمهام المعتمدة والمرفوضة معا
-  const targetScores = [...myApproved, ...myRejected].map(r=>Number(r.totalScore || r.cleanlinessScore || 85));
+  // يحسب متوسط تحليل البوت للمهام المعتمدة فقط
+  const targetScores = myApproved.map(r=>Number(r.totalScore || r.cleanlinessScore || 85));
   const myAvg = targetScores.length ? Math.round(targetScores.reduce((a,b)=>a+b,0)/targetScores.length) : 0;
   const dailyPct = list.length ? Math.round(myApproved.length/list.length*100) : 0;
 
@@ -601,15 +601,15 @@ function empView(){
   <div class="top"><div><h1>شيفت ${esc(ST.shift)}</h1><div class="employee-identity"><span class="shift-label">${esc(ST.shift)} · ${weekday(ST.date)} ${fmtDate(ST.date)}</span><span class="employee-name">👤 ${esc(ST.name)}</span></div></div>
     <div><button class="sec small" onclick="ST.showRef=true;render()">📘 المرجع</button><button class="sec small" onclick="ST.showChat=true;render()">🤖 المساعد</button><button class="sec small" onclick="refreshAll()">🔄 تحديث</button><button class="sec small" onclick="logout()">🚪 خروج</button></div></div>
   <div class="daily-eval">
-    <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييمك اليومية</div><span class="tag ${myRejected.length?'bad':myPending?'review':'done'}">${myRejected.length?'توجد مهمة مرفوضة':myPending?'بانتظار مراجعة المدير':'تقييم اليوم'}</span></div>
+    <div class="daily-eval-head"><div class="daily-eval-title">📊 لوحة تقييمك اليومية</div><span class="tag ${myRejected?'bad':myPending?'review':'done'}">${myRejected?'توجد مهمة مرفوضة':myPending?'بانتظار مراجعة المدير':'تقييم اليوم'}</span></div>
     <div class="daily-eval-grid">
       <div class="daily-eval-item"><strong>${myApproved.length}</strong><span>مهام معتمدة</span></div>
       <div class="daily-eval-item"><strong>${myPending}</strong><span>بانتظار المدير</span></div>
-      <div class="daily-eval-item"><strong>${myRejected.length}</strong><span>مرفوضة</span></div>
+      <div class="daily-eval-item"><strong>${myRejected}</strong><span>مرفوضة</span></div>
       <div class="daily-eval-item"><strong>${myAvg ? myAvg+'%' : '—'}</strong><span>متوسط تحليل البوت</span></div>
     </div>
     <div class="bar"><div style="width:${dailyPct}%"></div></div>
-    <div class="muted" style="margin-top:7px">إنجاز المهام المعتمدة اليوم: <b>${dailyPct}%</b> · متوسط البوت يشمل المعتمدة والمرفوضة.</div>
+    <div class="muted" style="margin-top:7px">إنجاز المهام المعتمدة اليوم: <b>${dailyPct}%</b> · متوسط البوت للمهام المعتمدة فقط.</div>
   </div>
   <div class="card">
     <div>رصيد الاعتماد (النقاط): <b>${apprN}</b> من ${list.length} مهام معتمدة</div>
